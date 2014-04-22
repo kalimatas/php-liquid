@@ -22,6 +22,11 @@ class LiquidTestFileSystem extends LiquidBlankFileSystem
 			return "Inner: {{ inner }}{{ other }}";
 			
 		}		
+
+		if ($templatePath == 'outer') {
+			return "Outer: {% block title %}outer-title{% endblock %}";
+
+		}
 	}
 	
 }
@@ -342,6 +347,18 @@ XPCTD;
 		$output = $template->render(array("inner"=>"orig", "var" => array(1,2,3)));
 		
 		$this->assertEqual("Outer-Inner: orig-Outer-Inner: orig23", $output);
+	}
+
+	function test_extends_tag()
+	{
+		$template = new LiquidTemplate();
+		$template->setFileSystem(new LiquidTestFileSystem());
+
+		$template->parse("{% extends 'outer' %} {% block title %}inner-title{% endblock %}");
+
+		$output = $template->render(array());
+
+		$this->assertEqual("Outer: inner-title", $output);
 	}
 
 }
