@@ -39,6 +39,11 @@ class LiquidTemplate
 
     private static $_cache;
 
+    /**
+     * @var LiquidContext The context for keeping and resolving variables
+     */
+    private static $_context;
+
 
     /**
      * Constructor
@@ -132,6 +137,17 @@ class LiquidTemplate
 
 
     /**
+     *
+     *
+     * @return array
+     */
+    public static function getContext()
+    {
+        return self::$_context;
+    }
+
+
+    /**
      * Register the filter
      *
      * @param unknown_type $filter
@@ -158,10 +174,13 @@ class LiquidTemplate
      * Parses the given source string
      *
      * @param string $source
+     * @param array $assigns An array of values for the template
      */
-    public function parse($source)
+    public function parse($source, array $assigns = array())
     {
         $cache = self::$_cache;
+
+        self::$_context = new LiquidContext($assigns, null);
 
         if (isset($cache))
         {
@@ -192,7 +211,13 @@ class LiquidTemplate
      */
     public function render(array $assigns = array(), $filters = null, $registers = null)
     {
-        $context = new LiquidContext($assigns, $registers);
+        $context = self::$_context;
+        if (!empty($assigns) && is_array($assigns)) {
+            $context->merge($assigns);
+        }
+        if (!is_null($registers) && is_array($registers)) {
+            $context->addRegisters($registers);
+        }
 
         if (!is_null($filters))
         {
@@ -211,6 +236,7 @@ class LiquidTemplate
             $context->addFilters($filter);
         }
 
+        self::$_context = $context;
         return $this->_root->render($context);
     }
 }

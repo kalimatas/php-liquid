@@ -41,7 +41,7 @@ Example snippet:
 
 h2. Howto use Liquid
 
-Code to render:
+Code to render with original php-liquid:
 
 <pre>
 $liquid->parse(file_get_contents('templates/products.tpl'))->render($products);
@@ -61,3 +61,24 @@ h2. Fork Notes
 
 This fork is based on php-liquid by Mateo Murphy. The original library is still hosted at: ("http://code.google.com/p/php-liquid/":http://code.google.com/p/php-liquid/)
 
+Variables couldn't be used inside an 'include' or an 'extends' tag.
+
+Which means the below code didn't work:
+
+<pre>
+{% include foo %}
+{% include {{ foo }} %}
+</pre>
+
+With this modification it will work (where a string not inside a " or ' is considered as a variable):
+
+<pre>
+{% include merchant/'head' %}
+{% extends "root"/foo/bar/'index' %}
+</pre>
+
+Code to render with modified php-liquid (backward compatible, which means the original example does still work but variables can't be used in include and extends tags):
+
+<pre>
+$liquid->parse(file_get_contents('templates/products.tpl'), $products)->render();
+</pre>

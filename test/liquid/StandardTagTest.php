@@ -20,12 +20,22 @@ class LiquidTestFileSystem extends LiquidBlankFileSystem
 	{
 		if ($templatePath == 'inner') {
 			return "Inner: {{ inner }}{{ other }}";
-			
-		}		
+		}
+
+		if ($templatePath == 'inner2') {
+			return "Inner: {{ inner }}{{ other }}";
+		}
+
+		if ($templatePath == 'prob/foo/bar/prob/inner2') {
+			return "Inner in prob/foo/bar/prob/: {{ inner }}{{ other }}";
+		}
 
 		if ($templatePath == 'outer') {
 			return "Outer: {% block title %}outer-title{% endblock %}";
+		}
 
+		if ($templatePath == 'prob/foo/bar/prob/outer') {
+			return "Outer in prob/foo/bar/prob: {% block title %}outer-title{% endblock %}";
 		}
 	}
 	
@@ -349,6 +359,20 @@ XPCTD;
 		$this->assertEqual("Outer-Inner: orig-Outer-Inner: orig23", $output);
 	}
 
+	function test_include_tag_with_variable()
+	{
+		$template = new LiquidTemplate();
+		$template->setFileSystem(new LiquidTestFileSystem());
+
+		$template->parse("Outer-{% include inner2 %}-Outer with variable-{% include inner2 other:'23' %}", array("inner2"=>"inner2", "inner"=>"orig", "var" => array(1,2,3)));
+		$output = $template->render();
+		$this->assertEqual("Outer-Inner: orig-Outer with variable-Inner: orig23", $output);
+
+		$template->parse("Outer-{% include 'prob'/foo/bar/\"prob\"/inner2 %}-Outer with variable-{% include 'prob'/foo/bar/\"prob\"/inner2 other:'23' %}", array("inner2"=>"inner2", "foo"=>"foo", "bar"=>"bar", "inner"=>"orig", "var" => array(1,2,3)));
+		$output = $template->render();
+		$this->assertEqual("Outer-Inner in prob/foo/bar/prob/: orig-Outer with variable-Inner in prob/foo/bar/prob/: orig23", $output);
+	}
+
 	function test_extends_tag()
 	{
 		$template = new LiquidTemplate();
@@ -356,9 +380,23 @@ XPCTD;
 
 		$template->parse("{% extends 'outer' %} {% block title %}inner-title{% endblock %}");
 
-		$output = $template->render(array());
+		$output = $template->render();
 
 		$this->assertEqual("Outer: inner-title", $output);
+	}
+
+	function test_extends_tag_with_variable()
+	{
+		$template = new LiquidTemplate();
+		$template->setFileSystem(new LiquidTestFileSystem());
+
+		$template->parse("{% extends outer %} {% block title %}inner-title with variable{% endblock %}", array("outer"=>"outer"));
+		$output = $template->render();
+		$this->assertEqual("Outer: inner-title with variable", $output);
+
+		$template->parse("{% extends 'prob'/foo/bar/\"prob\"/outer %} {% block title %}inner-title with variable{% endblock %}", array("outer"=>"outer", "foo"=>"foo", "bar"=>"bar"));
+		$output = $template->render();
+		$this->assertEqual("Outer in prob/foo/bar/prob: inner-title with variable", $output);
 	}
 
 }

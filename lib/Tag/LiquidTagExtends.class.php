@@ -38,15 +38,37 @@ class LiquidTagExtends extends LiquidTag
      */
     public function __construct($markup, &$tokens, &$fileSystem)
     {
-        $regex = new LiquidRegexp('/("[^"]+"|\'[^\']+\')?/');
+        $regex = new LiquidRegexp('/([^\s]+)?/');
 
         if ($regex->match($markup))
         {
-            $this->_templateName = substr($regex->matches[1], 1, strlen($regex->matches[1]) - 2);
+            $regexTemplateName = new LiquidRegexp('/"[^"]+"|\'[^\']+\'|[^"\'\/]+/');
+            if ($regexTemplateName->match_all($regex->matches[1])) {
+                $regexQuote = new LiquidRegexp('/"[^"]+"|\'[^\']+\'/');
+                $context = LiquidTemplate::getContext();
+                $templName = "";
+                foreach ($regexTemplateName->matches[0] as $templPart) {
+                    $templPartName = '';
+                    if ($regexQuote->match($templPart)) {
+                        $templPartName = trim($templPart,"\"''");
+                    } else {
+                        $templPartName = $context->get($templPart);
+                    }
+                    if (!empty($templPartName)) {
+                        if (!empty($templName)) $templName .= "/";
+                        $templName .= $templPartName;
+                    }
+                }
+                $this->_templateName = $templName;
+            }
+
+            if (empty($this->_templateName)) {
+                throw new LiquidException("Error in tag 'extends' - Valid syntax: include [template]|'[template]' (with|for) [object|collection]");
+            }
         }
         else
         {
-            throw new LiquidException("Error in tag 'extends' - Valid syntax: extends '[template name]'");
+            throw new LiquidException("Error in tag 'extends' - Valid syntax: extends [template]|'[template name]'");
         }
 
         parent::__construct($markup, $tokens, $fileSystem);
