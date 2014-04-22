@@ -69,6 +69,17 @@ class LiquidContext
 
 
     /**
+     * Add registers to the context
+     *
+     * @param array $registers
+     */
+    public function addRegisters($registers = array())
+    {
+        $this->registers = $registers;
+    }
+
+
+    /**
      * Invoke the filter that matches given name
      *
      * @param string $name The name of the filter
