@@ -113,7 +113,7 @@ class TagFor extends AbstractBlock
 
 		$index = 0;
 		foreach ($segment as $key => $item) {
-			$value = is_numeric($key) ? $item : [$key, $item];
+			$value = is_numeric($key) ? $item : array($key, $item);
 			$context->set($this->variableName, $value);
 			$context->set('forloop', array(
 				'name' => $this->name,
