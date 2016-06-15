@@ -240,6 +240,17 @@ class Context
 		if (preg_match("|\[[0-9]+\]|", $key)) {
 			$key = preg_replace("|\[([0-9]+)\]|", ".$1", $key);
 		}
+		
+		// Support names as array indicies
+		if (preg_match("|\[(".Liquid::get('ALLOWED_VARIABLE_CHARS')."+)\]|", $key, $matches)) {
+			// this is probably a variable
+			$var = $this->variable($matches[1]);
+			if (is_null($var)) { // is not a variable
+				$key = preg_replace("|\[(".Liquid::get('ALLOWED_VARIABLE_CHARS')."+)\]|", ".$1", $key);	
+			} else {
+				$key = preg_replace("|\[(".Liquid::get('ALLOWED_VARIABLE_CHARS')."+)\]|", ".".$this->variable($matches[1]), $key);
+			}
+		}
 
 		$parts = explode(Liquid::get('VARIABLE_ATTRIBUTE_SEPARATOR'), $key);
 
