@@ -24,6 +24,14 @@ class TagForTest extends TestCase
 		$template->parse("{% for elem %}{% endfor %}");
 	}
 
+    /**
+     * @expectedException \Liquid\LiquidException
+     */
+    public function testRangeInvalidSyntax() {
+        $template = new Template();
+        $template->parse("{% for elem in (elem) %}{% endfor %}");
+    }
+
 	public function testFor() {
 		$this->assertTemplateResult(' yo  yo  yo  yo ', '{%for item in array%} yo {%endfor%}', array('array' => array(1, 2, 3, 4)));
 		$this->assertTemplateResult('yoyo', '{%for item in array%}yo{%endfor%}', array('array' => array(1, 2)));
