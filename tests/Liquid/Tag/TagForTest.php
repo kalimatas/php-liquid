@@ -180,4 +180,13 @@ next
 XPCTD;
 		$this->assertTemplateResult($expected, $markup, $assigns);
 	}
+
+    public function testRange() {
+        $this->assertTemplateResult(' yo  yo  yo  yo ', '{%for item in (3..6)%} yo {%endfor%}');
+        $this->assertTemplateResult(' yo  yo  yo  yo ', '{%for item in (103..106)%} yo {%endfor%}');
+        $this->assertTemplateResult(' yo  yo  yo  yo ', '{%for item in (3..num)%} yo {%endfor%}', array('num' => 6));
+        $this->assertTemplateResult(' yo  yo  yo  yo ', '{%for item in (num..6)%} yo {%endfor%}', array('num' => 3));
+        $this->assertTemplateResult(' yo  yo  yo  yo ', '{%for item in (3..array.num)%} yo {%endfor%}', array('array' => array('num' => 6)));
+        $this->assertTemplateResult(' yo  yo  yo  yo ', '{%for item in (array.num..6)%} yo {%endfor%}', array('array' => array('num' => 3)));
+    }
 }
