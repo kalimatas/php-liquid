@@ -236,24 +236,20 @@ class StandardFilters
 	 * @return string
 	 */
 	public static function map($input, $property) {
-		$callable = function($elem) use ($property) {
+		if ($input instanceof \Traversable) {
+			$input = iterator_to_array($input);
+		}
+		if (!is_array($input)) {
+			return $input;
+		}
+		return array_map(function ($elem) use ($property) {
 			if (is_callable($elem)) {
 				return $elem();
 			} elseif (is_array($elem) && array_key_exists($property, $elem)) {
 				return $elem[$property];
 			}
 			return null;
-		};
-		if ($input instanceof \Traversable) {
-			return self::mapTraversable($input, $callable);
-		}
-		return is_array($input) ? array_map($callable, $input) : $input;
-	}
-
-	private static function mapTraversable($input, $callable) {
-		foreach ($input as $elem) {
-			yield $callable($elem);
-		}
+		}, $input);
 	}
 	
 
@@ -457,7 +453,7 @@ class StandardFilters
 	 */
 	public static function slice($input, $offset, $length = null) {
 		if ($input instanceof \Iterator) {
-			return self::sliceIterator($input, $offset, $length ?? -1);
+			$input = iterator_to_array($input);
 		}
 		if (is_array($input)) {
 			$input = array_slice($input, $offset, $length);
@@ -468,20 +464,6 @@ class StandardFilters
 		}
 
 		return $input;
-	}	
-
-	private static function sliceIterator($input, $offset, $length ) {
-		if ($input instanceof \SeekableIterator) {
-			$input->rewind();
-			try {
-				$input->seek($offset);
-			} catch (\OutOfBoundsException $e) {
-				return;
-			}
-		}
-		foreach (new \LimitIterator($input, $offset, $length) as $elem) {
-			yield $elem;
-		}
 	}
 	
 	
