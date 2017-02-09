@@ -247,7 +247,7 @@ class StandardFilters
 		if ($input instanceof \Traversable) {
 			return self::mapTraversable($input, $callable);
 		}
-		return array_map($callable, $input);
+		return is_array($input) ? array_map($callable, $input) : $input;
 	}
 
 	private static function mapTraversable($input, $callable) {

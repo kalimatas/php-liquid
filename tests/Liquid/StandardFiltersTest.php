@@ -305,6 +305,10 @@ class StandardFiltersTest extends TestCase
 		// Slice a few elements
 		$data = array(
 			array(
+				null,
+				null,
+			),
+			array(
 				array(),
 				array(),
 			),
