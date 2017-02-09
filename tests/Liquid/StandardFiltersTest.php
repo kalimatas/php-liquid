@@ -495,7 +495,7 @@ class StandardFiltersTest extends TestCase
 		$data = array(
 			array(
 				array(),
-				'',
+				array(),
 			),
 			array(
 				array(
@@ -511,7 +511,7 @@ class StandardFiltersTest extends TestCase
 						'no_attr' => 'another value '
 					),
 				),
-				'from function value ',
+				array('from function ', 'value ', null),
 			),
 		);
 

@@ -215,14 +215,14 @@ class StandardFilters
 	 * @return string
 	 */
 	public static function map(array $input, $property) {
-		return array_reduce($input, function($result, $elem) use ($property) {
+		return array_map(function($elem) use ($property) {
 			if (is_callable($elem)) {
-				return $result . $elem();
+				return $elem();
 			} elseif (is_array($elem) && array_key_exists($property, $elem)) {
-				return $result . $elem[$property];
+				return $elem[$property];
 			}
-			return $result . '';
-		}, '');
+			return null;
+		}, $input);
 	}
 	
 
