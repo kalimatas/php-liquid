@@ -63,6 +63,7 @@ class StandardFiltersTest extends TestCase
 			4 => 1000,
 			3 => 100,
 			2 => array('one', 'two'),
+			1 => new \ArrayIterator(['one']),
 			SizeClass::SIZE => new SizeClass(),
 		);
 
@@ -261,10 +262,14 @@ class StandardFiltersTest extends TestCase
 	}
 
 	public function testSlice() {
-		// Slize up to the end
+		// Slice up to the end
 		$data = array(
 			array(
 				array(),
+				array(),
+			),
+			array(
+				new \ArrayIterator([]),
 				array(),
 			),
 			array(
@@ -273,6 +278,10 @@ class StandardFiltersTest extends TestCase
 			),
 			array(
 				array(1,2,3,4,5),
+				array(3,4,5),
+			),
+			array(
+				new \ArrayIterator([1,2,3,4,5]),
 				array(3,4,5),
 			),
 			array(
@@ -286,13 +295,21 @@ class StandardFiltersTest extends TestCase
 		);
 
 		foreach ($data as $item) {
-			$this->assertEquals($item[1], StandardFilters::slice($item[0], 2));
+			$actual = StandardFilters::slice($item[0], 2);
+			if ($actual instanceof \Traversable) {
+				$actual = iterator_to_array($actual);
+			}
+			$this->assertEquals($item[1], $actual);
 		}
 
-		// Slize a few elements
+		// Slice a few elements
 		$data = array(
 			array(
 				array(),
+				array(),
+			),
+			array(
+				new \ArrayIterator([]),
 				array(),
 			),
 			array(
@@ -301,6 +318,10 @@ class StandardFiltersTest extends TestCase
 			),
 			array(
 				array(1,2,3,4,5),
+				array(3,4),
+			),
+			array(
+				new \ArrayIterator([1,2,3,4,5]),
 				array(3,4),
 			),
 			array(
@@ -314,7 +335,11 @@ class StandardFiltersTest extends TestCase
 		);
 
 		foreach ($data as $item) {
-			$this->assertEquals($item[1], StandardFilters::slice($item[0], 2, 2));
+			$actual = StandardFilters::slice($item[0], 2, 2);
+			if ($actual instanceof \Traversable) {
+				$actual = iterator_to_array($actual);
+			}
+			$this->assertEquals($item[1], $actual);
 		}
 	}
 
@@ -378,11 +403,19 @@ class StandardFiltersTest extends TestCase
 				'',
 			),
 			array(
+				new \ArrayIterator([]),
+				''
+			),
+			array(
 				'',
 				'',
 			),
 			array(
 				array(1,2,3,4,5),
+				'1 2 3 4 5'
+			),
+			array(
+				new \ArrayIterator([1,2,3,4,5]),
 				'1 2 3 4 5'
 			),
 			array(
@@ -397,6 +430,7 @@ class StandardFiltersTest extends TestCase
 
 		// Custom glue
 		$this->assertEquals('1-2-3', StandardFilters::join(array(1, 2, 3), '-'));
+		$this->assertEquals('1-2-3', StandardFilters::join(new \ArrayIterator([1, 2, 3]), '-'));
 	}
 
 	public function testSort() {
@@ -406,7 +440,15 @@ class StandardFiltersTest extends TestCase
 				array(),
 			),
 			array(
+				new \ArrayIterator([]),
+				array(),
+			),
+			array(
 				array(1, 5, 3, 4, 2),
+				array(1, 2, 3, 4, 5),
+			),
+			array(
+				new \ArrayIterator([1, 5, 3, 4, 2]),
 				array(1, 2, 3, 4, 5),
 			),
 		);
@@ -428,6 +470,7 @@ class StandardFiltersTest extends TestCase
 		);
 
 		$this->assertEquals($expected, StandardFilters::sort($original, 'b'), '', 0, 10, true);
+		$this->assertEquals($expected, StandardFilters::sort(new \ArrayIterator($original), 'b'), '', 0, 10, true);
 	}
 
 /*
@@ -464,7 +507,15 @@ class StandardFiltersTest extends TestCase
 				array(),
 			),
 			array(
+				new \ArrayIterator([]),
+				array(),
+			),
+			array(
 				array(1, 1, 5, 3, 4, 2, 5, 2),
+				array(1, 5, 3, 4, 2),
+			),
+			array(
+				new \ArrayIterator([1, 1, 5, 3, 4, 2, 5, 2]),
 				array(1, 5, 3, 4, 2),
 			),
 		);
@@ -481,7 +532,15 @@ class StandardFiltersTest extends TestCase
 				array(),
 			),
 			array(
+				new \ArrayIterator([]),
+				array(),
+			),
+			array(
 				array(1, 1, 5, 3, 4, 2, 5, 2),
+				array(2, 5, 2, 4, 3, 5, 1, 1),
+			),
+			array(
+				new \ArrayIterator([1, 1, 5, 3, 4, 2, 5, 2]),
 				array(2, 5, 2, 4, 3, 5, 1, 1),
 			),
 		);
@@ -495,6 +554,10 @@ class StandardFiltersTest extends TestCase
 		$data = array(
 			array(
 				array(),
+				array(),
+			),
+			array(
+				new \ArrayIterator([]),
 				array(),
 			),
 			array(
@@ -513,10 +576,30 @@ class StandardFiltersTest extends TestCase
 				),
 				array('from function ', 'value ', null),
 			),
+			array(
+				new \ArrayIterator([
+					function() {
+						return 'from function ';
+					},
+					array(
+						'b' => 10,
+						'attr' => 'value ',
+					),
+					array(
+						'a' => 20,
+						'no_attr' => 'another value '
+					),
+				]),
+				array('from function ', 'value ', null),
+			),
 		);
 
 		foreach ($data as $item) {
-			$this->assertEquals($item[1], StandardFilters::map($item[0], 'attr'));
+			$actual = StandardFilters::map($item[0], 'attr');
+			if ($actual instanceof \Traversable) {
+				$actual = iterator_to_array($actual);
+			}
+			$this->assertEquals($item[1], $actual);
 		}
 	}
 
@@ -527,11 +610,23 @@ class StandardFiltersTest extends TestCase
 				false,
 			),
 			array(
+				new \ArrayIterator([]),
+				false,
+			),
+			array(
 				array('two', 'one', 'three'),
 				'two',
 			),
 			array(
+				new \ArrayIterator(['two', 'one', 'three']),
+				'two',
+			),
+			array(
 				array(100, 400, 200),
+				100,
+			),
+			array(
+				new \ArrayIterator([100, 400, 200]),
 				100,
 			),
 		);
@@ -548,11 +643,23 @@ class StandardFiltersTest extends TestCase
 				false,
 			),
 			array(
+				new \ArrayIterator([]),
+				false,
+			),
+			array(
 				array('two', 'one', 'three'),
 				'three',
 			),
 			array(
+				new \ArrayIterator(['two', 'one', 'three']),
+				'three',
+			),
+			array(
 				array(100, 400, 200),
+				200,
+			),
+			array(
+				new \ArrayIterator([100, 400, 200]),
 				200,
 			),
 		);
