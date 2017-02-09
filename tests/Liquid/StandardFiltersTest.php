@@ -63,7 +63,7 @@ class StandardFiltersTest extends TestCase
 			4 => 1000,
 			3 => 100,
 			2 => array('one', 'two'),
-			1 => new \ArrayIterator(['one']),
+			1 => new \ArrayIterator(array('one')),
 			SizeClass::SIZE => new SizeClass(),
 		);
 
@@ -269,7 +269,7 @@ class StandardFiltersTest extends TestCase
 				array(),
 			),
 			array(
-				new \ArrayIterator([]),
+				new \ArrayIterator(array()),
 				array(),
 			),
 			array(
@@ -281,7 +281,7 @@ class StandardFiltersTest extends TestCase
 				array(3,4,5),
 			),
 			array(
-				new \ArrayIterator([1,2,3,4,5]),
+				new \ArrayIterator(array(1,2,3,4,5)),
 				array(3,4,5),
 			),
 			array(
@@ -313,7 +313,7 @@ class StandardFiltersTest extends TestCase
 				array(),
 			),
 			array(
-				new \ArrayIterator([]),
+				new \ArrayIterator(array()),
 				array(),
 			),
 			array(
@@ -325,7 +325,7 @@ class StandardFiltersTest extends TestCase
 				array(3,4),
 			),
 			array(
-				new \ArrayIterator([1,2,3,4,5]),
+				new \ArrayIterator(array(1,2,3,4,5)),
 				array(3,4),
 			),
 			array(
@@ -407,7 +407,7 @@ class StandardFiltersTest extends TestCase
 				'',
 			),
 			array(
-				new \ArrayIterator([]),
+				new \ArrayIterator(array()),
 				''
 			),
 			array(
@@ -419,7 +419,7 @@ class StandardFiltersTest extends TestCase
 				'1 2 3 4 5'
 			),
 			array(
-				new \ArrayIterator([1,2,3,4,5]),
+				new \ArrayIterator(array(1,2,3,4,5)),
 				'1 2 3 4 5'
 			),
 			array(
@@ -434,7 +434,7 @@ class StandardFiltersTest extends TestCase
 
 		// Custom glue
 		$this->assertEquals('1-2-3', StandardFilters::join(array(1, 2, 3), '-'));
-		$this->assertEquals('1-2-3', StandardFilters::join(new \ArrayIterator([1, 2, 3]), '-'));
+		$this->assertEquals('1-2-3', StandardFilters::join(new \ArrayIterator(array(1, 2, 3)), '-'));
 	}
 
 	public function testSort() {
@@ -444,7 +444,7 @@ class StandardFiltersTest extends TestCase
 				array(),
 			),
 			array(
-				new \ArrayIterator([]),
+				new \ArrayIterator(array()),
 				array(),
 			),
 			array(
@@ -452,7 +452,7 @@ class StandardFiltersTest extends TestCase
 				array(1, 2, 3, 4, 5),
 			),
 			array(
-				new \ArrayIterator([1, 5, 3, 4, 2]),
+				new \ArrayIterator(array(1, 5, 3, 4, 2)),
 				array(1, 2, 3, 4, 5),
 			),
 		);
@@ -511,7 +511,7 @@ class StandardFiltersTest extends TestCase
 				array(),
 			),
 			array(
-				new \ArrayIterator([]),
+				new \ArrayIterator(array()),
 				array(),
 			),
 			array(
@@ -519,7 +519,7 @@ class StandardFiltersTest extends TestCase
 				array(1, 5, 3, 4, 2),
 			),
 			array(
-				new \ArrayIterator([1, 1, 5, 3, 4, 2, 5, 2]),
+				new \ArrayIterator(array(1, 1, 5, 3, 4, 2, 5, 2)),
 				array(1, 5, 3, 4, 2),
 			),
 		);
@@ -536,7 +536,7 @@ class StandardFiltersTest extends TestCase
 				array(),
 			),
 			array(
-				new \ArrayIterator([]),
+				new \ArrayIterator(array()),
 				array(),
 			),
 			array(
@@ -544,7 +544,7 @@ class StandardFiltersTest extends TestCase
 				array(2, 5, 2, 4, 3, 5, 1, 1),
 			),
 			array(
-				new \ArrayIterator([1, 1, 5, 3, 4, 2, 5, 2]),
+				new \ArrayIterator(array(1, 1, 5, 3, 4, 2, 5, 2)),
 				array(2, 5, 2, 4, 3, 5, 1, 1),
 			),
 		);
@@ -561,7 +561,7 @@ class StandardFiltersTest extends TestCase
 				array(),
 			),
 			array(
-				new \ArrayIterator([]),
+				new \ArrayIterator(array()),
 				array(),
 			),
 			array(
@@ -581,7 +581,7 @@ class StandardFiltersTest extends TestCase
 				array('from function ', 'value ', null),
 			),
 			array(
-				new \ArrayIterator([
+				new \ArrayIterator(array(
 					function() {
 						return 'from function ';
 					},
@@ -593,7 +593,7 @@ class StandardFiltersTest extends TestCase
 						'a' => 20,
 						'no_attr' => 'another value '
 					),
-				]),
+				)),
 				array('from function ', 'value ', null),
 			),
 		);
@@ -614,7 +614,7 @@ class StandardFiltersTest extends TestCase
 				false,
 			),
 			array(
-				new \ArrayIterator([]),
+				new \ArrayIterator(array()),
 				false,
 			),
 			array(
@@ -622,7 +622,7 @@ class StandardFiltersTest extends TestCase
 				'two',
 			),
 			array(
-				new \ArrayIterator(['two', 'one', 'three']),
+				new \ArrayIterator(array('two', 'one', 'three')),
 				'two',
 			),
 			array(
@@ -630,7 +630,7 @@ class StandardFiltersTest extends TestCase
 				100,
 			),
 			array(
-				new \ArrayIterator([100, 400, 200]),
+				new \ArrayIterator(array(100, 400, 200)),
 				100,
 			),
 		);
@@ -647,7 +647,7 @@ class StandardFiltersTest extends TestCase
 				false,
 			),
 			array(
-				new \ArrayIterator([]),
+				new \ArrayIterator(array()),
 				false,
 			),
 			array(
@@ -655,7 +655,7 @@ class StandardFiltersTest extends TestCase
 				'three',
 			),
 			array(
-				new \ArrayIterator(['two', 'one', 'three']),
+				new \ArrayIterator(array('two', 'one', 'three')),
 				'three',
 			),
 			array(
@@ -663,7 +663,7 @@ class StandardFiltersTest extends TestCase
 				200,
 			),
 			array(
-				new \ArrayIterator([100, 400, 200]),
+				new \ArrayIterator(array(100, 400, 200)),
 				200,
 			),
 		);

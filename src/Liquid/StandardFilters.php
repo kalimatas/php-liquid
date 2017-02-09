@@ -475,7 +475,6 @@ class StandardFilters
 			$input->rewind();
 			try {
 				$input->seek($offset);
-				$input->rewind();
 			} catch (\OutOfBoundsException $e) {
 				return;
 			}
