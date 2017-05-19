@@ -24,6 +24,14 @@ class TagForTest extends TestCase
 		$template->parse("{% for elem %}{% endfor %}");
 	}
 
+    /**
+     * @expectedException \Liquid\LiquidException
+     */
+    public function testRangeInvalidSyntax() {
+        $template = new Template();
+        $template->parse("{% for elem in (elem) %}{% endfor %}");
+    }
+
 	public function testFor() {
 		$this->assertTemplateResult(' yo  yo  yo  yo ', '{%for item in array%} yo {%endfor%}', array('array' => array(1, 2, 3, 4)));
 		$this->assertTemplateResult('yoyo', '{%for item in array%}yo{%endfor%}', array('array' => array(1, 2)));
@@ -180,4 +188,13 @@ next
 XPCTD;
 		$this->assertTemplateResult($expected, $markup, $assigns);
 	}
+
+    public function testRange() {
+        $this->assertTemplateResult(' yo  yo  yo  yo ', '{%for item in (3..6)%} yo {%endfor%}');
+        $this->assertTemplateResult(' yo  yo  yo  yo ', '{%for item in (103..106)%} yo {%endfor%}');
+        $this->assertTemplateResult(' yo  yo  yo  yo ', '{%for item in (3..num)%} yo {%endfor%}', array('num' => 6));
+        $this->assertTemplateResult(' yo  yo  yo  yo ', '{%for item in (num..6)%} yo {%endfor%}', array('num' => 3));
+        $this->assertTemplateResult(' yo  yo  yo  yo ', '{%for item in (3..array.num)%} yo {%endfor%}', array('array' => array('num' => 6)));
+        $this->assertTemplateResult(' yo  yo  yo  yo ', '{%for item in (array.num..6)%} yo {%endfor%}', array('array' => array('num' => 3)));
+    }
 }

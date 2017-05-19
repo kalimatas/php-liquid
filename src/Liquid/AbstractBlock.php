@@ -115,6 +115,13 @@ class AbstractBlock extends AbstractTag
 
 		foreach ($list as $token) {
 			$result .= (is_object($token) && method_exists($token, 'render')) ? $token->render($context) : $token;
+
+            if (isset($context->registers['break'])) {
+                break;
+            }
+            if (isset($context->registers['continue'])) {
+                break;
+            }
 		}
 
 		return $result;
@@ -143,7 +150,7 @@ class AbstractBlock extends AbstractTag
 			case 'end':
 				throw new LiquidException("'end' is not a valid delimiter for " . $this->blockName() . " tags. Use " . $this->blockDelimiter());
 			default:
-				throw new LiquidException("Unkown tag $tag");
+				throw new LiquidException("Unknown tag $tag");
 		}
 	}
 

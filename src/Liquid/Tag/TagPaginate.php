@@ -84,7 +84,7 @@ class TagPaginate extends AbstractBlock
        
         parent::__construct($markup, $tokens, $fileSystem);
 
-        $syntax = new Regexp('/(' . Liquid::get('ALLOWED_VARIABLE_CHARS') . '+)\s+by\s+(\w+)/');
+        $syntax = new Regexp('/(' . Liquid::get('VARIABLE_NAME') . ')\s+by\s+(\w+)/');
 
         if ($syntax->match($markup)) {
             $this->collectionName = $syntax->matches[1];
@@ -109,6 +109,9 @@ class TagPaginate extends AbstractBlock
         $this->currentPage = ( is_numeric($context->get('page')) ) ? $context->get('page') : 1;
         $this->currentOffset = ($this->currentPage - 1) * $this->numberItems;
     	$this->collection = $context->get($this->collectionName);
+		if ($this->collection instanceof \Traversable) {
+			$this->collection = iterator_to_array($this->collection);
+		}
     	$this->collectionSize = count($this->collection);
     	$this->totalPages = ceil($this->collectionSize / $this->numberItems);
     	$paginatedCollection =  array_slice($this->collection, $this->currentOffset, $this->numberItems);

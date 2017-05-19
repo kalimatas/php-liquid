@@ -56,7 +56,7 @@ class TagTablerow extends AbstractBlock
 	public function __construct($markup, array &$tokens, FileSystem $fileSystem = null) {
 		parent::__construct($markup, $tokens, $fileSystem);
 
-		$syntax = new Regexp("/(\w+)\s+in\s+(" . Liquid::get('ALLOWED_VARIABLE_CHARS') . "+)/");
+		$syntax = new Regexp('/(\w+)\s+in\s+(' . Liquid::get('VARIABLE_NAME') . ')/');
 
 		if ($syntax->match($markup)) {
 			$this->variableName = $syntax->matches[1];
@@ -78,6 +78,10 @@ class TagTablerow extends AbstractBlock
 	public function render(Context $context) {
 		$collection = $context->get($this->collectionName);
 
+		if ($collection instanceof \Traversable) {
+			$collection = iterator_to_array($collection);
+		}
+
 		if (!is_array($collection)) {
 			die('not array, ' . var_export($collection, true));
 		}
@@ -93,7 +97,7 @@ class TagTablerow extends AbstractBlock
 
 		$length = count($collection);
 
-		$cols = $context->get($this->attributes['cols']);
+		$cols = isset($this->attributes['cols']) ? $context->get($this->attributes['cols']) : PHP_INT_MAX;
 
 		$row = 1;
 		$col = 0;
@@ -114,12 +118,26 @@ class TagTablerow extends AbstractBlock
 				'last' => (int)($index == $length - 1)
 			));
 
-			$result .= "<td class=\"col" . (++$col) . "\">" . $this->renderAll($this->nodelist, $context) . "</td>";
+            $text = $this->renderAll($this->nodelist, $context);
+            $break = isset($context->registers['break']);
+            $continue = isset($context->registers['continue']);
+
+            if ((!$break && !$continue) || strlen(trim($text)) > 0) {
+                $result .= "<td class=\"col" . (++$col) . "\">$text</td>";
+            }
 
 			if ($col == $cols && !($index == $length - 1)) {
 				$col = 0;
-				$result .= "</tr>\n<tr class=\"row" . (++$row) . "\">";
+				$result .= "</tr>\n<tr class=\"row" . (++$row) . "\">\n";
 			}
+
+            if ($break) {
+                unset($context->registers['break']);
+                break;
+            }
+            if ($continue) {
+                unset($context->registers['continue']);
+            }
 		}
 
 		$context->pop();
