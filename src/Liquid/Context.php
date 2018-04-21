@@ -263,6 +263,17 @@ class Context
 				$key = preg_replace("|\[([0-9a-z._]+)\]|", ".$index", $key);
 			}
 		}
+		
+		// Support names as array indicies
+		if (preg_match("|\[(".Liquid::get('ALLOWED_VARIABLE_CHARS')."+)\]|", $key, $matches)) {
+			// this is probably a variable
+			$var = $this->variable($matches[1]);
+			if (is_null($var) || !is_string($var)) { // is not a variable
+				$key = preg_replace("|\[(".Liquid::get('ALLOWED_VARIABLE_CHARS')."+)\]|", ".$1", $key);	
+			} else {
+				$key = preg_replace("|\[(".Liquid::get('ALLOWED_VARIABLE_CHARS')."+)\]|", ".".$var), $key);
+			}
+		}
 
 		$parts = explode(Liquid::get('VARIABLE_ATTRIBUTE_SEPARATOR'), $key);
 
