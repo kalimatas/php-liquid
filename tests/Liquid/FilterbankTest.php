@@ -30,6 +30,10 @@ class ClassFilter
 {
 	private $variable = 'not set';
 
+	public function __construct()
+	{
+	}
+
 	public static function static_test()
 	{
 		return "worked";
@@ -166,6 +170,9 @@ class FilterbankTest extends TestCase
 
 		$var = new Variable('var | static_test');
 		$this->assertEquals('worked', $var->render($this->context));
+
+		$var = new Variable('var | __construct');
+		$this->assertEquals('1000', $var->render($this->context));
 	}
 
 	public function testCallbackFilter()
