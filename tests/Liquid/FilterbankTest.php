@@ -175,6 +175,27 @@ class FilterbankTest extends TestCase
 		$this->assertEquals('1000', $var->render($this->context));
 	}
 
+	public function testObjectFilterDontCallConstruct()
+	{
+		$this->context->set('var', 1000);
+		$this->context->addFilters(new \ClassFilter());
+
+		$filterbankReflectionClass = new \ReflectionClass(Context::class);
+		$methodMapProperty = $filterbankReflectionClass->getProperty('filterbank');
+		$methodMapProperty->setAccessible(true);
+		$filterbank = $methodMapProperty->getValue($this->context);
+
+		$filterbankReflectionClass = new \ReflectionClass(Filterbank::class);
+		$methodMapProperty = $filterbankReflectionClass->getProperty('methodMap');
+		$methodMapProperty->setAccessible(true);
+		$methodMap = $methodMapProperty->getValue($filterbank);
+
+		$this->assertArrayNotHasKey('__construct', $methodMap);
+
+		$var = new Variable('var | __construct');
+		$this->assertEquals('1000', $var->render($this->context));
+	}
+
 	public function testCallbackFilter()
 	{
 		$var = new Variable('var | my_callback');
