@@ -13,21 +13,21 @@ namespace Liquid;
 
 class TickTest extends TestCase
 {
-    public function testSimpleVariable()
-    {
-        $ticks = 0;
+	public function testSimpleVariable()
+	{
+		$ticks = 0;
 
-        $template = new Template();
-        $template->parse("{% for i in (1..100) %}x{% endfor %}");
-        $this->assertEquals(str_pad('x', 100, 'x'), $template->render(
-            [],
-            [],
-            [],
-            function(Context $context) use (&$ticks) {
-                $ticks++;
-            }
-        ));
+		$template = new Template();
+		$template->parse("{% for i in (1..100) %}x{% endfor %}");
+		$this->assertEquals(str_pad('x', 100, 'x'), $template->render(
+			[],
+			[],
+			[],
+			function (Context $context) use (&$ticks) {
+				$ticks++;
+			}
+		));
 
-        $this->assertGreaterThanOrEqual(100, $ticks);
-    }
+		$this->assertGreaterThanOrEqual(100, $ticks);
+	}
 }

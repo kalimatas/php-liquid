@@ -44,11 +44,11 @@ class Context
 	 */
 	public $environments = array();
 
-    /**
-     * Called "sometimes" while rendering. For example to abort the execution of a rendering.
-     *
-     * @var null|callable
-     */
+	/**
+	 * Called "sometimes" while rendering. For example to abort the execution of a rendering.
+	 *
+	 * @var null|callable
+	 */
 	protected $tickFunction = null;
 
 	/**
@@ -393,12 +393,12 @@ class Context
 	}
 
 	public function tick()
-    {
-        if ($this->tickFunction === null) {
-            return;
-        }
+	{
+		if ($this->tickFunction === null) {
+			return;
+		}
 
-        $tickFunction = $this->tickFunction;
-        $tickFunction($this);
-    }
+		$tickFunction = $this->tickFunction;
+		$tickFunction($this);
+	}
 }
