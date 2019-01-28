@@ -44,19 +44,27 @@ class Context
 	 */
 	public $environments = array();
 
+    /**
+     * Called "sometimes" while rendering. For example to abort the execution of a rendering.
+     *
+     * @var null|callable
+     */
+	protected $tickFunction = null;
+
 	/**
 	 * Constructor
 	 *
 	 * @param array $assigns
 	 * @param array $registers
 	 */
-	public function __construct(array $assigns = array(), array $registers = array())
+	public function __construct(array $assigns = array(), array $registers = array(), callable $tickFunction = null)
 	{
 		$this->assigns = array($assigns);
 		$this->registers = $registers;
 		$this->filterbank = new Filterbank($this);
 		// first empty array serves as source for overrides, e.g. as in TagDecrement
 		$this->environments = array(array(), $_SERVER);
+		$this->tickFunction = $tickFunction;
 	}
 
 	/**
@@ -383,4 +391,14 @@ class Context
 
 		return $object;
 	}
+
+	public function tick()
+    {
+        if ($this->tickFunction === null) {
+            return;
+        }
+
+        $tickFunction = $this->tickFunction;
+        $tickFunction($this);
+    }
 }

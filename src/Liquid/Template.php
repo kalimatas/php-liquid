@@ -230,9 +230,9 @@ class Template
 	 *
 	 * @return string
 	 */
-	public function render(array $assigns = array(), $filters = null, array $registers = array())
+	public function render(array $assigns = array(), $filters = null, array $registers = array(), callable $tickFunction = null)
 	{
-		$context = new Context($assigns, $registers);
+		$context = new Context($assigns, $registers, $tickFunction);
 
 		if (!is_null($filters)) {
 			if (is_array($filters)) {
