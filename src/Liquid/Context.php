@@ -56,6 +56,7 @@ class Context
 	 *
 	 * @param array $assigns
 	 * @param array $registers
+	 * @param callable $tickFunction
 	 */
 	public function __construct(array $assigns = array(), array $registers = array(), callable $tickFunction = null)
 	{

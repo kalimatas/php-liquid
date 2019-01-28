@@ -227,6 +227,7 @@ class Template
 	 * @param array $assigns an array of values for the template
 	 * @param array $filters additional filters for the template
 	 * @param array $registers additional registers for the template
+	 * @param array $tickFunction tick function
 	 *
 	 * @return string
 	 */
