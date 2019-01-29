@@ -56,15 +56,23 @@ class Context
 	 *
 	 * @param array $assigns
 	 * @param array $registers
-	 * @param callable $tickFunction
 	 */
-	public function __construct(array $assigns = array(), array $registers = array(), callable $tickFunction = null)
+	public function __construct(array $assigns = array(), array $registers = array())
 	{
 		$this->assigns = array($assigns);
 		$this->registers = $registers;
 		$this->filterbank = new Filterbank($this);
 		// first empty array serves as source for overrides, e.g. as in TagDecrement
 		$this->environments = array(array(), $_SERVER);
+	}
+
+	/**
+	 * Sets a tick function, this function is called sometimes while liquid is rendering a template.
+	 *
+	 * @param callable $tickFunction
+	 */
+	public function setTickFunction(callable $tickFunction)
+	{
 		$this->tickFunction = $tickFunction;
 	}
 

@@ -227,13 +227,12 @@ class Template
 	 * @param array $assigns an array of values for the template
 	 * @param array $filters additional filters for the template
 	 * @param array $registers additional registers for the template
-	 * @param array $tickFunction tick function
 	 *
 	 * @return string
 	 */
-	public function render(array $assigns = array(), $filters = null, array $registers = array(), callable $tickFunction = null)
+	public function render(array $assigns = array(), $filters = null, array $registers = array())
 	{
-		$context = new Context($assigns, $registers, $tickFunction);
+		$context = new Context($assigns, $registers);
 
 		if (!is_null($filters)) {
 			if (is_array($filters)) {

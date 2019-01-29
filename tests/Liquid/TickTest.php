@@ -13,21 +13,37 @@ namespace Liquid;
 
 class TickTest extends TestCase
 {
-	public function testSimpleVariable()
+	public function tickDataProvider()
+	{
+		return [
+			[10, 11, '{% for i in (1..10) %}x{% endfor %}'],
+			[1, 2, '{% if true %} {% endif %}'],
+			[7, 8, '{% assign a = 0 %} {% increment a %} {% increment a %} {% increment a %}'],
+			[1, 1, ' ']
+		];
+	}
+
+	/**
+	 * @dataProvider tickDataProvider
+	 *
+	 * @param int $min
+	 * @param int $max
+	 * @param string $template
+	 */
+	public function testTicks($min, $max, $template)
 	{
 		$ticks = 0;
 
-		$template = new Template();
-		$template->parse("{% for i in (1..100) %}x{% endfor %}");
-		$this->assertEquals(str_pad('x', 100, 'x'), $template->render(
-			[],
-			[],
-			[],
-			function (Context $context) use (&$ticks) {
-				$ticks++;
-			}
-		));
+		$context = new Context();
+		$context->setTickFunction(function (Context $context) use (&$ticks) {
+			$ticks++;
+		});
 
-		$this->assertGreaterThanOrEqual(100, $ticks);
+		$tokens = Template::tokenize($template);
+		$document = new Document($tokens);
+		$document->render($context);
+
+		$this->assertGreaterThanOrEqual($min, $ticks);
+		$this->assertLessThanOrEqual($max, $ticks);
 	}
 }
