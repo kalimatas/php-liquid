@@ -29,20 +29,19 @@ class TickTest extends TestCase
 	 *
 	 * @param int $min
 	 * @param int $max
-	 * @param string $template
+	 * @param string $source
 	 */
-	public function testTicks($min, $max, $template)
+	public function testTicks($min, $max, $source)
 	{
 		$ticks = 0;
 
-		$context = new Context();
-		$context->setTickFunction(function (Context $context) use (&$ticks) {
+		$template = new Template();
+		$template->parse($source);
+		$template->setTickFunction(function (Context $context) use (&$ticks) {
 			$ticks++;
 		});
 
-		$tokens = Template::tokenize($template);
-		$document = new Document($tokens);
-		$document->render($context);
+		$template->render();
 
 		$this->assertGreaterThanOrEqual($min, $ticks);
 		$this->assertLessThanOrEqual($max, $ticks);
