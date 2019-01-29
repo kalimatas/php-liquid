@@ -49,7 +49,7 @@ class Context
 	 *
 	 * @var null|callable
 	 */
-	protected $tickFunction = null;
+	private $tickFunction = null;
 
 	/**
 	 * Constructor
