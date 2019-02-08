@@ -40,33 +40,40 @@ class Filterbank
 	 */
 	private $context;
 
-	/**
-	 * Constructor
-	 *
-	 * @param $context
-	 */
+    /**
+     * Constructor
+     *
+     * @param $context
+     *
+     * @throws \Liquid\Exception\WrongArgumentException
+     * @throws \ReflectionException
+     */
 	public function __construct(Context $context)
 	{
 		$this->context = $context;
 
-		$this->addFilter(\Liquid\StandardFilters::class);
-		$this->addFilter(\Liquid\CustomFilters::class);
+		$this->addFilter(StandardFilters::class);
+		$this->addFilter(CustomFilters::class);
 	}
 
-	/**
-	 * Adds a filter to the bank
-	 *
-	 * @param mixed $filter Can either be an object, the name of a class (in which case the
-	 *						filters will be called statically) or the name of a function.
-	 *
-	 * @throws \Liquid\Exception\WrongArgumentException
-	 * @return bool
-	 */
+    /**
+     * Adds a filter to the bank
+     *
+     * @param mixed         $filter Can either be an object, the name of a class (in which case the
+     *                        filters will be called statically) or the name of a function.
+     *
+     * @param callable|null $callback
+     *
+     * @return bool
+     * @throws \Liquid\Exception\WrongArgumentException
+     * @throws \ReflectionException
+     */
 	public function addFilter($filter, callable $callback = null)
 	{
 		// If it is a callback, save it as it is
 		if (is_string($filter) && $callback) {
-			$this->methodMap[$filter] = $callback;
+			$this->methodMap[$this->toMapName($filter)] = $callback;
+
 			return true;
 		}
 
@@ -74,7 +81,7 @@ class Filterbank
 		if (is_string($filter) && class_exists($filter)) {
 			$reflection = new \ReflectionClass($filter);
 			foreach ($reflection->getMethods(\ReflectionMethod::IS_STATIC) as $method) {
-				$this->methodMap[$method->name] = $method->class;
+				$this->methodMap[$this->toMapName($method->name)] = $method->class;
 			}
 
 			return true;
@@ -82,7 +89,8 @@ class Filterbank
 
 		// If it's a global function, register it simply
 		if (is_string($filter) && function_exists($filter)) {
-			$this->methodMap[$filter] = false;
+			$this->methodMap[$this->toMapName($filter)] = false;
+
 			return true;
 		}
 
@@ -92,8 +100,8 @@ class Filterbank
 		}
 
 		// If the passed filter was an object, store the object for future reference.
-		$filter->context = $this->context;
-		$className = get_class($filter);
+		$filter->context           = $this->context;
+		$className                 = get_class($filter);
 		$this->filters[$className] = $filter;
 
 		// Then register all public static and not methods as filters
@@ -101,7 +109,7 @@ class Filterbank
 			if (strtolower($method) === '__construct') {
 				continue;
 			}
-			$this->methodMap[$method] = $className;
+			$this->methodMap[$this->toMapName($method)] = $className;
 		}
 
 		return true;
@@ -112,15 +120,17 @@ class Filterbank
 	 *
 	 * @param string $name The name of the filter
 	 * @param string $value The value to filter
-	 * @param array $args The additional arguments for the filter
+	 * @param array  $args The additional arguments for the filter
 	 *
 	 * @return string
 	 */
-	public function invoke($name, $value, array $args = array())
+	public function invoke($name, $value, array $args = [])
 	{
 		// workaround for a single standard filter being a reserved keyword - we can't use overloading for static calls
-		if ($name == 'default') {
+		if ($name === 'default') {
 			$name = '_default';
+		} else {
+			$name = $this->toMapName($name);
 		}
 
 		array_unshift($args, $value);
@@ -148,6 +158,18 @@ class Filterbank
 		}
 
 		// Call a class or an instance method
-		return call_user_func_array(array($class, $name), $args);
+		return call_user_func_array([$class, $name], $args);
+	}
+
+	/**
+	 * Convert method name to camelCase, PSR-2
+	 *
+	 * @param string $method
+	 *
+	 * @return string
+	 */
+	protected function toMapName(string $method): string
+	{
+		return strtolower(str_replace('_', '', $method));
 	}
 }
