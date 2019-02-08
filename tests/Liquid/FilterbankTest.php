@@ -51,6 +51,34 @@ class ClassFilter
 	}
 }
 
+/**
+ * Global filter class
+ */
+class PSR2ClassFilter
+{
+	private $variable = 'not set';
+
+	public function __construct()
+	{
+	}
+
+	public static function staticTest()
+	{
+		return "worked";
+	}
+
+	public function instanceTestOne()
+	{
+		$this->variable = 'set';
+		return 'set';
+	}
+
+	public function instanceTestTwo()
+	{
+		return $this->variable;
+	}
+}
+
 } // global namespace
 
 namespace Liquid {
@@ -62,6 +90,17 @@ class NamespacedClassFilter
 	public static function static_test2($var)
 	{
 		return "good {$var}";
+	}
+
+	// the same alias
+	public static function staticTest2($var)
+	{
+		return "PSR2 good {$var}";
+	}
+
+	public static function staticTestPSR2($var)
+	{
+		return "PSR2 good {$var}";
 	}
 }
 
@@ -119,6 +158,11 @@ class FilterbankTest extends TestCase
 		$this->context->set('var', 1000);
 		$this->context->addFilters('functionFilter');
 		$this->assertEquals('worked', $var->render($this->context));
+
+		$var = new Variable('var | function_filter');
+		$this->context->set('var', 1010);
+		$this->context->addFilters('function_filter');
+		$this->assertEquals('worked', $var->render($this->context));
 	}
 
 	/**
@@ -130,6 +174,17 @@ class FilterbankTest extends TestCase
 		$this->context->set('var', 1000);
 		$this->context->addFilters(NamespacedClassFilter::class);
 		$this->assertEquals('good 1000', $var->render($this->context));
+	}
+
+	/**
+	 * Test using a namespaced static class
+	 */
+	public function testPSR2NamespacedStaticClassFilter()
+	{
+		$var = new Variable('var | static_test_psr_2');
+		$this->context->set('var', 1000);
+		$this->context->addFilters(NamespacedClassFilter::class);
+		$this->assertEquals('PSR2 good 1000', $var->render($this->context));
 	}
 
 	/**
@@ -196,6 +251,70 @@ class FilterbankTest extends TestCase
 		$this->assertEquals('1000', $var->render($this->context));
 	}
 
+	/**
+	 * Test using a static class
+	 */
+	public function testPSR2NamingStaticClassFilter()
+	{
+		$var = new Variable('var | static_test');
+		$this->context->set('var', 1000);
+		$this->context->addFilters(\PSR2ClassFilter::class);
+		$this->assertEquals('worked', $var->render($this->context));
+	}
+
+	/**
+	 * Test with instance method on a static class
+	 */
+	public function testPSR2NamingStaticMixedClassFilter()
+	{
+		$var = new Variable('var | instance_test_one');
+		$this->context->set('var', 'foo');
+		$this->context->addFilters(\PSR2ClassFilter::class);
+		$this->assertEquals('foo', $var->render($this->context));
+	}
+
+	/**
+	 * Test using an object as a filter; an object fiter will retain its state
+	 * between calls to its filters.
+	 */
+	public function testPSR2NamingObjectFilter()
+	{
+		$var = new Variable('var | instance_test_one');
+		$this->context->set('var', 1000);
+		$this->context->addFilters(new \PSR2ClassFilter());
+		$this->assertEquals('set', $var->render($this->context));
+
+		$var = new Variable('var | instance_test_two');
+		$this->assertEquals('set', $var->render($this->context));
+
+		$var = new Variable('var | static_test');
+		$this->assertEquals('worked', $var->render($this->context));
+
+		$var = new Variable('var | __construct');
+		$this->assertEquals('1000', $var->render($this->context));
+	}
+
+	public function testPSR2NamingObjectFilterDontCallConstruct()
+	{
+		$this->context->set('var', 1000);
+		$this->context->addFilters(new \PSR2ClassFilter());
+
+		$filterbankReflectionClass = new \ReflectionClass(Context::class);
+		$methodMapProperty = $filterbankReflectionClass->getProperty('filterbank');
+		$methodMapProperty->setAccessible(true);
+		$filterbank = $methodMapProperty->getValue($this->context);
+
+		$filterbankReflectionClass = new \ReflectionClass(Filterbank::class);
+		$methodMapProperty = $filterbankReflectionClass->getProperty('methodMap');
+		$methodMapProperty->setAccessible(true);
+		$methodMap = $methodMapProperty->getValue($filterbank);
+
+		$this->assertArrayNotHasKey('__construct', $methodMap);
+
+		$var = new Variable('var | __construct');
+		$this->assertEquals('1000', $var->render($this->context));
+	}
+
 	public function testCallbackFilter()
 	{
 		$var = new Variable('var | my_callback');
@@ -223,6 +342,29 @@ class FilterbankTest extends TestCase
 
 		$template->parse("{{'bar' | foo }}");
 		$this->assertEquals('Foo bar', $template->render());
+	}
+
+	/**
+	 * All filter's name will convert to lowercase and without underscore
+	 *
+	 * @param $name
+	 * @testWith ["test_me_well"]
+	 *           ["Test_Me_Well"]
+	 *           ["TestMeWell"]
+	 *           ["testmewell"]
+	 *           ["t_e_s_t_m_e_w_e_l_l"]
+	 *           ["T_e_s_t_M_e_W_e_l_l"]
+	 *           ["T_E_S_T_M_E_W_E_L_L"]
+	 *           ["TESTMEWELL"]
+	 *
+	 * @throws \ReflectionException
+	 */
+	public function testDifferentCasesToMapName($name)
+	{
+		$method = new \ReflectionMethod($this->filterBank, 'toMapName');
+		$method->setAccessible(true);
+
+		$this->assertEquals('testmewell', $method->invoke($this->filterBank, $name));
 	}
 }
 
