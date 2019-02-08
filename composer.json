@@ -30,10 +30,10 @@
         "php": ">= 7"
     },
     "require-dev": {
-        "phpunit/phpunit": "<6",
-        "satooshi/php-coveralls": "^1.0",
         "friendsofphp/php-cs-fixer": "^2.6",
-        "infection/infection": "^0.8.1"
+        "infection/infection": "^0.8.1",
+        "php-coveralls/php-coveralls": "^2.1",
+        "phpunit/phpunit": "<6"
     },
     "autoload": {
         "psr-4": {
