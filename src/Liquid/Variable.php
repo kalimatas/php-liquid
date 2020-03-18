@@ -96,7 +96,7 @@ class Variable
 	 * @param array $unparsedArgs
 	 * @return array
 	 */
-	private function parseFilterExpressions($filterName, array $unparsedArgs)
+	private static function parseFilterExpressions($filterName, array $unparsedArgs)
 	{
 		$filterArgs = array();
 		$keywordArgs = array();
