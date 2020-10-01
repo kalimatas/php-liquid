@@ -17,7 +17,9 @@ jobs:
         dependencies: ['']
         include:
           - { php-version: '7.3', dependencies: '--prefer-lowest' }
+          - { php-version: '8.0', dependencies: '--ignore-platform-req=php' }
 
+    continue-on-error: ${{ matrix.php-version == '8.0' }}
     name: PHP ${{ matrix.php-version }} ${{ matrix.dependencies }}
 
     steps:
@@ -29,7 +31,7 @@ jobs:
           php-version: ${{ matrix.php-version }}
           extensions: 
           coverage: pcov
-          tools: composer:v1
+          tools: composer:v2
 
       - name: Install dependencies
         run: |
