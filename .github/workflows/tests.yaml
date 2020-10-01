@@ -33,15 +33,19 @@ jobs:
           coverage: pcov
           tools: composer:v2
 
+      - name: Cache dependencies
+        uses: actions/cache@v2
+        with:
+          path: ~/.cache/composer
+          key: composer-${{ matrix.php-version }}-${{ hashFiles('**/composer.*') }}
+          restore-keys: |
+            composer-${{ matrix.php-version }}-
+            composer-
+
       - name: Install dependencies
         run: |
-          composer update --no-interaction ${{ matrix.dependencies }}
+          composer update --prefer-dist --no-interaction --no-progress ${{ matrix.dependencies }}
 
       - name: Run tests
         run: |
           php vendor/bin/phpunit
-
-      - name: Run mutation testing
-        run: |
-          php vendor/bin/infection --min-msi=80 --min-covered-msi=80 --show-mutations --threads=$(nproc)
-          
