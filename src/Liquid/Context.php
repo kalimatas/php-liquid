@@ -303,10 +303,12 @@ class Context
 			}
 
 			// first try to cast an object to an array or value
-			if (method_exists($object, 'toLiquid')) {
-				$object = $object->toLiquid();
-			} elseif (method_exists($object, 'toArray')) {
-				$object = $object->toArray();
+			if (is_object($object)) {
+				if (method_exists($object, 'toLiquid')) {
+					$object = $object->toLiquid();
+				} elseif (method_exists($object, 'toArray')) {
+					$object = $object->toArray();
+				}
 			}
 
 			if (is_null($object)) {
