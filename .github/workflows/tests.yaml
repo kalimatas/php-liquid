@@ -18,9 +18,9 @@ jobs:
       matrix:
         php-version: ['7.3', '7.4', '8.0']
         include:
-          - { php-version: '7.3', dependencies: '--prefer-lowest' }
+          - { php-version: '7.3', dependencies: '--prefer-lowest', legend: 'with lowest dependencies' }
 
-    name: PHP ${{ matrix.php-version }}
+    name: PHP ${{ matrix.php-version }} ${{ matrix.legend }}
 
     steps:
       - uses: actions/checkout@v2
