@@ -294,6 +294,14 @@ class Context
 		// Support numeric and variable array indicies
 		if (preg_match("|\[[0-9]+\]|", $key)) {
 			$key = preg_replace("|\[([0-9]+)\]|", ".$1", $key);
+		} elseif (preg_match('|\["[0-9a-z._ ]+\"]|', $key, $matches)) {
+			$single_index = str_replace(array("['", "']"), "", $matches[0]);
+			$double_index = str_replace(array('["', '"]'), "", $matches[0]);
+			if (strlen($single_index)) {
+				$key = preg_replace('|\["([0-9a-z._ ]+)\"]|', ".$single_index", $key);
+			}elseif (strlen($double_index)) {
+				$key = preg_replace('|\["([0-9a-z._ ]+)\"]|', ".$double_index", $key);
+			}
 		} elseif (preg_match("|\[[0-9a-z._]+\]|", $key, $matches)) {
 			$index = $this->get(str_replace(array("[", "]"), "", $matches[0]));
 			if (strlen($index)) {
