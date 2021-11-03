@@ -160,7 +160,8 @@ class TagIncludeTest extends TestCase
 		$template->parse("{% include 'example' %}");
 		
 		$output = $template->render(array("var" => array("a", "b", "c")));
-		$this->assertEquals("([a])", $output);
+		$expectedOutput = print_r(array("a", "b", "c"),true);
+		$this->assertEquals("([$expectedOutput])", $output);
 	}
 
 	public function testIncludePassArrayWithIndex()
@@ -174,13 +175,7 @@ class TagIncludeTest extends TestCase
 		$template->parse("{% include 'example' %}");
 
 		$output = $template->render(array("var" => array("a", "b", "c")));
-		$expectedOutput = "Array
-(
-    [0] => a
-    [1] => b
-    [2] => c
-)";
-		$this->assertEquals($expectedOutput, $output);
+		$this->assertEquals("([a])", $output);
 	}
 
 	public function testIncludePassObjectValue()
