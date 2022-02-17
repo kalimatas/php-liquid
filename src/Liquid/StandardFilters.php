@@ -44,7 +44,7 @@ class StandardFilters
 	{
 		return preg_replace_callback("/(^|[^\p{L}'])([\p{Ll}])/u", function ($matches) {
 			$first_char = mb_substr($matches[2], 0, 1);
-			return $matches[1] . mb_strtoupper($first_char) . mb_substr($matches[2], 1, null);
+			return $matches[1] . mb_strtoupper($first_char) . mb_substr($matches[2], 1);
 		}, ucwords($input));
 	}
 	

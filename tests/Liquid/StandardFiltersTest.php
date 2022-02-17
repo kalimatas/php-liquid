@@ -442,7 +442,7 @@ class StandardFiltersTest extends TestCase
 		$this->assertEquals('abcend', StandardFilters::truncate('abcdef', 3, 'end'));
 
 		// UTF-8
-		$this->assertEquals('Владимир...', StandardFilters::truncate('Владимир Владимирович', 8));
+		$this->assertEquals('Влад...', StandardFilters::truncate('Владимир Владимирович', 4));
 	}
 
 	public function testTruncateWords()
