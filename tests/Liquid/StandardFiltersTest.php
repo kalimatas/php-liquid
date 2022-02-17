@@ -99,6 +99,8 @@ class StandardFiltersTest extends TestCase
 		$data = array(
 			'UpperCaseMiXed' => 'uppercasemixed',
 			3 => 3,
+			// UTF-8
+			'Владимир' => 'владимир'
 		);
 
 		foreach ($data as $element => $expected) {
@@ -111,6 +113,8 @@ class StandardFiltersTest extends TestCase
 		$data = array(
 			'UpperCaseMiXed' => 'UPPERCASEMIXED',
 			3 => 3,
+			// UTF-8
+			'владимир' => 'ВЛАДИМИР'
 		);
 
 		foreach ($data as $element => $expected) {
@@ -124,6 +128,8 @@ class StandardFiltersTest extends TestCase
 			'one Word not' => 'One Word Not',
 			'1test' => '1Test',
 			'' => '',
+			// UTF-8
+			'владимир владимирович' => 'Владимир Владимирович'
 		);
 
 		foreach ($data as $element => $expected) {
@@ -434,6 +440,9 @@ class StandardFiltersTest extends TestCase
 
 		// Custom ending
 		$this->assertEquals('abcend', StandardFilters::truncate('abcdef', 3, 'end'));
+
+		// UTF-8
+		$this->assertEquals('Владимир...', StandardFilters::truncate('Владимир Владимирович', 8));
 	}
 
 	public function testTruncateWords()
