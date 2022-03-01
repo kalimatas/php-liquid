@@ -231,6 +231,7 @@ class TagIfTest extends TestCase
 
 		$this->assertTemplateResult('', '{% if jerry == 1 %}');
 	}
+
 	public function testSyntaxErrorNotClosedLineBreak()
 	{
 		$this->expectException(\Liquid\Exception\ParseException::class);
