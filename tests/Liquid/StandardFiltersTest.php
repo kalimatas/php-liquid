@@ -956,7 +956,7 @@ class StandardFiltersTest extends TestCase
 		);
 
 		foreach ($data as $item) {
-			$this->assertEquals($item[2], StandardFilters::times($item[0], $item[1]), '', 0.00001);
+			$this->assertEqualsWithDelta($item[2], StandardFilters::times($item[0], $item[1]), '', 0.00001);
 		}
 	}
 
