@@ -1133,7 +1133,7 @@ class StandardFiltersTest extends TestCase
 
 		$var = new Variable("var | date: '%d/%m/%Y %l:%M %p'");
 		$this->context->set('var', $dateVar);
-		$this->assertEquals('01/07/2017  9:00 PM', $var->render($this->context));
+		$this->assertEquals('01/07/2017 9:00 PM', $var->render($this->context));
 
 		$var = new Variable('var | date, ""');
 		$this->context->set('var', $dateVar);
