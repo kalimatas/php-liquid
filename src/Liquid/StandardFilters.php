@@ -78,7 +78,7 @@ class StandardFilters
 		$input = date('Y-m-d H:i:s', $input);
 	    }
 
-	    $dateTime = new DateTime($input);
+	    $dateTime = new \DateTime($input);
 	    if ( !$dateTime ) {
 		return "";
 	    }
