@@ -45,6 +45,22 @@ class VariableResolutionTest extends TestCase
 		$this->assertEquals('worked', $template->render(array('test' => '<b>worked</b>')));
 	}
 
+	public function squareBracketsProvider()
+	{
+		yield ['Hello, {{ name["Hello World"] }}!'];
+		yield ['Hello, {{ name[\'Hello World\'] }}!'];
+	}
+
+	/**
+	 * @dataProvider squareBracketsProvider
+	 */
+	public function testSquareBrackets(string $test)
+	{
+		$template = new Template;
+		$template->parse($test);
+		$this->assertEquals('Hello, foo!', $template->render(array('name' => array('Hello World' => 'foo'))));
+	}
+
 	public function testArrayScoping()
 	{
 		$template = new Template();
