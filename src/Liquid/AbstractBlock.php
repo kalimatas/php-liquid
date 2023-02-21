@@ -51,10 +51,6 @@ class AbstractBlock extends AbstractTag
 	 */
 	public function parse(array &$tokens)
 	{
-		$startRegexp = new Regexp('/^' . Liquid::$config['TAG_START'] . '/');
-		$tagRegexp = new Regexp('/^' . Liquid::$config['TAG_START'] . Liquid::$config['WHITESPACE_CONTROL'] . '?\s*(\w+)\s*(.*?)' . Liquid::$config['WHITESPACE_CONTROL'] . '?' . Liquid::$config['TAG_END'] . '$/s');
-		$variableStartRegexp = new Regexp('/^' . Liquid::$config['VARIABLE_START'] . '/');
-
 		$this->nodelist = array();
 
 		$tags = Template::getTags();
@@ -66,45 +62,45 @@ class AbstractBlock extends AbstractTag
 			$token = $tokens[$i];
 			$tokens[$i] = null;
 
-			if ($startRegexp->match($token)) {
-				$this->whitespaceHandler($token);
-				if ($tagRegexp->match($token)) {
-					// If we found the proper block delimitor just end parsing here and let the outer block proceed
-					if ($tagRegexp->matches[1] == $this->blockDelimiter()) {
-						$this->endTag();
-						return;
-					}
-
-					$tagName = null;
-					if (array_key_exists($tagRegexp->matches[1], $tags)) {
-						$tagName = $tags[$tagRegexp->matches[1]];
-					} else {
-						$tagName = self::TAG_PREFIX . ucwords($tagRegexp->matches[1]);
-						$tagName = (class_exists($tagName) === true) ? $tagName : null;
-					}
-
-					if ($tagName !== null) {
-						$this->nodelist[] = new $tagName($tagRegexp->matches[2], $tokens, $this->fileSystem);
-						if ($tagRegexp->matches[1] == 'extends') {
+			if (preg_match('/({%)?(-)?(?(1)\s*(\w+)|({{)(-)?)\s*(.*?)\s*(-)?([%}]})/s', $token, $tokenParts)) {
+				if ($tokenParts[1] == '{%') {
+					$this->whitespaceHandler($tokenParts);
+					if ($tokenParts[8] == '%}') {
+						// If we found the proper block delimitor just end parsing here and let the outer block proceed
+						if ($tokenParts[3] == $this->blockDelimiter()) {
+							$this->endTag();
 							return;
 						}
+
+						$tagName = $tags[$tokenParts[3]] ?? null;
+						if ($tagName === null) {
+							$tagName = self::TAG_PREFIX . ucwords($tokenParts[3]);
+							$tagName = class_exists($tagName) ? $tagName : null;
+						}
+
+						if ($tagName !== null) {
+							$this->nodelist[] = new $tagName($tokenParts[6], $tokens, $this->fileSystem);
+							if ($tokenParts[3] == 'extends') {
+								return;
+							}
+						} else {
+							$this->unknownTag($tokenParts[3], $tokenParts[6], $tokens);
+						}
 					} else {
-						$this->unknownTag($tagRegexp->matches[1], $tagRegexp->matches[2], $tokens);
+						throw new ParseException("Tag $token was not properly terminated");
 					}
-				} else {
-					throw new ParseException("Tag $token was not properly terminated (won't match $tagRegexp)");
+				} elseif ($tokenParts[4] == '{{') {
+					if ($tokenParts[8] == '}}') {
+						$this->whitespaceHandler($tokenParts);
+						$this->nodelist[] = new Variable($tokenParts[6]);
+					} else {
+						throw new ParseException("Variable $token was not properly terminated");
+					}
 				}
-			} elseif ($variableStartRegexp->match($token)) {
-				$this->whitespaceHandler($token);
-				$this->nodelist[] = $this->createVariable($token);
 			} else {
 				// This is neither a tag or a variable, proceed with an ltrim
-				if (self::$trimWhitespace) {
-					$token = ltrim($token);
-				}
-
+				$this->nodelist[] = self::$trimWhitespace ? ltrim($token) : $token;
 				self::$trimWhitespace = false;
-				$this->nodelist[] = $token;
 			}
 		}
 
@@ -116,24 +112,16 @@ class AbstractBlock extends AbstractTag
 	 *
 	 * @param string $token
 	 */
-	protected function whitespaceHandler($token)
+	protected function whitespaceHandler($tokenParts)
 	{
-		/*
-		 * This assumes that TAG_START is always '{%', and a whitespace control indicator
-		 * is exactly one character long, on a third position.
-		 */
-		if ($token[2] === Liquid::$config['WHITESPACE_CONTROL']) {
+		if ($tokenParts[2] === Liquid::$config['WHITESPACE_CONTROL'] || $tokenParts[5] === Liquid::$config['WHITESPACE_CONTROL']) {
 			$previousToken = end($this->nodelist);
 			if (is_string($previousToken)) { // this can also be a tag or a variable
 				$this->nodelist[key($this->nodelist)] = rtrim($previousToken);
 			}
 		}
 
-		/*
-		 * This assumes that TAG_END is always '%}', and a whitespace control indicator
-		 * is exactly one character long, on a third position from the end.
-		 */
-		self::$trimWhitespace = $token[-3] === Liquid::$config['WHITESPACE_CONTROL'];
+		self::$trimWhitespace = $tokenParts[7] === Liquid::$config['WHITESPACE_CONTROL'];
 	}
 
 	/**
@@ -246,23 +234,5 @@ class AbstractBlock extends AbstractTag
 	{
 		$reflection = new \ReflectionClass($this);
 		return str_replace('tag', '', strtolower($reflection->getShortName()));
-	}
-
-	/**
-	 * Create a variable for the given token
-	 *
-	 * @param string $token
-	 *
-	 * @throws \Liquid\Exception\ParseException
-	 * @return Variable
-	 */
-	private function createVariable($token)
-	{
-		$variableRegexp = new Regexp('/^' . Liquid::$config['VARIABLE_START'] . Liquid::$config['WHITESPACE_CONTROL'] . '?(.*?)' . Liquid::$config['WHITESPACE_CONTROL'] . '?' . Liquid::$config['VARIABLE_END'] . '$/s');
-		if ($variableRegexp->match($token)) {
-			return new Variable($variableRegexp->matches[1]);
-		}
-
-		throw new ParseException("Variable $token was not properly terminated");
 	}
 }
