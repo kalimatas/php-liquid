@@ -52,8 +52,11 @@ class AbstractBlock extends AbstractTag
 	public function parse(array &$tokens)
 	{
 		$this->nodelist = array();
-
 		$tags = Template::getTags();
+
+		if (!isset(Liquid::$config['tokenRegex'])) {
+			Liquid::$config['tokenRegex'] = '/(' . Liquid::$config['TAG_START'] . ')?(?(1)(' . Liquid::$config['WHITESPACE_CONTROL'] . ')?\s*(\w+)|(' . Liquid::$config['VARIABLE_START'] . ')(-' . Liquid::$config['WHITESPACE_CONTROL'] . ')?)\s*(.*?)\s*(' . Liquid::$config['WHITESPACE_CONTROL'] . ')?((?(1)' . Liquid::$config['TAG_END'] . '|' . Liquid::$config['VARIABLE_END'] . '))/s';
+		}
 
 		for ($i = 0, $n = count($tokens); $i < $n; $i++) {
 			if ($tokens[$i] === null) {
@@ -62,7 +65,17 @@ class AbstractBlock extends AbstractTag
 			$token = $tokens[$i];
 			$tokens[$i] = null;
 
-			if (preg_match('/({%)?(-)?(?(1)\s*(\w+)|({{)(-)?)\s*(.*?)\s*(-)?([%}]})/s', $token, $tokenParts)) {
+			if (preg_match(Liquid::$config['tokenRegex'], $token, $tokenParts)) {
+
+				// $tokenParts[1]: Start tag
+				// $tokenParts[2]: Whitespace control for tag start
+				// $tokenParts[3]: Tag name
+				// $tokenParts[4]: Variable start
+				// $tokenParts[5]: Whitespace control for variable start
+				// $tokenParts[6]: Tag/variable markup
+				// $tokenParts[7]: Whitespace control for tag/variable end
+				// $tokenParts[8]: End tag/variable
+
 				if ($tokenParts[1] == '{%') {
 					$this->whitespaceHandler($tokenParts);
 					if ($tokenParts[8] == '%}') {
@@ -110,7 +123,7 @@ class AbstractBlock extends AbstractTag
 	/**
 	 * Handle the whitespace.
 	 *
-	 * @param string $token
+	 * @param string[] $tokenParts
 	 */
 	protected function whitespaceHandler($tokenParts)
 	{
