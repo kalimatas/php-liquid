@@ -76,39 +76,31 @@ class AbstractBlock extends AbstractTag
 				// $tokenParts[7]: Whitespace control for tag/variable end
 				// $tokenParts[8]: End tag/variable
 
-				if ($tokenParts[1] == '{%') {
+				if ($tokenParts[1] == '{%' || $tokenParts[8] == '%}') {
 					$this->whitespaceHandler($tokenParts);
-					if ($tokenParts[8] == '%}') {
-						// If we found the proper block delimitor just end parsing here and let the outer block proceed
-						if ($tokenParts[3] == $this->blockDelimiter()) {
-							$this->endTag();
+					// If we found the proper block delimitor just end parsing here and let the outer block proceed
+					if ($tokenParts[3] == $this->blockDelimiter()) {
+						$this->endTag();
+						return;
+					}
+
+					$tagName = $tags[$tokenParts[3]] ?? null;
+					if ($tagName === null) {
+						$tagName = self::TAG_PREFIX . ucwords($tokenParts[3]);
+						$tagName = class_exists($tagName) ? $tagName : null;
+					}
+
+					if ($tagName !== null) {
+						$this->nodelist[] = new $tagName($tokenParts[6], $tokens, $this->fileSystem);
+						if ($tokenParts[3] == 'extends') {
 							return;
 						}
-
-						$tagName = $tags[$tokenParts[3]] ?? null;
-						if ($tagName === null) {
-							$tagName = self::TAG_PREFIX . ucwords($tokenParts[3]);
-							$tagName = class_exists($tagName) ? $tagName : null;
-						}
-
-						if ($tagName !== null) {
-							$this->nodelist[] = new $tagName($tokenParts[6], $tokens, $this->fileSystem);
-							if ($tokenParts[3] == 'extends') {
-								return;
-							}
-						} else {
-							$this->unknownTag($tokenParts[3], $tokenParts[6], $tokens);
-						}
 					} else {
-						throw new ParseException("Tag $token was not properly terminated");
+						$this->unknownTag($tokenParts[3], $tokenParts[6], $tokens);
 					}
-				} elseif ($tokenParts[4] == '{{') {
-					if ($tokenParts[8] == '}}') {
-						$this->whitespaceHandler($tokenParts);
-						$this->nodelist[] = new Variable($tokenParts[6]);
-					} else {
-						throw new ParseException("Variable $token was not properly terminated");
-					}
+				} elseif ($tokenParts[4] == '{{' || $tokenParts[8] == '}}') {
+					$this->whitespaceHandler($tokenParts);
+					$this->nodelist[] = new Variable($tokenParts[6]);
 				}
 			} else {
 				// This is neither a tag or a variable, proceed with an ltrim
