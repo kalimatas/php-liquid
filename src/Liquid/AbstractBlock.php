@@ -55,7 +55,7 @@ class AbstractBlock extends AbstractTag
 		$tags = Template::getTags();
 
 		if (!isset(Liquid::$config['tokenRegex'])) {
-			Liquid::$config['tokenRegex'] = '/(' . Liquid::$config['TAG_START'] . ')?(?(1)(' . Liquid::$config['WHITESPACE_CONTROL'] . ')?\s*(\w+)|(' . Liquid::$config['VARIABLE_START'] . ')(-' . Liquid::$config['WHITESPACE_CONTROL'] . ')?)\s*(.*?)\s*(' . Liquid::$config['WHITESPACE_CONTROL'] . ')?((?(1)' . Liquid::$config['TAG_END'] . '|' . Liquid::$config['VARIABLE_END'] . '))/s';
+			Liquid::$config['tokenRegex'] = '/(' . Liquid::$config['TAG_START'] . ')?(?(1)(' . Liquid::$config['WHITESPACE_CONTROL'] . ')?\s*(\w+)|(' . Liquid::$config['VARIABLE_START'] . ')(' . Liquid::$config['WHITESPACE_CONTROL'] . ')?)\s*(.*?)\s*(' . Liquid::$config['WHITESPACE_CONTROL'] . ')?((?(1)' . Liquid::$config['TAG_END'] . '|' . Liquid::$config['VARIABLE_END'] . '))/s';
 		}
 
 		for ($i = 0, $n = count($tokens); $i < $n; $i++) {
