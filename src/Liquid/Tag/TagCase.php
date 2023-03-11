@@ -101,7 +101,7 @@ class TagCase extends Decision
 	{
 		switch ($tag) {
 			case 'when':
-				$whenSyntax = preg_match_all('/(?<=,|or|^)\s*(' . Liquid::get('QUOTED_FRAGMENT') . ')/', $params, $matches, PREG_UNMATCHED_AS_NULL);
+				$whenSyntax = preg_match_all('/(?<=,|or|^)\s*(' . Liquid::get('QUOTED_FRAGMENT') . ')/', $params, $matches);
 				// push the current nodelist onto the stack and prepare for a new one
 				if ($whenSyntax) {
 					$this->pushNodelist();
