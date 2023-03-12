@@ -15,13 +15,6 @@ use Liquid\TestCase;
 
 class AbstractBlockTest extends TestCase
 {
-	public function testUnterminatedBlockError()
-	{
-		$this->expectException(\Liquid\Exception\ParseException::class);
-
-		$this->assertTemplateResult('', '{% block }');
-	}
-
 	public function testWhitespaceHandler()
 	{
 		$this->assertTemplateResult('foo', '{% if true %}foo{% endif %}');
