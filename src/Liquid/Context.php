@@ -213,35 +213,24 @@ class Context
 	{
 		// This shouldn't happen
 		if (is_array($key)) {
-			throw new LiquidException("Cannot resolve arrays as key");
+			throw new LiquidException('Cannot resolve arrays as key');
 		}
 
 		if (is_null($key) || $key == 'null') {
 			return null;
 		}
 
-		if ($key == 'true') {
-			return true;
+		switch ($key) {
+			case 'true':
+				return true;
+			case 'false':
+				return false;
 		}
 
-		if ($key == 'false') {
-			return false;
-		}
-
-		if (preg_match('/^\'(.*)\'$/', $key, $matches)) {
-			return $matches[1];
-		}
-
-		if (preg_match('/^"(.*)"$/', $key, $matches)) {
-			return $matches[1];
-		}
-
-		if (preg_match('/^(-?\d+)$/', $key, $matches)) {
-			return $matches[1];
-		}
-
-		if (preg_match('/^(-?\d[\d\.]+)$/', $key, $matches)) {
-			return $matches[1];
+		if (preg_match('/^(["\'])((?:(?!\1).)*)\1$/', $key, $match)) {
+			return $match[2];
+		} elseif (preg_match('/^-?[0-9]+(?:\.[0-9]+)?$/', $key, $match)) {
+			return $match[0];
 		}
 
 		return $this->variable($key);
@@ -292,12 +281,17 @@ class Context
 	private function variable($key)
 	{
 		// Support numeric and variable array indicies
-		if (preg_match("|\[[0-9]+\]|", $key)) {
-			$key = preg_replace("|\[([0-9]+)\]|", ".$1", $key);
-		} elseif (preg_match("|\[[0-9a-z._]+\]|", $key, $matches)) {
-			$index = $this->get(str_replace(array("[", "]"), "", $matches[0]));
-			if (strlen($index)) {
-				$key = preg_replace("|\[([0-9a-z._]+)\]|", ".$index", $key);
+		if (preg_match('/\[[0-9]+\]/', $key)) {
+			$key = preg_replace('/\[([0-9]+)\]/', '.$1', $key);
+		} elseif (preg_match('/\[(["\'])?(?(1)((?:(?!\1).)+)\1)|([0-9a-z._]+)\]/', $key, $matches, PREG_UNMATCHED_AS_NULL)) {
+		var_dump('/\[(["\'])?(?(1)((?:(?!\1).)+)\1|([0-9a-z._]+))\]/', $key, $matches, $this->assigns);
+			if (isset($matches[2])) {
+				$key = str_replace($matches[0], '.' . $matches[2], $key);
+			} elseif (isset($matches[3])) {
+				$index = $this->get($matches[3]);
+				if (strlen($index)) {
+					$key = str_replace($matches[0], '.' . $index, $key);
+				}
 			}
 		}
 
