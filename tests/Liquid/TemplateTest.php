@@ -11,6 +11,8 @@
 
 namespace Liquid;
 
+use Liquid\Exception\ParseException;
+
 class TemplateTest extends TestCase
 {
 	const CACHE_DIR = 'cache_dir';
@@ -165,5 +167,14 @@ class TemplateTest extends TestCase
 		$this->assertIsString($nodelist[0]);
 		$this->assertInstanceOf(\Liquid\Tag\TagComment::class, $nodelist[1]);
 		$this->assertIsString($nodelist[2]);
+	}
+
+	public function testMissingClosingBraceFails()
+	{
+		$template = new Template();
+
+		$this->expectException(ParseException::class);
+
+		$template->parse('Hello, {{name}');
 	}
 }
