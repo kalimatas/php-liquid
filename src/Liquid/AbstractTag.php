@@ -41,22 +41,21 @@ abstract class AbstractTag
 	 * Constructor.
 	 *
 	 * @param string $markup
-	 * @param array $tokens
 	 * @param FileSystem $fileSystem
 	 */
-	public function __construct($markup, array &$tokens, FileSystem $fileSystem = null)
+	public function __construct($markup, FileSystem $fileSystem = null)
 	{
 		$this->markup = $markup;
 		$this->fileSystem = $fileSystem;
-		$this->parse($tokens);
 	}
 
 	/**
 	 * Parse the given tokens.
 	 *
 	 * @param array $tokens
+	 * @param null|mixed $context
 	 */
-	public function parse(array &$tokens)
+	public function parse(array &$tokens, $context = null)
 	{
 		// Do nothing by default
 	}

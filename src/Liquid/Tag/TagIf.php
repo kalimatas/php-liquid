@@ -48,16 +48,15 @@ class TagIf extends Decision
 	 * Constructor
 	 *
 	 * @param string $markup
-	 * @param array $tokens
 	 * @param FileSystem $fileSystem
 	 */
-	public function __construct($markup, array &$tokens, FileSystem $fileSystem = null)
+	public function __construct($markup, FileSystem $fileSystem = null)
 	{
 		$this->nodelist = & $this->nodelistHolders[count($this->blocks)];
 
 		array_push($this->blocks, array('if', $markup, &$this->nodelist));
 
-		parent::__construct($markup, $tokens, $fileSystem);
+		parent::__construct($markup, $fileSystem);
 	}
 
 	/**

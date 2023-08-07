@@ -179,13 +179,14 @@ class Template
 	 * Parses the given source string
 	 *
 	 * @param string $source
+	 * @param null|mixed $context
 	 *
 	 * @return Template
 	 */
-	public function parse($source)
+	public function parse($source, $context = null)
 	{
 		if (!self::$cache) {
-			return $this->parseAlways($source);
+			return $this->parseAlways($source, $context);
 		}
 
 		$hash = md5($source);
@@ -193,7 +194,7 @@ class Template
 
 		// if no cached version exists, or if it checks for includes
 		if ($this->root == false || $this->root->hasIncludes() == true) {
-			$this->parseAlways($source);
+			$this->parseAlways($source, $context);
 			self::$cache->write($hash, $this->root);
 		}
 
@@ -204,13 +205,16 @@ class Template
 	 * Parses the given source string regardless of caching
 	 *
 	 * @param string $source
+	 * @param null|mixed $context
 	 *
 	 * @return Template
 	 */
-	private function parseAlways($source)
+	private function parseAlways($source, $context = null)
 	{
 		$tokens = Template::tokenize($source);
-		$this->root = new Document($tokens, $this->fileSystem);
+		$document = new Document($tokens, $this->fileSystem, $context);
+
+		$this->root = $document;
 
 		return $this;
 	}
@@ -219,16 +223,17 @@ class Template
 	 * Parses the given template file
 	 *
 	 * @param string $templatePath
+	 * @param null|mixed $context
 	 * @throws \Liquid\Exception\MissingFilesystemException
 	 * @return Template
 	 */
-	public function parseFile($templatePath)
+	public function parseFile($templatePath, $context = null)
 	{
 		if (!$this->fileSystem) {
 			throw new MissingFilesystemException("Could not load a template without an initialized file system");
 		}
 
-		return $this->parse($this->fileSystem->readTemplateFile($templatePath));
+		return $this->parse($this->fileSystem->readTemplateFile($templatePath), $context);
 	}
 
 	/**

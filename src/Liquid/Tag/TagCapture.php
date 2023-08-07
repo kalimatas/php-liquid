@@ -37,18 +37,17 @@ class TagCapture extends AbstractBlock
 	 * Constructor
 	 *
 	 * @param string $markup
-	 * @param array $tokens
 	 * @param FileSystem $fileSystem
 	 *
 	 * @throws \Liquid\Exception\ParseException
 	 */
-	public function __construct($markup, array &$tokens, FileSystem $fileSystem = null)
+	public function __construct($markup, FileSystem $fileSystem = null)
 	{
 		$syntaxRegexp = new Regexp('/(\w+)/');
 
 		if ($syntaxRegexp->match($markup)) {
 			$this->to = $syntaxRegexp->matches[1];
-			parent::__construct($markup, $tokens, $fileSystem);
+			parent::__construct($markup, $fileSystem);
 		} else {
 			throw new ParseException("Syntax Error in 'capture' - Valid syntax: capture [var] [value]");
 		}

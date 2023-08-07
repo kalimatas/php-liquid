@@ -74,15 +74,14 @@ class TagPaginate extends AbstractBlock
 	 * Constructor
 	 *
 	 * @param string $markup
-	 * @param array $tokens
 	 * @param FileSystem $fileSystem
 	 *
 	 * @throws \Liquid\Exception\ParseException
 	 *
 	 */
-	public function __construct($markup, array &$tokens, FileSystem $fileSystem = null)
+	public function __construct($markup, FileSystem $fileSystem = null)
 	{
-		parent::__construct($markup, $tokens, $fileSystem);
+		parent::__construct($markup, $fileSystem);
 
 		$syntax = new Regexp('/(' . Liquid::get('VARIABLE_NAME') . ')\s+by\s+(\w+)/');
 

@@ -29,8 +29,9 @@ class TagRaw extends AbstractBlock
 {
 	/**
 	 * @param array $tokens
+	 * @param null|mixed $context
 	 */
-	public function parse(array &$tokens)
+	public function parse(array &$tokens, $context = null)
 	{
 		$tagRegexp = new Regexp('/^' . Liquid::get('TAG_START') . '\s*(\w+)\s*(.*)?' . Liquid::get('TAG_END') . '$/');
 

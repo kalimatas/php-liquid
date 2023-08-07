@@ -45,11 +45,11 @@ class AbstractBlock extends AbstractTag
 	 * Parses the given tokens
 	 *
 	 * @param array $tokens
-	 *
+	 * @param null|mixed $context
 	 * @throws \Liquid\LiquidException
 	 * @return void
 	 */
-	public function parse(array &$tokens)
+	public function parse(array &$tokens, $context = null)
 	{
 		$startRegexp = new Regexp('/^' . Liquid::get('TAG_START') . '/');
 		$tagRegexp = new Regexp('/^' . Liquid::get('TAG_START') . Liquid::get('WHITESPACE_CONTROL') . '?\s*(\w+)\s*(.*?)' . Liquid::get('WHITESPACE_CONTROL') . '?' . Liquid::get('TAG_END') . '$/s');
@@ -80,7 +80,9 @@ class AbstractBlock extends AbstractTag
 					}
 
 					if ($tagName !== null) {
-						$this->nodelist[] = new $tagName($tagRegexp->matches[2], $tokens, $this->fileSystem);
+						$tag = new $tagName($tagRegexp->matches[2], $this->fileSystem);
+						$tag->parse($tokens, $context);
+						$this->nodelist[] = $tag;
 						if ($tagRegexp->matches[1] == 'extends') {
 							return;
 						}

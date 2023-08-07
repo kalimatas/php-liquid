@@ -59,17 +59,16 @@ class TagCase extends Decision
 	 * Constructor
 	 *
 	 * @param string $markup
-	 * @param array $tokens
 	 * @param FileSystem $fileSystem
 	 *
 	 * @throws \Liquid\Exception\ParseException
 	 */
-	public function __construct($markup, array &$tokens, FileSystem $fileSystem = null)
+	public function __construct($markup, FileSystem $fileSystem = null)
 	{
 		$this->nodelists = array();
 		$this->elseNodelist = array();
 
-		parent::__construct($markup, $tokens, $fileSystem);
+		parent::__construct($markup, $fileSystem);
 
 		$syntaxRegexp = new Regexp('/' . Liquid::get('QUOTED_FRAGMENT') . '/');
 

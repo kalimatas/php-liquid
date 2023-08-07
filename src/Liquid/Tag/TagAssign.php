@@ -43,12 +43,11 @@ class TagAssign extends AbstractTag
 	 * Constructor
 	 *
 	 * @param string $markup
-	 * @param array $tokens
 	 * @param FileSystem $fileSystem
 	 *
 	 * @throws \Liquid\Exception\ParseException
 	 */
-	public function __construct($markup, array &$tokens, FileSystem $fileSystem = null)
+	public function __construct($markup, FileSystem $fileSystem = null)
 	{
 		$syntaxRegexp = new Regexp('/(\w+)\s*=\s*(.*)\s*/');
 

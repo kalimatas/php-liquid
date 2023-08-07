@@ -24,12 +24,13 @@ class Document extends AbstractBlock
 	 * Constructor.
 	 *
 	 * @param array $tokens
+	 * @param null|mixed $context
 	 * @param FileSystem $fileSystem
 	 */
-	public function __construct(array &$tokens, FileSystem $fileSystem = null)
+	public function __construct(array &$tokens, FileSystem $fileSystem = null, $context = null)
 	{
 		$this->fileSystem = $fileSystem;
-		$this->parse($tokens);
+		$this->parse($tokens, $context);
 	}
 
 	/**
