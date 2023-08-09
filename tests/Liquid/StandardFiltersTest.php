@@ -591,7 +591,8 @@ class StandardFiltersTest extends TestCase
 		$this->assertEquals($expected, array_values(StandardFilters::sort(new \ArrayIterator($original), 'b')));
 	}
 
-	public function testSortWithoutKey() {
+	public function testSortWithoutKey()
+	{
 		// Sort by inner key
 		$original = array(
 			array('a' => 20, 'b' => 10),
