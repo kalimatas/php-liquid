@@ -231,6 +231,7 @@ class StandardFiltersTest extends TestCase
 		$data = array(
 			"one Word's not" => "one Word&#039;s not",
 			"&><\"'" => "&amp;&gt;&lt;&quot;&#039;",
+			null => null,
 		);
 
 		foreach ($data as $element => $expected) {
