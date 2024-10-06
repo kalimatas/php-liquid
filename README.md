@@ -115,7 +115,7 @@ Adding filters has never been easier.
 
 ## Requirements
 
- * PHP 7.0+
+ * PHP 7.4+
 
 Some earlier versions could be used with PHP 5.3/5.4/5.5/5.6, though they're not supported anymore.
 
