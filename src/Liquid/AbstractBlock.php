@@ -53,7 +53,7 @@ class AbstractBlock extends AbstractTag
 	{
 		$startRegexp = new Regexp('/^' . Liquid::$config['TAG_START'] . '/');
 		$tagRegexp = new Regexp('/^' . Liquid::$config['TAG_START'] . Liquid::$config['WHITESPACE_CONTROL'] . '?\s*(\w+)\s*(.*?)' . Liquid::$config['WHITESPACE_CONTROL'] . '?' . Liquid::$config['TAG_END'] . '$/s');
-		$variableStartRegexp = new Regexp('/^' . $this->config['VARIABLE_START'] . '/');
+		$variableStartRegexp = new Regexp('/^' . Liquid::$config['VARIABLE_START'] . '/');
 
 		$this->nodelist = array();
 
