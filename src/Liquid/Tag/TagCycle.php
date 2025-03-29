@@ -57,14 +57,15 @@ class TagCycle extends AbstractTag
 	 */
 	public function __construct($markup, array &$tokens, FileSystem $fileSystem = null)
 	{
-		$simpleSyntax = new Regexp("/" . Liquid::get('QUOTED_FRAGMENT') . "/");
-		$namedSyntax = new Regexp("/(" . Liquid::get('QUOTED_FRAGMENT') . ")\s*\:\s*(.*)/");
+		$simpleSyntax = preg_match_all('/(["\'])?(?(1)(?:(?!\1).)*+\1|[^\s,:|\'"]++)/', $markup, $matches);
+		$namedSyntax = preg_match('/^(["\'])?(?(1)(?:(?!\1).)*+\1|[^\s,:|\'"]++)\s*\:/', $markup, $namedMatches);
 
-		if ($namedSyntax->match($markup)) {
-			$this->variables = $this->variablesFromString($namedSyntax->matches[2]);
-			$this->name = $namedSyntax->matches[1];
-		} elseif ($simpleSyntax->match($markup)) {
-			$this->variables = $this->variablesFromString($markup);
+		if ($namedSyntax) {
+			$this->name = $matches[0][0];
+			array_shift($matches[0]);
+			$this->variables = $matches[0];
+		} elseif ($simpleSyntax) {
+			$this->variables = $matches[0];
 			$this->name = "'" . implode($this->variables) . "'";
 		} else {
 			throw new ParseException("Syntax Error in 'cycle' - Valid syntax: cycle [name :] var [, var2, var3 ...]");
@@ -100,30 +101,6 @@ class TagCycle extends AbstractTag
 		$context->registers['cycle'][$key] = $iteration;
 
 		$context->pop();
-
-		return $result;
-	}
-
-	/**
-	 * Extract variables from a string of markup
-	 *
-	 * @param string $markup
-	 *
-	 * @return array;
-	 */
-	private function variablesFromString($markup)
-	{
-		$regexp = new Regexp('/\s*(' . Liquid::get('QUOTED_FRAGMENT') . ')\s*/');
-		$parts = explode(',', $markup);
-		$result = array();
-
-		foreach ($parts as $part) {
-			$regexp->match($part);
-
-			if (!empty($regexp->matches[1])) {
-				$result[] = $regexp->matches[1];
-			}
-		}
 
 		return $result;
 	}
