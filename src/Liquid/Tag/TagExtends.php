@@ -80,7 +80,13 @@ class TagExtends extends AbstractTag
 		$b = array();
 		$name = null;
 
-		foreach ($tokens as $token) {
+		for ($i = 0, $n = count($tokens); $i < $n; $i++) {
+			if ($tokens[$i] === null) {
+				continue;
+			}
+			$token = $tokens[$i];
+			$tokens[$i] = null;
+
 			if ($blockstartRegexp->match($token)) {
 				$name = $blockstartRegexp->matches[1];
 				$b[$name] = array();
