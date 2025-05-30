@@ -146,7 +146,7 @@ class Template
 	 *
 	 * @param string $filter
 	 */
-	public function registerFilter($filter, callable $callback = null)
+	public function registerFilter($filter, ?callable $callback = null)
 	{
 		// Store callback for later use
 		if ($callback) {

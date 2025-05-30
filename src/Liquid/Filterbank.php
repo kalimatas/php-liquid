@@ -62,7 +62,7 @@ class Filterbank
 	 * @throws \Liquid\Exception\WrongArgumentException
 	 * @return bool
 	 */
-	public function addFilter($filter, callable $callback = null)
+	public function addFilter($filter, ?callable $callback = null)
 	{
 		// If it is a callback, save it as it is
 		if (is_string($filter) && $callback) {

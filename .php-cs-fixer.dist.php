@@ -11,36 +11,37 @@ EOF;
 
 $config = new PhpCsFixer\Config();
 $config
-	->setRiskyAllowed(true)
-	->setRules([
-		'@PSR2' => true,
-		'psr_autoloading' => true,
-		'no_unreachable_default_argument_value' => true,
-		'no_useless_else' => true,
-		'no_useless_return' => true,
-		'phpdoc_add_missing_param_annotation' => true,
-		'phpdoc_order' => true,
-		'semicolon_after_instruction' => true,
-		'whitespace_after_comma_in_array' => true,
-		'header_comment' => ['header' => $header],
-		'php_unit_construct' => true,
-		'php_unit_dedicate_assert' => true,
-		'php_unit_dedicate_assert_internal_type' => true,
-		'php_unit_expectation' => true,
-		'php_unit_mock_short_will_return' => true,
-		'php_unit_mock' => true,
-		'php_unit_namespaced' => true,
-		'php_unit_no_expectation_annotation' => true,
-				"phpdoc_order_by_value" => ['annotations' => ['covers']],
-		'php_unit_set_up_tear_down_visibility' => true,
-		'php_unit_test_case_static_method_calls' => ['call_type' => 'this'],
-				'no_whitespace_in_blank_line' => true,
-	])
-	->setIndent("\t")
-	->setFinder(
-		PhpCsFixer\Finder::create()
-		->in(__DIR__)
-	)
+    ->setRiskyAllowed(true)
+    ->setRules([
+        '@PSR2' => true,
+        'header_comment' => ['header' => $header],
+        'no_unreachable_default_argument_value' => true,
+        'no_useless_else' => true,
+        'no_useless_return' => true,
+        'no_whitespace_in_blank_line' => true,
+        'nullable_type_declaration_for_default_null_value' => true,
+        'php_unit_construct' => true,
+        'php_unit_dedicate_assert' => true,
+        'php_unit_dedicate_assert_internal_type' => true,
+        'php_unit_expectation' => true,
+        'php_unit_mock' => true,
+        'php_unit_mock_short_will_return' => true,
+        'php_unit_namespaced' => true,
+        'php_unit_no_expectation_annotation' => true,
+        'php_unit_set_up_tear_down_visibility' => true,
+        'php_unit_test_case_static_method_calls' => ['call_type' => 'this'],
+        'phpdoc_add_missing_param_annotation' => true,
+        'phpdoc_order' => true,
+        'phpdoc_order_by_value' => ['annotations' => ['covers']],
+        'psr_autoloading' => true,
+        'semicolon_after_instruction' => true,
+        'whitespace_after_comma_in_array' => true,
+    ])
+    ->setIndent("\t")
+    ->setFinder(
+        PhpCsFixer\Finder::create()
+        ->in(__DIR__)
+    )
 ;
 
 
