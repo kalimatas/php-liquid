@@ -19,7 +19,7 @@ $template->registerFilter('absolute_url', function ($arg) {
 	return "https://www.example.com$arg";
 });
 $template->parse("{{ my_url | absolute_url }}");
-echo $template->render(array(
-	'my_url' => '/test'
-));
+echo $template->render([
+	'my_url' => '/test',
+]);
 // expect: https://www.example.com/test

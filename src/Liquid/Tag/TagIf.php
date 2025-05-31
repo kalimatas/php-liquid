@@ -35,14 +35,14 @@ class TagIf extends Decision
 	 *
 	 * @var array
 	 */
-	private $nodelistHolders = array();
+	private $nodelistHolders = [];
 
 	/**
 	 * Array holding the block type, block markup (conditions) and block nodelist
 	 *
 	 * @var array
 	 */
-	protected $blocks = array();
+	protected $blocks = [];
 
 	/**
 	 * Constructor
@@ -55,7 +55,7 @@ class TagIf extends Decision
 	{
 		$this->nodelist = & $this->nodelistHolders[count($this->blocks)];
 
-		array_push($this->blocks, array('if', $markup, &$this->nodelist));
+		array_push($this->blocks, ['if', $markup, &$this->nodelist]);
 
 		parent::__construct($markup, $tokens, $fileSystem);
 	}
@@ -72,9 +72,9 @@ class TagIf extends Decision
 		if ($tag == 'else' || $tag == 'elsif') {
 			// Update reference to nodelistHolder for this block
 			$this->nodelist = & $this->nodelistHolders[count($this->blocks) + 1];
-			$this->nodelistHolders[count($this->blocks) + 1] = array();
+			$this->nodelistHolders[count($this->blocks) + 1] = [];
 
-			array_push($this->blocks, array($tag, $params, &$this->nodelist));
+			array_push($this->blocks, [$tag, $params, &$this->nodelist]);
 		} else {
 			parent::unknownTag($tag, $params, $tokens);
 		}
@@ -112,7 +112,7 @@ class TagIf extends Decision
 				// Extract individual conditions
 				$temp = $logicalRegex->split($block[1]);
 
-				$conditions = array();
+				$conditions = [];
 
 				foreach ($temp as $condition) {
 					if ($conditionalRegex->match($condition)) {
@@ -120,11 +120,11 @@ class TagIf extends Decision
 						$operator = (isset($conditionalRegex->matches[2])) ? $conditionalRegex->matches[2] : null;
 						$right = (isset($conditionalRegex->matches[3])) ? $conditionalRegex->matches[3] : null;
 
-						array_push($conditions, array(
+						array_push($conditions, [
 							'left' => $left,
 							'operator' => $operator,
-							'right' => $right
-						));
+							'right' => $right,
+						]);
 					} else {
 						throw new ParseException("Syntax Error in tag 'if' - Valid syntax: if [condition]");
 					}

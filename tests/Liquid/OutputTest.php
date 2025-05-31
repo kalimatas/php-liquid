@@ -68,16 +68,16 @@ class FunnyFilter
 
 class OutputTest extends TestCase
 {
-	protected $assigns = array();
+	protected $assigns = [];
 
 	protected function setUp(): void
 	{
 		parent::setUp();
 
-		$this->assigns = array(
+		$this->assigns = [
 			'best_cars' => 'bmw',
-			'car' => array('bmw' => 'good', 'gm' => 'bad')
-		);
+			'car' => ['bmw' => 'good', 'gm' => 'bad'],
+		];
 
 		$this->filters = new FunnyFilter();
 	}

@@ -24,7 +24,7 @@ class AbstractBlock extends AbstractTag
 	/**
 	 * @var AbstractTag[]|Variable[]|string[]
 	 */
-	protected $nodelist = array();
+	protected $nodelist = [];
 
 	/**
 	 * Whenever next token should be ltrim'med.
@@ -55,7 +55,7 @@ class AbstractBlock extends AbstractTag
 		$tagRegexp = new Regexp('/^' . Liquid::get('TAG_START') . Liquid::get('WHITESPACE_CONTROL') . '?\s*(\w+)\s*(.*?)' . Liquid::get('WHITESPACE_CONTROL') . '?' . Liquid::get('TAG_END') . '$/s');
 		$variableStartRegexp = new Regexp('/^' . Liquid::get('VARIABLE_START') . '/');
 
-		$this->nodelist = array();
+		$this->nodelist = [];
 
 		$tags = Template::getTags();
 

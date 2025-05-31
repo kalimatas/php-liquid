@@ -23,14 +23,14 @@ class TagIncludeTest extends TestCase
 
 	protected function setUp(): void
 	{
-		$this->fs = TestFileSystem::fromArray(array(
+		$this->fs = TestFileSystem::fromArray([
 			'a' => "{% include 'b' %}",
 			'b' => "{% include 'c' %}",
 			'c' => "{% include 'd' %}",
 			'd' => '({{ inner }})',
 			'inner' => "Inner: {{ inner }}{{ other }}",
 			'example' => "Example: {% include 'inner' %}",
-		));
+		]);
 	}
 
 	protected function tearDown(): void
@@ -87,7 +87,7 @@ class TagIncludeTest extends TestCase
 
 		$template->parse("Outer-{% include 'inner' with 'value' other:23 %}-Outer{% include 'inner' for var other:'loop' %}");
 
-		$output = $template->render(array("var" => array(1, 2, 3)));
+		$output = $template->render(["var" => [1, 2, 3]]);
 
 		$this->assertEquals("Outer-Inner: value23-OuterInner: 1loopInner: 2loopInner: 3loop", $output);
 	}
@@ -99,7 +99,7 @@ class TagIncludeTest extends TestCase
 
 		$template->parse("Outer-{% include 'inner' %}-Outer-{% include 'inner' other:'23' %}");
 
-		$output = $template->render(array("inner" => "orig", "var" => array(1, 2, 3)));
+		$output = $template->render(["inner" => "orig", "var" => [1, 2, 3]]);
 
 		$this->assertEquals("Outer-Inner: orig-Outer-Inner: orig23", $output);
 	}
@@ -113,10 +113,10 @@ class TagIncludeTest extends TestCase
 		$template->setFileSystem($this->fs);
 		$template->setCache(new Local());
 
-		foreach (array("Before cache:", "With cache:") as $type) {
+		foreach (["Before cache:", "With cache:"] as $type) {
 			$template->parse("{{ type }} {% for item in list %}{% include 'example' inner:item %} {% endfor %}{% include 'a' %}");
-			$template->render(array("inner" => "foo", "list" => array(1, 2, 3)), array());
-			$this->assertEquals("$type Example: Inner: 1 Example: Inner: 2 (bar)", $template->render(array("type" => $type, "inner" => "bar", "list" => array(1, 2))));
+			$template->render(["inner" => "foo", "list" => [1, 2, 3]], []);
+			$this->assertEquals("$type Example: Inner: 1 Example: Inner: 2 (bar)", $template->render(["type" => $type, "inner" => "bar", "list" => [1, 2]]));
 		}
 
 		$template->setCache(null);
@@ -136,14 +136,14 @@ class TagIncludeTest extends TestCase
 	public function testIncludePassPlainValue()
 	{
 		$template = new Template();
-		$template->setFileSystem(TestFileSystem::fromArray(array(
+		$template->setFileSystem(TestFileSystem::fromArray([
 			'inner' => "[{{ other }}]",
 			'example' => "({% include 'inner' other:var %})",
-		)));
+		]));
 
 		$template->parse("{% include 'example' %}");
 
-		$output = $template->render(array("var" => "test"));
+		$output = $template->render(["var" => "test"]);
 		$this->assertEquals("([test])", $output);
 	}
 
@@ -152,61 +152,61 @@ class TagIncludeTest extends TestCase
 	public function testIncludePassArrayWithoutIndex()
 	{
 		$template = new Template();
-		$template->setFileSystem(TestFileSystem::fromArray(array(
+		$template->setFileSystem(TestFileSystem::fromArray([
 			'inner' => "[{{ other }}]",
 			'example' => "({% include 'inner' other:var %})",
-		)));
+		]));
 
 		$template->parse("{% include 'example' %}");
 
-		$output = $template->render(array("var" => array("a", "b", "c")));
+		$output = $template->render(["var" => ["a", "b", "c"]]);
 		$this->assertEquals("([abc])", $output);
 	}
 
 	public function testIncludePassArrayWithIndex()
 	{
 		$template = new Template();
-		$template->setFileSystem(TestFileSystem::fromArray(array(
+		$template->setFileSystem(TestFileSystem::fromArray([
 			'inner' => "[{{ other[0] }}]",
 			'example' => "({% include 'inner' other:var %})",
-		)));
+		]));
 
 		$template->parse("{% include 'example' %}");
 
-		$output = $template->render(array("var" => array("a", "b", "c")));
+		$output = $template->render(["var" => ["a", "b", "c"]]);
 		$this->assertEquals("([a])", $output);
 	}
 
 	public function testIncludePassObjectValue()
 	{
 		$template = new Template();
-		$template->setFileSystem(TestFileSystem::fromArray(array(
+		$template->setFileSystem(TestFileSystem::fromArray([
 			'inner' => "[{{ other.a }}]",
 			'example' => "({% include 'inner' other:var %})",
-		)));
+		]));
 
 		$template->parse("{% include 'example' %}");
 
-		$output = $template->render(array("var" => (object) array('a' => 'b')));
+		$output = $template->render(["var" => (object) ['a' => 'b']]);
 		$this->assertEquals("([b])", $output);
 	}
 
 	public function testIncludeWithoutQuotes()
 	{
 		$template = new Template();
-		$template->setFileSystem(TestFileSystem::fromArray(array(
+		$template->setFileSystem(TestFileSystem::fromArray([
 			'inner' => "[{{ other }}]",
 			'example' => "{%include inner other:var %} ({{var}})",
-		)));
+		]));
 
 		$template->parse("{% include example other:var %}");
 
-		$output = $template->render(array("var" => "test"));
+		$output = $template->render(["var" => "test"]);
 		$this->assertEquals("[test] (test)", $output);
 
 		$template->parse("{% include inner %}");
 
-		$output = $template->render(array("other" => "test"));
+		$output = $template->render(["other" => "test"]);
 		$this->assertEquals("[test]", $output);
 	}
 
@@ -216,24 +216,24 @@ class TagIncludeTest extends TestCase
 	public function testIncludeWithExtends()
 	{
 		$template = new Template();
-		$template->setFileSystem(TestFileSystem::fromArray(array(
+		$template->setFileSystem(TestFileSystem::fromArray([
 			'outer' => "{% block content %}Content for outer block{% endblock %} / {% block footer %}Footer for outer block{% endblock %}",
 			'content' => 'Content for {{ name }} block',
 			'middle' => "{% extends 'outer' %}{% block content %}{% include 'content' name:'middle' %}{% endblock %}",
 			'main' => "Main: {% extends 'middle' %}{% block footer %}{% include 'footer-top' hello:message %}{% endblock %}",
 			'footer-bottom' => "{{ name }} with message: {{ hello }}",
 			'footer-top' => "Footer top and {% include 'footer-bottom' name:'bottom' %}",
-		)));
+		]));
 
 		$template->setCache(new Local());
 
-		foreach (array("Before cache", "With cache") as $type) {
-			$this->assertEquals("Block with message: $type", $template->parseFile('footer-bottom')->render(array("name" => "Block", "hello" => $type)));
+		foreach (["Before cache", "With cache"] as $type) {
+			$this->assertEquals("Block with message: $type", $template->parseFile('footer-bottom')->render(["name" => "Block", "hello" => $type]));
 			$this->assertEquals('Content for middle block / Footer for outer block', $template->parseFile('middle')->render());
-			$this->assertEquals("Main: Content for middle block / Footer top and bottom with message: $type", $template->parseFile('main')->render(array("message" => $type)));
+			$this->assertEquals("Main: Content for middle block / Footer top and bottom with message: $type", $template->parseFile('main')->render(["message" => $type]));
 
 			$template->parse("{% include 'main' hello:message %}");
-			$output = $template->render(array("message" => $type));
+			$output = $template->render(["message" => $type]);
 			$this->assertEquals("Main: Content for middle block / Footer top and bottom with message: $type", $output);
 		}
 
@@ -246,17 +246,17 @@ class TagIncludeTest extends TestCase
 		$template->setCache(new Local());
 
 		$content = "[{{ name }}]";
-		$template->setFileSystem(TestFileSystem::fromArray(array(
+		$template->setFileSystem(TestFileSystem::fromArray([
 			'example' => &$content,
-		)));
+		]));
 
 		$template->parse("{% include 'example' %}");
-		$output = $template->render(array("name" => "Example"));
+		$output = $template->render(["name" => "Example"]);
 		$this->assertEquals("[Example]", $output);
 
 		$content = "<{{ name }}>";
 		$template->parse("{% include 'example' %}");
-		$output = $template->render(array("name" => "Example"));
+		$output = $template->render(["name" => "Example"]);
 		$this->assertEquals("<Example>", $output);
 	}
 }

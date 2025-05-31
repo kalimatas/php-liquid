@@ -9,10 +9,10 @@
  * @package Liquid
  */
 
-return array(
+return [
 		'generator' => call_user_func(function () {
 			yield 'a';
 			yield 'b';
 			yield 'c';
 		}),
-);
+];

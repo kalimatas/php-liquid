@@ -30,7 +30,7 @@ class Apc extends Cache
 	 *
 	 * @throws LiquidException if APC cache extension is not loaded or is disabled.
 	 */
-	public function __construct(array $options = array())
+	public function __construct(array $options = [])
 	{
 		parent::__construct($options);
 

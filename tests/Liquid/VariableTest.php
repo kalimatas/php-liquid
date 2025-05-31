@@ -23,65 +23,65 @@ class VariableTest extends TestCase
 	{
 		$var = new Variable('hello | textileze');
 		$this->assertEquals('hello', $var->getName());
-		$this->assertEquals(array(array('textileze', array())), $var->getFilters());
+		$this->assertEquals([['textileze', []]], $var->getFilters());
 
 		$var = new Variable('hello | textileze | paragraph');
 		$this->assertEquals('hello', $var->getName());
-		$this->assertEquals(array(array('textileze', array()), array('paragraph', array())), $var->getFilters());
+		$this->assertEquals([['textileze', []], ['paragraph', []]], $var->getFilters());
 
 		$var = new Variable(" hello | strftime: '%Y'");
 		$this->assertEquals('hello', $var->getName());
-		$this->assertEquals(array(array('strftime', array("'%Y'"))), $var->getFilters());
+		$this->assertEquals([['strftime', ["'%Y'"]]], $var->getFilters());
 
 		$var = new Variable(" 'typo' | link_to: 'Typo', true ");
 		$this->assertEquals("'typo'", $var->getName());
-		$this->assertEquals(array(array('link_to', array("'Typo'", "true"))), $var->getFilters());
+		$this->assertEquals([['link_to', ["'Typo'", "true"]]], $var->getFilters());
 
 		$var = new Variable(" 'typo' | link_to: 'Typo', false ");
 		$this->assertEquals("'typo'", $var->getName());
-		$this->assertEquals(array(array('link_to', array("'Typo'", "false"))), $var->getFilters());
+		$this->assertEquals([['link_to', ["'Typo'", "false"]]], $var->getFilters());
 
 		$var = new Variable(" 'foo' | repeat: 3 ");
 		$this->assertEquals("'foo'", $var->getName());
-		$this->assertEquals(array(array('repeat', array("3"))), $var->getFilters());
+		$this->assertEquals([['repeat', ["3"]]], $var->getFilters());
 
 		$var = new Variable(" 'foo' | repeat: 3, 3");
 		$this->assertEquals("'foo'", $var->getName());
-		$this->assertEquals(array(array('repeat', array("3", "3"))), $var->getFilters());
+		$this->assertEquals([['repeat', ["3", "3"]]], $var->getFilters());
 
 		$var = new Variable(" 'foo' | repeat: 3, 3, 3 ");
 		$this->assertEquals("'foo'", $var->getName());
-		$this->assertEquals(array(array('repeat', array("3", "3", "3"))), $var->getFilters());
+		$this->assertEquals([['repeat', ["3", "3", "3"]]], $var->getFilters());
 
 		$var = new Variable(" hello | strftime: '%Y, okay?'");
 		$this->assertEquals('hello', $var->getName());
-		$this->assertEquals(array(array('strftime', array("'%Y, okay?'"))), $var->getFilters());
+		$this->assertEquals([['strftime', ["'%Y, okay?'"]]], $var->getFilters());
 
 		$var = new Variable(" hello | things: \"%Y, okay?\", 'the other one'");
 		$this->assertEquals('hello', $var->getName());
-		$this->assertEquals(array(array('things', array('"%Y, okay?"', "'the other one'"))), $var->getFilters());
+		$this->assertEquals([['things', ['"%Y, okay?"', "'the other one'"]]], $var->getFilters());
 
 		$var = new Variable(" product.featured_image | img_url: '450x450', crop: 'center', scale: 2 ");
 		$this->assertEquals("product.featured_image", $var->getName());
-		$this->assertEquals(array(array('img_url', array("'450x450'", array("crop" => "'center'", "scale" => "2")))), $var->getFilters());
+		$this->assertEquals([['img_url', ["'450x450'", ["crop" => "'center'", "scale" => "2"]]]], $var->getFilters());
 	}
 
 	public function testFiltersWithoutWhitespace()
 	{
 		$var = new Variable('hello | textileze | paragraph');
 		$this->assertEquals('hello', $var->getName());
-		$this->assertEquals(array(array('textileze', array()), array('paragraph', array())), $var->getFilters());
+		$this->assertEquals([['textileze', []], ['paragraph', []]], $var->getFilters());
 
 		$var = new Variable('hello|textileze|paragraph');
 		$this->assertEquals('hello', $var->getName());
-		$this->assertEquals(array(array('textileze', array()), array('paragraph', array())), $var->getFilters());
+		$this->assertEquals([['textileze', []], ['paragraph', []]], $var->getFilters());
 	}
 
 	public function testSymbol()
 	{
 		$var = new Variable("http://disney.com/logo.gif | image: 'med' ");
 		$this->assertEquals('http://disney.com/logo.gif', $var->getName());
-		$this->assertEquals(array(array('image', array("'med'"))), $var->getFilters());
+		$this->assertEquals([['image', ["'med'"]]], $var->getFilters());
 	}
 
 	public function testStringSingleQuoted()

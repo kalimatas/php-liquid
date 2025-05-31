@@ -94,68 +94,68 @@ class TagIfTest extends TestCase
 	{
 		$text = " {% if var == \"hello there!\" %} true {% else %} false {% endif %} ";
 		$expected = "  true  ";
-		$this->assertTemplateResult($expected, $text, array('var' => 'hello there!'));
+		$this->assertTemplateResult($expected, $text, ['var' => 'hello there!']);
 	}
 
 	public function testVarStringsAreNotEqual()
 	{
 		$text = " {% if \"hello there!\" == var %} true {% else %} false {% endif %} ";
 		$expected = "  true  ";
-		$this->assertTemplateResult($expected, $text, array('var' => 'hello there!'));
+		$this->assertTemplateResult($expected, $text, ['var' => 'hello there!']);
 	}
 
 	public function testVarAndLongStringAreEqual()
 	{
 		$text = " {% if var == 'hello there!' %} true {% else %} false {% endif %} ";
 		$expected = "  true  ";
-		$this->assertTemplateResult($expected, $text, array('var' => 'hello there!'));
+		$this->assertTemplateResult($expected, $text, ['var' => 'hello there!']);
 	}
 
 	public function testVarAndLongStringAreEqualBackwards()
 	{
 		$text = " {% if 'hello there!' == var %} true {% else %} false {% endif %} ";
 		$expected = "  true  ";
-		$this->assertTemplateResult($expected, $text, array('var' => 'hello there!'));
+		$this->assertTemplateResult($expected, $text, ['var' => 'hello there!']);
 	}
 
 	public function testIsCollectionEmpty()
 	{
 		$text = " {% if array == empty %} true {% else %} false {% endif %} ";
 		$expected = "  true  ";
-		$this->assertTemplateResult($expected, $text, array('array' => array()));
+		$this->assertTemplateResult($expected, $text, ['array' => []]);
 
 		$text = " {% if empty == array %} true {% else %} false {% endif %} ";
 		$expected = "  true  ";
-		$this->assertTemplateResult($expected, $text, array('array' => array()));
+		$this->assertTemplateResult($expected, $text, ['array' => []]);
 	}
 
 	public function testIsNotCollectionEmpty()
 	{
 		$text = " {% if array == empty %} true {% else %} false {% endif %} ";
 		$expected = "  false  ";
-		$this->assertTemplateResult($expected, $text, array('array' => array(1, 2, 3)));
+		$this->assertTemplateResult($expected, $text, ['array' => [1, 2, 3]]);
 	}
 
 	public function testNil()
 	{
 		$text = " {% if var == null %} true {% else %} false {% endif %} ";
 		$expected = "  true  ";
-		$this->assertTemplateResult($expected, $text, array('var' => null));
+		$this->assertTemplateResult($expected, $text, ['var' => null]);
 
 		$text = " {% if var == null %} true {% else %} false {% endif %} ";
 		$expected = "  true  ";
-		$this->assertTemplateResult($expected, $text, array('var' => null));
+		$this->assertTemplateResult($expected, $text, ['var' => null]);
 	}
 
 	public function testNotNil()
 	{
 		$text = " {% if var != null %} true {% else %} false {% endif %} ";
 		$expected = "  true  ";
-		$this->assertTemplateResult($expected, $text, array('var' => 1));
+		$this->assertTemplateResult($expected, $text, ['var' => 1]);
 
 		$text = " {% if var != null %} true {% else %} false {% endif %} ";
 		$expected = "  true  ";
-		$this->assertTemplateResult($expected, $text, array('var' => 1));
+		$this->assertTemplateResult($expected, $text, ['var' => 1]);
 	}
 
 	public function testNotNilWhitespaceControlEdgeCase()
@@ -166,31 +166,31 @@ class TagIfTest extends TestCase
 
 	public function testIfFromVariable()
 	{
-		$this->assertTemplateResult('', '{% if var %} NO {% endif %}', array('var' => false));
-		$this->assertTemplateResult('', '{% if var %} NO {% endif %}', array('var' => null));
-		$this->assertTemplateResult('', '{% if foo.bar %} NO {% endif %}', array('foo' => array('bar' => false)));
-		$this->assertTemplateResult('', '{% if foo.bar %} NO {% endif %}', array('foo' => array()));
-		$this->assertTemplateResult('', '{% if foo.bar %} NO {% endif %}', array('foo' => null));
+		$this->assertTemplateResult('', '{% if var %} NO {% endif %}', ['var' => false]);
+		$this->assertTemplateResult('', '{% if var %} NO {% endif %}', ['var' => null]);
+		$this->assertTemplateResult('', '{% if foo.bar %} NO {% endif %}', ['foo' => ['bar' => false]]);
+		$this->assertTemplateResult('', '{% if foo.bar %} NO {% endif %}', ['foo' => []]);
+		$this->assertTemplateResult('', '{% if foo.bar %} NO {% endif %}', ['foo' => null]);
 
-		$this->assertTemplateResult(' YES ', '{% if var %} YES {% endif %}', array('var' => "text"));
-		$this->assertTemplateResult(' YES ', '{% if var %} YES {% endif %}', array('var' => true));
-		$this->assertTemplateResult(' YES ', '{% if var %} YES {% endif %}', array('var' => 1));
+		$this->assertTemplateResult(' YES ', '{% if var %} YES {% endif %}', ['var' => "text"]);
+		$this->assertTemplateResult(' YES ', '{% if var %} YES {% endif %}', ['var' => true]);
+		$this->assertTemplateResult(' YES ', '{% if var %} YES {% endif %}', ['var' => 1]);
 		$this->assertTemplateResult(' YES ', '{% if "foo" %} YES {% endif %}');
-		$this->assertTemplateResult(' YES ', '{% if foo.bar %} YES {% endif %}', array('foo' => array('bar' => true)));
-		$this->assertTemplateResult(' YES ', '{% if foo.bar %} YES {% endif %}', array('foo' => array('bar' => "text")));
-		$this->assertTemplateResult(' YES ', '{% if foo.bar %} YES {% endif %}', array('foo' => array('bar' => 1)));
+		$this->assertTemplateResult(' YES ', '{% if foo.bar %} YES {% endif %}', ['foo' => ['bar' => true]]);
+		$this->assertTemplateResult(' YES ', '{% if foo.bar %} YES {% endif %}', ['foo' => ['bar' => "text"]]);
+		$this->assertTemplateResult(' YES ', '{% if foo.bar %} YES {% endif %}', ['foo' => ['bar' => 1]]);
 
-		$this->assertTemplateResult(' YES ', '{% if var %} NO {% else %} YES {% endif %}', array('var' => false));
-		$this->assertTemplateResult(' YES ', '{% if var %} NO {% else %} YES {% endif %}', array('var' => null));
-		$this->assertTemplateResult(' YES ', '{% if var %} YES {% else %} NO {% endif %}', array('var' => true));
-		$this->assertTemplateResult(' YES ', '{% if "foo" %} YES {% else %} NO {% endif %}', array('var' => "text"));
+		$this->assertTemplateResult(' YES ', '{% if var %} NO {% else %} YES {% endif %}', ['var' => false]);
+		$this->assertTemplateResult(' YES ', '{% if var %} NO {% else %} YES {% endif %}', ['var' => null]);
+		$this->assertTemplateResult(' YES ', '{% if var %} YES {% else %} NO {% endif %}', ['var' => true]);
+		$this->assertTemplateResult(' YES ', '{% if "foo" %} YES {% else %} NO {% endif %}', ['var' => "text"]);
 
-		$this->assertTemplateResult(' YES ', '{% if foo.bar %} NO {% else %} YES {% endif %}', array('foo' => array('bar' => false)));
-		$this->assertTemplateResult(' YES ', '{% if foo.bar %} YES {% else %} NO {% endif %}', array('foo' => array('bar' => true)));
-		$this->assertTemplateResult(' YES ', '{% if foo.bar %} YES {% else %} NO {% endif %}', array('foo' => array('bar' => "text")));
-		$this->assertTemplateResult(' YES ', '{% if foo.bar %} NO {% else %} YES {% endif %}', array('foo' => array('notbar' => true)));
-		$this->assertTemplateResult(' YES ', '{% if foo.bar %} NO {% else %} YES {% endif %}', array('foo' => array()));
-		$this->assertTemplateResult(' YES ', '{% if foo.bar %} NO {% else %} YES {% endif %}', array('notfoo' => array('bar' => true)));
+		$this->assertTemplateResult(' YES ', '{% if foo.bar %} NO {% else %} YES {% endif %}', ['foo' => ['bar' => false]]);
+		$this->assertTemplateResult(' YES ', '{% if foo.bar %} YES {% else %} NO {% endif %}', ['foo' => ['bar' => true]]);
+		$this->assertTemplateResult(' YES ', '{% if foo.bar %} YES {% else %} NO {% endif %}', ['foo' => ['bar' => "text"]]);
+		$this->assertTemplateResult(' YES ', '{% if foo.bar %} NO {% else %} YES {% endif %}', ['foo' => ['notbar' => true]]);
+		$this->assertTemplateResult(' YES ', '{% if foo.bar %} NO {% else %} YES {% endif %}', ['foo' => []]);
+		$this->assertTemplateResult(' YES ', '{% if foo.bar %} NO {% else %} YES {% endif %}', ['notfoo' => ['bar' => true]]);
 	}
 
 	public function testNestedIf()
@@ -215,11 +215,11 @@ class TagIfTest extends TestCase
 
 	public function testContains()
 	{
-		$this->assertTemplateResult('true', '{% if foo contains "h" %}true{% else %}false{% endif %}', array('foo' => array('k', 'h', 'z')));
-		$this->assertTemplateResult('false', '{% if foo contains "y" %}true{% else %}false{% endif %}', array('foo' => array('k', 'h', 'z')));
-		$this->assertTemplateResult('true', '{% if foo contains "e" %}true{% else %}false{% endif %}', array('foo' => 'abcedf'));
-		$this->assertTemplateResult('true', '{% if foo contains "e" %}true{% else %}false{% endif %}', array('foo' => 'e'));
-		$this->assertTemplateResult('false', '{% if foo contains "y" %}true{% else %}false{% endif %}', array('foo' => 'abcedf'));
+		$this->assertTemplateResult('true', '{% if foo contains "h" %}true{% else %}false{% endif %}', ['foo' => ['k', 'h', 'z']]);
+		$this->assertTemplateResult('false', '{% if foo contains "y" %}true{% else %}false{% endif %}', ['foo' => ['k', 'h', 'z']]);
+		$this->assertTemplateResult('true', '{% if foo contains "e" %}true{% else %}false{% endif %}', ['foo' => 'abcedf']);
+		$this->assertTemplateResult('true', '{% if foo contains "e" %}true{% else %}false{% endif %}', ['foo' => 'e']);
+		$this->assertTemplateResult('false', '{% if foo contains "y" %}true{% else %}false{% endif %}', ['foo' => 'abcedf']);
 	}
 
 	/**
@@ -255,7 +255,7 @@ class TagIfTest extends TestCase
 	{
 		$this->expectException(\Liquid\Exception\RenderException::class);
 
-		$this->assertTemplateResult('', '{% if foo === y %}true{% else %}false{% endif %}', array('foo' => true, 'y' => true));
+		$this->assertTemplateResult('', '{% if foo === y %}true{% else %}false{% endif %}', ['foo' => true, 'y' => true]);
 	}
 
 	/**
@@ -264,7 +264,7 @@ class TagIfTest extends TestCase
 	{
 		$this->expectException(\Liquid\Exception\RenderException::class);
 
-		$this->assertTemplateResult('', '{% if foo == 1 %}true{% endif %}', array('foo' => (object) array()));
+		$this->assertTemplateResult('', '{% if foo == 1 %}true{% endif %}', ['foo' => (object) []]);
 	}
 
 	/**

@@ -136,18 +136,18 @@ class TagPaginate extends AbstractBlock
 		// Sets the collection if it's a key of another collection (ie search.results, collection.products, blog.articles)
 		$segments = explode('.', $this->collectionName);
 		if (count($segments) == 2) {
-			$context->set($segments[0], array($segments[1] => $paginatedCollection));
+			$context->set($segments[0], [$segments[1] => $paginatedCollection]);
 		} else {
 			$context->set($this->collectionName, $paginatedCollection);
 		}
 
-		$paginate = array(
+		$paginate = [
 			'page_size' => $this->numberItems,
 			'current_page' => $this->currentPage,
 			'current_offset' => $this->currentOffset,
 			'pages' => $this->totalPages,
-			'items' => $this->collectionSize
-		);
+			'items' => $this->collectionSize,
+		];
 
 		// Get the name of the request field to use in URLs
 		$pageRequestKey = Liquid::get('PAGINATION_REQUEST_KEY');

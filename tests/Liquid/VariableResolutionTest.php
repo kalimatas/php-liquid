@@ -17,7 +17,7 @@ class VariableResolutionTest extends TestCase
 	{
 		$template = new Template();
 		$template->parse("{{test}}");
-		$this->assertEquals('worked', $template->render(array('test' => 'worked')));
+		$this->assertEquals('worked', $template->render(['test' => 'worked']));
 	}
 
 	public function testSimpleWithWhitespaces()
@@ -25,8 +25,8 @@ class VariableResolutionTest extends TestCase
 		$template = new Template();
 
 		$template->parse('  {{ test }}  ');
-		$this->assertEquals('  worked  ', $template->render(array('test' => 'worked')));
-		$this->assertEquals('  worked wonderfully  ', $template->render(array('test' => 'worked wonderfully')));
+		$this->assertEquals('  worked  ', $template->render(['test' => 'worked']));
+		$this->assertEquals('  worked wonderfully  ', $template->render(['test' => 'worked wonderfully']));
 	}
 
 	public function testIgnoreUnknown()
@@ -42,7 +42,7 @@ class VariableResolutionTest extends TestCase
 		$template = new Template();
 
 		$template->parse("{{ test |\n strip_html }}");
-		$this->assertEquals('worked', $template->render(array('test' => '<b>worked</b>')));
+		$this->assertEquals('worked', $template->render(['test' => '<b>worked</b>']));
 	}
 
 	public function testArrayScoping()
@@ -50,7 +50,7 @@ class VariableResolutionTest extends TestCase
 		$template = new Template();
 
 		$template->parse('{{ test.test }}');
-		$this->assertEquals('worked', $template->render(array('test' => array('test' => 'worked'))));
+		$this->assertEquals('worked', $template->render(['test' => ['test' => 'worked']]));
 	}
 
 	public function testVariableArrayIndices()

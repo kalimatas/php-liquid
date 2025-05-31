@@ -9,10 +9,10 @@
  * @package Liquid
  */
 
-return array(
+return [
 		'name' => 'Harald',
 		'company' => 'DELACAP',
-		'user' => array(
-				'name' => 'Superuser'
-		)
-);
+		'user' => [
+				'name' => 'Superuser',
+		],
+];

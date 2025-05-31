@@ -111,15 +111,15 @@ class TagTablerow extends AbstractBlock
 
 		foreach ($collection as $index => $item) {
 			$context->set($this->variableName, $item);
-			$context->set('tablerowloop', array(
+			$context->set('tablerowloop', [
 				'length' => $length,
 				'index' => $index + 1,
 				'index0' => $index,
 				'rindex' => $length - $index,
 				'rindex0' => $length - $index - 1,
 				'first' => (int)($index == 0),
-				'last' => (int)($index == $length - 1)
-			));
+				'last' => (int)($index == $length - 1),
+			]);
 
 			$text = $this->renderAll($this->nodelist, $context);
 			$break = isset($context->registers['break']);

@@ -35,7 +35,7 @@ class LiquidTest extends TestCase
 
 	public function testArrayFlattenEmptyArray()
 	{
-		$this->assertSame(array(), Liquid::arrayFlatten(array()));
+		$this->assertSame([], Liquid::arrayFlatten([]));
 	}
 
 	public function testArrayFlattenFlatArray()
@@ -43,17 +43,17 @@ class LiquidTest extends TestCase
 		$object = new \stdClass();
 
 		// Method does not maintain keys.
-		$original = array(
+		$original = [
 			'one' => 'one_value',
 			42,
 			$object,
-		);
+		];
 
-		$expected = array(
+		$expected = [
 			'one_value',
 			42,
-			$object
-		);
+			$object,
+		];
 
 		$this->assertEquals($expected, Liquid::arrayFlatten($original));
 	}
@@ -63,25 +63,25 @@ class LiquidTest extends TestCase
 		$object = new \stdClass();
 
 		// Method does not maintain keys.
-		$original = array(
+		$original = [
 			'one' => 'one_value',
-			42 => array(
+			42 => [
 				'one_value',
-				array(
+				[
 					'two_value',
-					10
-				),
-			),
+					10,
+				],
+			],
 			$object,
-		);
+		];
 
-		$expected = array(
+		$expected = [
 			'one_value',
 			'one_value',
 			'two_value',
 			10,
-			$object
-		);
+			$object,
+		];
 
 		$this->assertEquals($expected, Liquid::arrayFlatten($original));
 	}

@@ -116,7 +116,7 @@ class Filterbank
 	 *
 	 * @return string
 	 */
-	public function invoke($name, $value, array $args = array())
+	public function invoke($name, $value, array $args = [])
 	{
 		// workaround for a single standard filter being a reserved keyword - we can't use overloading for static calls
 		if ($name == 'default') {
@@ -148,6 +148,6 @@ class Filterbank
 		}
 
 		// Call a class or an instance method
-		return call_user_func_array(array($class, $name), $args);
+		return call_user_func_array([$class, $name], $args);
 	}
 }

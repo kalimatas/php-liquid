@@ -35,14 +35,14 @@ abstract class AbstractTag
 	 *
 	 * @var array
 	 */
-	protected $attributes = array();
+	protected $attributes = [];
 
 	/**
 	 * A cached instance of the config array, for performance reasons.
 	 *
 	 * @var array
 	 */
-	protected $config = array();
+	protected $config = [];
 
 	/**
 	 * Constructor.
@@ -86,7 +86,7 @@ abstract class AbstractTag
 	 */
 	protected function extractAttributes($markup)
 	{
-		$this->attributes = array();
+		$this->attributes = [];
 
 		$attributeRegexp = new Regexp(Liquid::get('TAG_ATTRIBUTES'));
 

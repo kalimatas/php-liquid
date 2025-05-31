@@ -75,13 +75,13 @@ class StandardFiltersTest extends TestCase
 
 	public function testSize()
 	{
-		$data = array(
+		$data = [
 			4 => 1000,
 			3 => 100,
-			2 => array('one', 'two'),
-			1 => new \ArrayIterator(array('one')),
+			2 => ['one', 'two'],
+			1 => new \ArrayIterator(['one']),
 			SizeClass::SIZE => new SizeClass(),
-		);
+		];
 
 		foreach ($data as $expected => $element) {
 			$this->assertEquals($expected, StandardFilters::size($element));
@@ -95,17 +95,17 @@ class StandardFiltersTest extends TestCase
 		$this->expectException(\Liquid\LiquidException::class);
 		$this->expectExceptionMessage('cannot be estimated');
 
-		StandardFilters::size((object) array());
+		StandardFilters::size((object) []);
 	}
 
 	public function testDowncase()
 	{
-		$data = array(
+		$data = [
 			'UpperCaseMiXed' => 'uppercasemixed',
 			3 => 3,
 			// UTF-8
-			'Владимир' => 'владимир'
-		);
+			'Владимир' => 'владимир',
+		];
 
 		foreach ($data as $element => $expected) {
 			$this->assertEquals($expected, StandardFilters::downcase($element));
@@ -114,12 +114,12 @@ class StandardFiltersTest extends TestCase
 
 	public function testUpcase()
 	{
-		$data = array(
+		$data = [
 			'UpperCaseMiXed' => 'UPPERCASEMIXED',
 			3 => 3,
 			// UTF-8
-			'владимир' => 'ВЛАДИМИР'
-		);
+			'владимир' => 'ВЛАДИМИР',
+		];
 
 		foreach ($data as $element => $expected) {
 			$this->assertEquals($expected, StandardFilters::upcase($element));
@@ -128,13 +128,13 @@ class StandardFiltersTest extends TestCase
 
 	public function testCapitalize()
 	{
-		$data = array(
+		$data = [
 			'one Word not' => 'One Word Not',
 			'1test' => '1Test',
 			'' => '',
 			// UTF-8
-			'владимир владимирович' => 'Владимир Владимирович'
-		);
+			'владимир владимирович' => 'Владимир Владимирович',
+		];
 
 		foreach ($data as $element => $expected) {
 			$this->assertEquals($expected, StandardFilters::capitalize($element));
@@ -143,10 +143,10 @@ class StandardFiltersTest extends TestCase
 
 	public function testUrlEncode()
 	{
-		$data = array(
+		$data = [
 			'nothing' => 'nothing',
 			'%#&^' => '%25%23%26%5E',
-		);
+		];
 
 		foreach ($data as $element => $expected) {
 			$this->assertEquals($expected, StandardFilters::url_encode($element));
@@ -156,9 +156,9 @@ class StandardFiltersTest extends TestCase
 
 	public function testUrlDecode()
 	{
-		$data = array(
+		$data = [
 			'%25%23%26%5E' => '%#&^',
-		);
+		];
 
 		foreach ($data as $element => $expected) {
 			$this->assertEquals($expected, StandardFilters::url_decode($element));
@@ -168,10 +168,10 @@ class StandardFiltersTest extends TestCase
 
 	public function testRaw()
 	{
-		$data = array(
+		$data = [
 			"Anything" => "Anything",
 			3 => 3,
-		);
+		];
 
 		foreach ($data as $element => $expected) {
 			$this->assertEquals($expected, StandardFilters::raw($element));
@@ -180,28 +180,28 @@ class StandardFiltersTest extends TestCase
 
 	public function testJson()
 	{
-		$data = array(
-			array(
+		$data = [
+			[
 				"before" => "Anything",
 				"after" => "\"Anything\"",
-			),
-			array(
+			],
+			[
 				"before" => 3,
 				"after" => 3,
-			),
-			array(
-				"before" => array(1, 2, 3),
+			],
+			[
+				"before" => [1, 2, 3],
 				"after" => "[1,2,3]",
-			),
-			array(
-				"before" => array("one" => 1, "two" => 2, "three" => 3),
+			],
+			[
+				"before" => ["one" => 1, "two" => 2, "three" => 3],
 				"after" => "{\"one\":1,\"two\":2,\"three\":3}",
-			),
-			array(
-				"before" => array("one" => 1, "two" => array(1, 2, 3), "three" => 3),
+			],
+			[
+				"before" => ["one" => 1, "two" => [1, 2, 3], "three" => 3],
 				"after" => "{\"one\":1,\"two\":[1,2,3],\"three\":3}",
-			),
-		);
+			],
+		];
 
 		foreach ($data as $testCase) {
 			$this->assertEquals($testCase['after'], StandardFilters::json($testCase['before']));
@@ -228,42 +228,42 @@ class StandardFiltersTest extends TestCase
 
 	public function testEscape()
 	{
-		$data = array(
+		$data = [
 			"one Word's not" => "one Word&#039;s not",
 			"&><\"'" => "&amp;&gt;&lt;&quot;&#039;",
 			null => '',
-		);
+		];
 
 		foreach ($data as $element => $expected) {
 			$this->assertEquals($expected, StandardFilters::escape($element));
 		}
 
-		$this->assertSame(array(1), StandardFilters::escape(array(1)));
+		$this->assertSame([1], StandardFilters::escape([1]));
 	}
 
 	public function testEscapeOnce()
 	{
-		$data = array(
+		$data = [
 			"<b><script>alert()</script>" => "&lt;b&gt;&lt;script&gt;alert()&lt;/script&gt;",
 			"a < b & c" => "a &lt; b &amp; c",
 			"a &lt; b &amp; c" => "a &lt; b &amp; c",
 			"&lt;\">" => "&lt;&quot;&gt;",
-		);
+		];
 
 		foreach ($data as $element => $expected) {
 			$this->assertEquals($expected, StandardFilters::escape_once($element));
 		}
 
-		$this->assertSame(array(1), StandardFilters::escape_once(array(1)));
+		$this->assertSame([1], StandardFilters::escape_once([1]));
 	}
 
 	public function testStripNewLines()
 	{
-		$data = array(
+		$data = [
 			"one Word\r\n not\r\n\r\n" => "one Word not",
 			'test' => 'test',
 			3 => 3,
-		);
+		];
 
 		foreach ($data as $element => $expected) {
 			$this->assertEquals($expected, StandardFilters::strip_newlines($element));
@@ -272,11 +272,11 @@ class StandardFiltersTest extends TestCase
 
 	public function testNewLineToBr()
 	{
-		$data = array(
+		$data = [
 			"one Word\n not\n" => "one Word<br />\n not<br />\n",
 			'test' => 'test',
 			3 => 3,
-		);
+		];
 
 		foreach ($data as $element => $expected) {
 			$this->assertEquals($expected, StandardFilters::newline_to_br($element));
@@ -286,22 +286,22 @@ class StandardFiltersTest extends TestCase
 	public function testReplace()
 	{
 		// Replace for empty string
-		$data = array(
+		$data = [
 			"one Word not Word" => "one  not ",
 			'test' => 'test',
 			3 => 3,
-		);
+		];
 
 		foreach ($data as $element => $expected) {
 			$this->assertEquals($expected, StandardFilters::replace($element, 'Word'));
 		}
 
 		// Replace for "Hello" string
-		$data = array(
+		$data = [
 			"one Word not Word" => "one Hello not Hello",
 			'test' => 'test',
 			3 => 3,
-		);
+		];
 
 		foreach ($data as $element => $expected) {
 			$this->assertEquals($expected, StandardFilters::replace($element, 'Word', 'Hello'));
@@ -311,22 +311,22 @@ class StandardFiltersTest extends TestCase
 	public function testReplaceFirst()
 	{
 		// Replace for empty string
-		$data = array(
+		$data = [
 			"one Word not Word" => "one  not Word",
 			'test' => 'test',
 			3 => 3,
-		);
+		];
 
 		foreach ($data as $element => $expected) {
 			$this->assertEquals($expected, StandardFilters::replace_first($element, 'Word'));
 		}
 
 		// Replace for "Hello" string
-		$data = array(
+		$data = [
 			"one Word not Word" => "one Hello not Word",
 			'test' => 'test',
 			3 => 3,
-		);
+		];
 
 		foreach ($data as $element => $expected) {
 			$this->assertEquals($expected, StandardFilters::replace_first($element, 'Word', 'Hello'));
@@ -335,11 +335,11 @@ class StandardFiltersTest extends TestCase
 
 	public function testRemove()
 	{
-		$data = array(
+		$data = [
 			"one Word not Word" => "one  not ",
 			'test' => 'test',
 			3 => 3,
-		);
+		];
 
 		foreach ($data as $element => $expected) {
 			$this->assertEquals($expected, StandardFilters::remove($element, 'Word'));
@@ -348,11 +348,11 @@ class StandardFiltersTest extends TestCase
 
 	public function testRemoveFirst()
 	{
-		$data = array(
+		$data = [
 			"one Word not Word" => "one  not Word",
 			'test' => 'test',
 			3 => 3,
-		);
+		];
 
 		foreach ($data as $element => $expected) {
 			$this->assertEquals($expected, StandardFilters::remove_first($element, 'Word'));
@@ -361,11 +361,11 @@ class StandardFiltersTest extends TestCase
 
 	public function testAppend()
 	{
-		$data = array(
+		$data = [
 			"one Word not Word" => "one Word not Word appended",
 			'' => ' appended',
 			3 => '3 appended',
-		);
+		];
 
 		foreach ($data as $element => $expected) {
 			$this->assertEquals($expected, StandardFilters::append($element, ' appended'));
@@ -374,11 +374,11 @@ class StandardFiltersTest extends TestCase
 
 	public function testPrepend()
 	{
-		$data = array(
+		$data = [
 			"one Word not Word" => "prepended one Word not Word",
 			'' => 'prepended ',
 			3 => 'prepended 3',
-		);
+		];
 
 		foreach ($data as $element => $expected) {
 			$this->assertEquals($expected, StandardFilters::prepend($element, 'prepended '));
@@ -388,36 +388,36 @@ class StandardFiltersTest extends TestCase
 	public function testSlice()
 	{
 		// Slice up to the end
-		$data = array(
-			array(
-				array(),
-				array(),
-			),
-			array(
-				new \ArrayIterator(array()),
-				array(),
-			),
-			array(
+		$data = [
+			[
+				[],
+				[],
+			],
+			[
+				new \ArrayIterator([]),
+				[],
+			],
+			[
 				'',
 				'',
-			),
-			array(
-				array(1, 2, 3, 4, 5),
-				array(3, 4, 5),
-			),
-			array(
-				new \ArrayIterator(array(1, 2, 3, 4, 5)),
-				array(3, 4, 5),
-			),
-			array(
+			],
+			[
+				[1, 2, 3, 4, 5],
+				[3, 4, 5],
+			],
+			[
+				new \ArrayIterator([1, 2, 3, 4, 5]),
+				[3, 4, 5],
+			],
+			[
 				'12345',
-				'345'
-			),
-			array(
+				'345',
+			],
+			[
 				100,
-				100
-			),
-		);
+				100,
+			],
+		];
 
 		foreach ($data as $item) {
 			$actual = StandardFilters::slice($item[0], 2);
@@ -428,40 +428,40 @@ class StandardFiltersTest extends TestCase
 		}
 
 		// Slice a few elements
-		$data = array(
-			array(
+		$data = [
+			[
 				null,
 				null,
-			),
-			array(
-				array(),
-				array(),
-			),
-			array(
-				new \ArrayIterator(array()),
-				array(),
-			),
-			array(
+			],
+			[
+				[],
+				[],
+			],
+			[
+				new \ArrayIterator([]),
+				[],
+			],
+			[
 				'',
 				'',
-			),
-			array(
-				array(1, 2, 3, 4, 5),
-				array(3, 4),
-			),
-			array(
-				new \ArrayIterator(array(1, 2, 3, 4, 5)),
-				array(3, 4),
-			),
-			array(
+			],
+			[
+				[1, 2, 3, 4, 5],
+				[3, 4],
+			],
+			[
+				new \ArrayIterator([1, 2, 3, 4, 5]),
+				[3, 4],
+			],
+			[
 				'12345',
-				'34'
-			),
-			array(
+				'34',
+			],
+			[
 				100,
-				100
-			),
-		);
+				100,
+			],
+		];
 
 		foreach ($data as $item) {
 			$actual = StandardFilters::slice($item[0], 2, 2);
@@ -477,12 +477,12 @@ class StandardFiltersTest extends TestCase
 	public function testTruncate()
 	{
 		// Truncate with default ending
-		$data = array(
+		$data = [
 			'' => '',
 			str_repeat('a', 150) => str_repeat('a', 100) . '...',
 			'test' => 'test',
 			3 => 3,
-		);
+		];
 
 		foreach ($data as $element => $expected) {
 			$this->assertEquals($expected, StandardFilters::truncate($element));
@@ -501,12 +501,12 @@ class StandardFiltersTest extends TestCase
 	public function testTruncateWords()
 	{
 		// Truncate with default ending
-		$data = array(
+		$data = [
 			'' => '',
 			str_repeat('abc ', 10) => rtrim(str_repeat('abc ', 3)) . '...',
 			'test two' => 'test two',
 			3 => 3,
-		);
+		];
 
 		foreach ($data as $element => $expected) {
 			$this->assertEquals($expected, StandardFilters::truncatewords($element));
@@ -521,12 +521,12 @@ class StandardFiltersTest extends TestCase
 
 	public function testStripHtml()
 	{
-		$data = array(
+		$data = [
 			'' => '',
 			'test no html tags' => 'test no html tags',
 			'test <br /> <p>paragraph</p> hello' => 'test  paragraph hello',
 			3 => 3,
-		);
+		];
 
 		foreach ($data as $element => $expected) {
 			$this->assertEquals($expected, StandardFilters::strip_html($element));
@@ -535,80 +535,80 @@ class StandardFiltersTest extends TestCase
 
 	public function testJoin()
 	{
-		$data = array(
-			array(
-				array(),
+		$data = [
+			[
+				[],
 				'',
-			),
-			array(
-				new \ArrayIterator(array()),
-				''
-			),
-			array(
+			],
+			[
+				new \ArrayIterator([]),
+				'',
+			],
+			[
 				'',
 				'',
-			),
-			array(
-				array(1, 2, 3, 4, 5),
-				'1 2 3 4 5'
-			),
-			array(
-				new \ArrayIterator(array(1, 2, 3, 4, 5)),
-				'1 2 3 4 5'
-			),
-			array(
+			],
+			[
+				[1, 2, 3, 4, 5],
+				'1 2 3 4 5',
+			],
+			[
+				new \ArrayIterator([1, 2, 3, 4, 5]),
+				'1 2 3 4 5',
+			],
+			[
 				100,
-				100
-			),
-		);
+				100,
+			],
+		];
 
 		foreach ($data as $item) {
 			$this->assertEquals($item[1], StandardFilters::join($item[0]));
 		}
 
 		// Custom glue
-		$this->assertEquals('1-2-3', StandardFilters::join(array(1, 2, 3), '-'));
-		$this->assertEquals('1-2-3', StandardFilters::join(new \ArrayIterator(array(1, 2, 3)), '-'));
+		$this->assertEquals('1-2-3', StandardFilters::join([1, 2, 3], '-'));
+		$this->assertEquals('1-2-3', StandardFilters::join(new \ArrayIterator([1, 2, 3]), '-'));
 	}
 
 	public function testSort()
 	{
-		$data = array(
-			array(
-				array(),
-				array(),
-			),
-			array(
-				new \ArrayIterator(array()),
-				array(),
-			),
-			array(
-				array(1, 5, 3, 4, 2),
-				array(1, 2, 3, 4, 5),
-			),
-			array(
-				new \ArrayIterator(array(1, 5, 3, 4, 2)),
-				array(1, 2, 3, 4, 5),
-			),
-		);
+		$data = [
+			[
+				[],
+				[],
+			],
+			[
+				new \ArrayIterator([]),
+				[],
+			],
+			[
+				[1, 5, 3, 4, 2],
+				[1, 2, 3, 4, 5],
+			],
+			[
+				new \ArrayIterator([1, 5, 3, 4, 2]),
+				[1, 2, 3, 4, 5],
+			],
+		];
 
 		foreach ($data as $key => $item) {
 			$this->assertEquals(array_values($item[1]), array_values(StandardFilters::sort($item[0])), "Sort failed for case #{$key}");
 		}
 
 		// Sort by inner key
-		$original = array(
-			array('a' => 20, 'b' => 10),
-			array('a' => 45, 'b' => 5),
-			array('a' => 40, 'b' => 6),
-			array('a' => 30, 'b' => 48),
-		);
-		$expected = array(
-			array('a' => 45, 'b' => 5),
-			array('a' => 40, 'b' => 6),
-			array('a' => 20, 'b' => 10),
-			array('a' => 30, 'b' => 48),
-		);
+		$original = [
+			['a' => 20, 'b' => 10],
+			['a' => 45, 'b' => 5],
+			['a' => 40, 'b' => 6],
+			['a' => 30, 'b' => 48],
+		];
+		$expected = [
+			['a' => 45, 'b' => 5],
+			['a' => 40, 'b' => 6],
+			['a' => 20, 'b' => 10],
+			['a' => 30, 'b' => 48],
+		];
 
 		$this->assertEquals($expected, array_values(StandardFilters::sort($original, 'b')));
 		$this->assertEquals($expected, array_values(StandardFilters::sort(new \ArrayIterator($original), 'b')));
@@ -617,20 +617,20 @@ class StandardFiltersTest extends TestCase
 	public function testSortWithoutKey()
 	{
 		// Sort by inner key
-		$original = array(
-			array('a' => 20, 'b' => 10),
-			array('a' => 45, 'b' => 5),
-			array('a' => 40, 'b' => 6),
-			array('a' => 30, 'b' => 48),
-			array('a' => 50),
-		);
-		$expected = array(
-			array('a' => 50),
-			array('a' => 45, 'b' => 5),
-			array('a' => 40, 'b' => 6),
-			array('a' => 20, 'b' => 10),
-			array('a' => 30, 'b' => 48),
-		);
+		$original = [
+			['a' => 20, 'b' => 10],
+			['a' => 45, 'b' => 5],
+			['a' => 40, 'b' => 6],
+			['a' => 30, 'b' => 48],
+			['a' => 50],
+		];
+		$expected = [
+			['a' => 50],
+			['a' => 45, 'b' => 5],
+			['a' => 40, 'b' => 6],
+			['a' => 20, 'b' => 10],
+			['a' => 30, 'b' => 48],
+		];
 
 		$this->assertEquals($expected, array_values(StandardFilters::sort($original, 'b')));
 		$this->assertEquals($expected, array_values(StandardFilters::sort(new \ArrayIterator($original), 'b')));
@@ -668,24 +668,24 @@ class StandardFiltersTest extends TestCase
 
 	public function testUnique()
 	{
-		$data = array(
-			array(
-				array(),
-				array(),
-			),
-			array(
-				new \ArrayIterator(array()),
-				array(),
-			),
-			array(
-				array(1, 1, 5, 3, 4, 2, 5, 2),
-				array(1, 5, 3, 4, 2),
-			),
-			array(
-				new \ArrayIterator(array(1, 1, 5, 3, 4, 2, 5, 2)),
-				array(1, 5, 3, 4, 2),
-			),
-		);
+		$data = [
+			[
+				[],
+				[],
+			],
+			[
+				new \ArrayIterator([]),
+				[],
+			],
+			[
+				[1, 1, 5, 3, 4, 2, 5, 2],
+				[1, 5, 3, 4, 2],
+			],
+			[
+				new \ArrayIterator([1, 1, 5, 3, 4, 2, 5, 2]),
+				[1, 5, 3, 4, 2],
+			],
+		];
 
 		foreach ($data as $item) {
 			$this->assertEquals($item[1], array_values(StandardFilters::uniq($item[0])));
@@ -694,24 +694,24 @@ class StandardFiltersTest extends TestCase
 
 	public function testReverse()
 	{
-		$data = array(
-			array(
-				array(),
-				array(),
-			),
-			array(
-				new \ArrayIterator(array()),
-				array(),
-			),
-			array(
-				array(1, 1, 5, 3, 4, 2, 5, 2),
-				array(2, 5, 2, 4, 3, 5, 1, 1),
-			),
-			array(
-				new \ArrayIterator(array(1, 1, 5, 3, 4, 2, 5, 2)),
-				array(2, 5, 2, 4, 3, 5, 1, 1),
-			),
-		);
+		$data = [
+			[
+				[],
+				[],
+			],
+			[
+				new \ArrayIterator([]),
+				[],
+			],
+			[
+				[1, 1, 5, 3, 4, 2, 5, 2],
+				[2, 5, 2, 4, 3, 5, 1, 1],
+			],
+			[
+				new \ArrayIterator([1, 1, 5, 3, 4, 2, 5, 2]),
+				[2, 5, 2, 4, 3, 5, 1, 1],
+			],
+		];
 
 		foreach ($data as $item) {
 			$this->assertEquals($item[1], StandardFilters::reverse($item[0]), '', 0, 10, true);
@@ -720,52 +720,52 @@ class StandardFiltersTest extends TestCase
 
 	public function testMap()
 	{
-		$data = array(
-			array(
-				array(),
-				array(),
-			),
-			array(
-				new \ArrayIterator(array()),
-				array(),
-			),
-			array(
-				array(
+		$data = [
+			[
+				[],
+				[],
+			],
+			[
+				new \ArrayIterator([]),
+				[],
+			],
+			[
+				[
 					function () {
 						return 'from function ';
 					},
-					array(
+					[
 						'b' => 10,
 						'attr' => 'value ',
-					),
-					array(
+					],
+					[
 						'a' => 20,
-						'no_attr' => 'another value '
-					),
-				),
-				array('from function ', 'value ', null),
-			),
-			array(
-				new \ArrayIterator(array(
+						'no_attr' => 'another value ',
+					],
+				],
+				['from function ', 'value ', null],
+			],
+			[
+				new \ArrayIterator([
 					function () {
 						return 'from function ';
 					},
-					array(
+					[
 						'b' => 10,
 						'attr' => 'value ',
-					),
-					array(
+					],
+					[
 						'a' => 20,
-						'no_attr' => 'another value '
-					),
-				)),
-				array('from function ', 'value ', null),
-			),
-			array(
+						'no_attr' => 'another value ',
+					],
+				]),
+				['from function ', 'value ', null],
+			],
+			[
 				0,
-				0
-			)
-		);
+				0,
+			],
+		];
 
 		foreach ($data as $item) {
 			$actual = StandardFilters::map($item[0], 'attr');
@@ -778,32 +778,32 @@ class StandardFiltersTest extends TestCase
 
 	public function testFirst()
 	{
-		$data = array(
-			array(
-				array(),
+		$data = [
+			[
+				[],
 				false,
-			),
-			array(
-				new \ArrayIterator(array()),
+			],
+			[
+				new \ArrayIterator([]),
 				false,
-			),
-			array(
-				array('two', 'one', 'three'),
+			],
+			[
+				['two', 'one', 'three'],
 				'two',
-			),
-			array(
-				new \ArrayIterator(array('two', 'one', 'three')),
+			],
+			[
+				new \ArrayIterator(['two', 'one', 'three']),
 				'two',
-			),
-			array(
-				array(100, 400, 200),
+			],
+			[
+				[100, 400, 200],
 				100,
-			),
-			array(
-				new \ArrayIterator(array(100, 400, 200)),
+			],
+			[
+				new \ArrayIterator([100, 400, 200]),
 				100,
-			),
-		);
+			],
+		];
 
 		foreach ($data as $item) {
 			$this->assertEquals($item[1], StandardFilters::first($item[0]));
@@ -812,32 +812,32 @@ class StandardFiltersTest extends TestCase
 
 	public function testLast()
 	{
-		$data = array(
-			array(
-				array(),
+		$data = [
+			[
+				[],
 				false,
-			),
-			array(
-				new \ArrayIterator(array()),
+			],
+			[
+				new \ArrayIterator([]),
 				false,
-			),
-			array(
-				array('two', 'one', 'three'),
+			],
+			[
+				['two', 'one', 'three'],
 				'three',
-			),
-			array(
-				new \ArrayIterator(array('two', 'one', 'three')),
+			],
+			[
+				new \ArrayIterator(['two', 'one', 'three']),
 				'three',
-			),
-			array(
-				array(100, 400, 200),
+			],
+			[
+				[100, 400, 200],
 				200,
-			),
-			array(
-				new \ArrayIterator(array(100, 400, 200)),
+			],
+			[
+				new \ArrayIterator([100, 400, 200]),
 				200,
-			),
-		);
+			],
+		];
 
 		foreach ($data as $item) {
 			$this->assertEquals($item[1], StandardFilters::last($item[0]));
@@ -846,16 +846,16 @@ class StandardFiltersTest extends TestCase
 
 	public function testString()
 	{
-		$data = array(
-				array(
+		$data = [
+				[
 						1,
 						'1',
-				),
-				array(
+				],
+				[
 						new SizeClass(),
 						"forty two",
-				),
-		);
+				],
+		];
 
 		foreach ($data as $item) {
 			$this->assertEquals($item[1], StandardFilters::string($item[0]));
@@ -864,40 +864,40 @@ class StandardFiltersTest extends TestCase
 
 	public function testSplit()
 	{
-		$data = array(
-			array(
+		$data = [
+			[
 				'',
-				array(),
-			),
-			array(
+				[],
+			],
+			[
 				null,
-				array(),
-			),
-			array(
+				[],
+			],
+			[
 				'two-one-three',
-				array('two', 'one', 'three'),
-			),
-			array(
+				['two', 'one', 'three'],
+			],
+			[
 				'12301230123',
-				array('123', '123', '123'),
-				'0'
-			),
-			array(
+				['123', '123', '123'],
+				'0',
+			],
+			[
 				'phrase',
-				array('p', 'h', 'r', 'a', 's', 'e'),
-				''
-			),
-			array(
+				['p', 'h', 'r', 'a', 's', 'e'],
+				'',
+			],
+			[
 				'phrase',
-				array('phrase'),
-				null
-			),
-			array(
+				['phrase'],
+				null,
+			],
+			[
 				'123 123 123',
-				array('123', '123', '123'),
-				' '
-			),
-		);
+				['123', '123', '123'],
+				' ',
+			],
+		];
 
 		foreach ($data as $item) {
 			$this->assertEquals($item[1], StandardFilters::split($item[0], $item[2] ?? '-'));
@@ -906,20 +906,20 @@ class StandardFiltersTest extends TestCase
 
 	public function testStrip()
 	{
-		$data = array(
-			array(
+		$data = [
+			[
 				'',
 				'',
-			),
-			array(
+			],
+			[
 				' hello   ',
 				'hello',
-			),
-			array(
+			],
+			[
 				1,
 				1,
-			),
-		);
+			],
+		];
 
 		foreach ($data as $item) {
 			$this->assertEquals($item[1], StandardFilters::strip($item[0]));
@@ -928,20 +928,20 @@ class StandardFiltersTest extends TestCase
 
 	public function testLStrip()
 	{
-		$data = array(
-			array(
+		$data = [
+			[
 				'',
 				'',
-			),
-			array(
+			],
+			[
 				' hello   ',
 				'hello   ',
-			),
-			array(
+			],
+			[
 				1,
 				1,
-			),
-		);
+			],
+		];
 
 		foreach ($data as $item) {
 			$this->assertEquals($item[1], StandardFilters::lstrip($item[0]));
@@ -950,20 +950,20 @@ class StandardFiltersTest extends TestCase
 
 	public function testRStrip()
 	{
-		$data = array(
-			array(
+		$data = [
+			[
 				'',
 				'',
-			),
-			array(
+			],
+			[
 				' hello   ',
 				' hello',
-			),
-			array(
+			],
+			[
 				1,
 				1,
-			),
-		);
+			],
+		];
 
 		foreach ($data as $item) {
 			$this->assertEquals($item[1], StandardFilters::rstrip($item[0]));
@@ -972,23 +972,23 @@ class StandardFiltersTest extends TestCase
 
 	public function testPlus()
 	{
-		$data = array(
-			array(
+		$data = [
+			[
 				'',
 				'',
 				0,
-			),
-			array(
+			],
+			[
 				10,
 				20,
 				30,
-			),
-			array(
+			],
+			[
 				1.5,
 				2.7,
 				4.2,
-			),
-		);
+			],
+		];
 
 		foreach ($data as $item) {
 			$this->assertEqualsWithDelta($item[2], StandardFilters::plus($item[0], $item[1]), 0.00001);
@@ -997,28 +997,28 @@ class StandardFiltersTest extends TestCase
 
 	public function testMinus()
 	{
-		$data = array(
-			array(
+		$data = [
+			[
 				'',
 				'',
 				0,
-			),
-			array(
+			],
+			[
 				10,
 				20,
 				-10,
-			),
-			array(
+			],
+			[
 				1.5,
 				2.7,
 				-1.2,
-			),
-			array(
+			],
+			[
 				3.1,
 				3.1,
-				0
-			)
-		);
+				0,
+			],
+		];
 
 		foreach ($data as $item) {
 			$this->assertEqualsWithDelta($item[2], StandardFilters::minus($item[0], $item[1]), 0.00001);
@@ -1027,28 +1027,28 @@ class StandardFiltersTest extends TestCase
 
 	public function testTimes()
 	{
-		$data = array(
-			array(
+		$data = [
+			[
 				'',
 				'',
 				0,
-			),
-			array(
+			],
+			[
 				10,
 				20,
 				200,
-			),
-			array(
+			],
+			[
 				1.5,
 				2.7,
 				4.05,
-			),
-			array(
+			],
+			[
 				  7.5,
 				  0,
-				  0
-			)
-		);
+				  0,
+			],
+		];
 
 		foreach ($data as $item) {
 			$this->assertEqualsWithDelta($item[2], StandardFilters::times($item[0], $item[1]), 0.00001);
@@ -1057,28 +1057,28 @@ class StandardFiltersTest extends TestCase
 
 	public function testDivideBy()
 	{
-		$data = array(
-			array(
+		$data = [
+			[
 				'20',
 				10,
 				2,
-			),
-			array(
+			],
+			[
 				10,
 				20,
 				0.5,
-			),
-			array(
+			],
+			[
 				0,
 				200,
 				0,
-			),
-			array(
+			],
+			[
 				10,
 				0.5,
 				20,
-			),
-		);
+			],
+		];
 
 		foreach ($data as $item) {
 			$this->assertEqualsWithDelta($item[2], StandardFilters::divided_by($item[0], $item[1]), 0.00001);
@@ -1087,33 +1087,33 @@ class StandardFiltersTest extends TestCase
 
 	public function testModulo()
 	{
-		$data = array(
-			array(
+		$data = [
+			[
 				'20',
 				10,
 				0,
-			),
-			array(
+			],
+			[
 				10,
 				20,
 				10,
-			),
-			array(
+			],
+			[
 				8,
 				3,
 				2,
-			),
-			array(
+			],
+			[
 				8.9,
 				3.5,
 				1.9,
-			),
-			array(
+			],
+			[
 				183.357,
 				12,
 				3.357,
-			),
-		);
+			],
+		];
 
 		foreach ($data as $item) {
 			$this->assertEqualsWithDelta($item[2], StandardFilters::modulo($item[0], $item[1]), 0.00001);
@@ -1122,23 +1122,23 @@ class StandardFiltersTest extends TestCase
 
 	public function testRound()
 	{
-		$data = array(
-			array(
+		$data = [
+			[
 				'20.003',
 				2,
 				20.00,
-			),
-			array(
+			],
+			[
 				10,
 				3,
 				10.000,
-			),
-			array(
+			],
+			[
 				8,
 				0,
 				8.0,
-			),
-		);
+			],
+		];
 
 		foreach ($data as $item) {
 			$this->assertSame($item[2], StandardFilters::round($item[0], $item[1]));
@@ -1147,20 +1147,20 @@ class StandardFiltersTest extends TestCase
 
 	public function testCeil()
 	{
-		$data = array(
-			array(
+		$data = [
+			[
 				'20.003',
 				21,
-			),
-			array(
+			],
+			[
 				10,
 				10,
-			),
-			array(
+			],
+			[
 				0.42,
 				1,
-			),
-		);
+			],
+		];
 
 		foreach ($data as $item) {
 			$this->assertSame($item[1], StandardFilters::ceil($item[0]));
@@ -1169,24 +1169,24 @@ class StandardFiltersTest extends TestCase
 
 	public function testFloor()
 	{
-		$data = array(
-			array(
+		$data = [
+			[
 				'20.003',
 				20,
-			),
-			array(
+			],
+			[
 				10,
 				10,
-			),
-			array(
+			],
+			[
 				0.42,
 				0,
-			),
-			array(
+			],
+			[
 				2.5,
 				2,
-			)
-		);
+			],
+		];
 
 		foreach ($data as $item) {
 			$this->assertSame($item[1], StandardFilters::floor($item[0]));

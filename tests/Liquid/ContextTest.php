@@ -76,10 +76,10 @@ class NestedObject
 	{
 		// we intentionally made the value different so
 		// that we could see where it is coming from
-		return array(
+		return [
 			'property' => $this->property,
 			'value' => 42,
-		);
+		];
 	}
 }
 
@@ -100,10 +100,10 @@ class ToArrayObject
 	{
 		// we intentionally made the value different so
 		// that we could see where it is coming from
-		return array(
+		return [
 			'property' => $this->property,
 			'value' => 42,
-		);
+		];
 	}
 }
 
@@ -196,19 +196,19 @@ class ContextTest extends TestCase
 	{
 		$this->expectException(\Liquid\LiquidException::class);
 
-		$this->context->get(array());
+		$this->context->get([]);
 	}
 
 	public function testGetNotVariable()
 	{
-		$data = array(
+		$data = [
 			null => null,
 			'null' => null,
 			'true' => true,
 			'false' => false,
 			"'quoted_string'" => 'quoted_string',
 			'"double_quoted_string"' => "double_quoted_string",
-		);
+		];
 
 		foreach ($data as $key => $expected) {
 			$this->assertEquals($expected, $this->context->get($key));
@@ -284,7 +284,7 @@ class ContextTest extends TestCase
 
 	public function testFinalVariableCanBeObject()
 	{
-		$this->context->set('test', (object) array('value' => (object) array()));
+		$this->context->set('test', (object) ['value' => (object) []]);
 		$this->assertInstanceOf(\stdClass::class, $this->context->get('test.value'));
 	}
 
@@ -302,7 +302,7 @@ class ContextTest extends TestCase
 
 	public function testLengthQuery()
 	{
-		$this->context->set('numbers', array(1, 2, 3, 4));
+		$this->context->set('numbers', [1, 2, 3, 4]);
 		$this->assertEquals(4, $this->context->get('numbers.size'));
 	}
 
@@ -323,49 +323,49 @@ class ContextTest extends TestCase
 
 	public function testOverrideSize()
 	{
-		$this->context->set('hash', array('a' => 1, 'b' => 2, 'c' => 3, 'd' => 4, 'size' => '5000'));
+		$this->context->set('hash', ['a' => 1, 'b' => 2, 'c' => 3, 'd' => 4, 'size' => '5000']);
 		$this->assertEquals(5000, $this->context->get('hash.size'));
 	}
 
 	public function testArrayFirst()
 	{
-		$this->context->set('array', array(11, 'jack', 43, 74, 5, 'tom'));
+		$this->context->set('array', [11, 'jack', 43, 74, 5, 'tom']);
 		$this->assertEquals(11, $this->context->get('array.first'));
 	}
 
 	public function testOverrideFirst()
 	{
-		$this->context->set('array', array(11, 'jack', 43, 'first' => 74, 5, 'tom'));
+		$this->context->set('array', [11, 'jack', 43, 'first' => 74, 5, 'tom']);
 		$this->assertEquals(74, $this->context->get('array.first'));
 	}
 
 	public function testArrayLast()
 	{
-		$this->context->set('array', array(11, 'jack', 43, 74, 5, 'tom'));
+		$this->context->set('array', [11, 'jack', 43, 74, 5, 'tom']);
 		$this->assertEquals('tom', $this->context->get('array.last'));
 	}
 
 	public function testOverrideLast()
 	{
-		$this->context->set('array', array(11, 'jack', 43, 'last' => 74, 5, 'tom'));
+		$this->context->set('array', [11, 'jack', 43, 'last' => 74, 5, 'tom']);
 		$this->assertEquals(74, $this->context->get('array.last'));
 	}
 
 	public function testDeepValueNotObject()
 	{
-		$this->context->set('example', array('foo' => new ToLiquidNotObject()));
+		$this->context->set('example', ['foo' => new ToLiquidNotObject()]);
 		$this->assertNull($this->context->get('example.foo.bar'));
 	}
 
 	public function testHierchalData()
 	{
-		$this->context->set('hash', array('name' => 'tobi'));
+		$this->context->set('hash', ['name' => 'tobi']);
 		$this->assertEquals('tobi', $this->context->get('hash.name'));
 	}
 
 	public function testHierchalDataNoKey()
 	{
-		$this->context->set('hash', array('name' => 'tobi'));
+		$this->context->set('hash', ['name' => 'tobi']);
 		$this->assertNull($this->context->get('hash.no_key'));
 	}
 
@@ -389,7 +389,7 @@ class ContextTest extends TestCase
 
 		$template->parse("{{'test' | notice }}");
 		$this->assertEquals('Global test', $template->render());
-		$this->assertEquals('Local test', $template->render(array(), new LocalFilter()));
+		$this->assertEquals('Local test', $template->render([], new LocalFilter()));
 	}
 
 	public function testCallbackFilter()
@@ -423,41 +423,41 @@ class ContextTest extends TestCase
 
 	public function testMerge()
 	{
-		$this->context->merge(array('test' => 'test'));
+		$this->context->merge(['test' => 'test']);
 		$this->assertEquals('test', $this->context->get('test'));
 
-		$this->context->merge(array('test' => 'newvalue', 'foo' => 'bar'));
+		$this->context->merge(['test' => 'newvalue', 'foo' => 'bar']);
 		$this->assertEquals('newvalue', $this->context->get('test'));
 		$this->assertEquals('bar', $this->context->get('foo'));
 	}
 
 	public function testCents()
 	{
-		$this->context->merge(array('cents' => new HundredCentes()));
+		$this->context->merge(['cents' => new HundredCentes()]);
 		$this->assertEquals(100, $this->context->get('cents'));
 	}
 
 	public function testNestedCents()
 	{
-		$this->context->merge(array('cents' => array('amount' => new HundredCentes())));
+		$this->context->merge(['cents' => ['amount' => new HundredCentes()]]);
 		$this->assertEquals(100, $this->context->get('cents.amount'));
 
-		$this->context->merge(array('cents' => array('cents' => array('amount' => new HundredCentes()))));
+		$this->context->merge(['cents' => ['cents' => ['amount' => new HundredCentes()]]]);
 		$this->assertEquals(100, $this->context->get('cents.cents.amount'));
 	}
 
 	public function testCentsThroughDrop()
 	{
-		$this->context->merge(array('cents' => new CentsDrop()));
+		$this->context->merge(['cents' => new CentsDrop()]);
 		$this->assertEquals(100, $this->context->get('cents.amount'));
 	}
 
 	public function testCentsThroughDropNestedly()
 	{
-		$this->context->merge(array('cents' => array('cents' => new CentsDrop())));
+		$this->context->merge(['cents' => ['cents' => new CentsDrop()]]);
 		$this->assertEquals(100, $this->context->get('cents.cents.amount'));
 
-		$this->context->merge(array('cents' => array('cents' => array('cents' => new CentsDrop()))));
+		$this->context->merge(['cents' => ['cents' => ['cents' => new CentsDrop()]]]);
 		$this->assertEquals(100, $this->context->get('cents.cents.cents.amount'));
 	}
 

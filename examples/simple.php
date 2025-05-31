@@ -20,4 +20,4 @@ Liquid::set('INCLUDE_PREFIX', '');
 $liquid = new Template();
 $liquid->parse('{{ hello }} {{ goback }}');
 
-echo $liquid->render(array('hello' => 'hello world', 'goback' => '<a href=".">index</a>'));
+echo $liquid->render(['hello' => 'hello world', 'goback' => '<a href=".">index</a>']);

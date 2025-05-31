@@ -17,9 +17,9 @@ class TagBreakTest extends TestCase
 {
 	public function testFor()
 	{
-		$this->assertTemplateResult(' ', '{%for item in array%} {%break%} yo {%endfor%}', array('array' => array(1, 2, 3, 4)));
-		$this->assertTemplateResult(' yo ', '{%for item in array%} yo {%break%} {%endfor%}', array('array' => array(1, 2, 3, 4)));
-		$this->assertTemplateResult('  1   2   ', '{%for item in array%} {%if item == 3%} {%break%} {%endif%} {{ item }} {%endfor%}', array('array' => array(1, 2, 3, 4)));
+		$this->assertTemplateResult(' ', '{%for item in array%} {%break%} yo {%endfor%}', ['array' => [1, 2, 3, 4]]);
+		$this->assertTemplateResult(' yo ', '{%for item in array%} yo {%break%} {%endfor%}', ['array' => [1, 2, 3, 4]]);
+		$this->assertTemplateResult('  1   2   ', '{%for item in array%} {%if item == 3%} {%break%} {%endif%} {{ item }} {%endfor%}', ['array' => [1, 2, 3, 4]]);
 	}
 
 	public function testRange()
@@ -34,17 +34,17 @@ class TagBreakTest extends TestCase
 		$this->assertTemplateResult(
 			"<tr class=\"row1\">\n</tr>\n",
 			'{%tablerow item in array%} {%break%} yo {%endtablerow%}',
-			array('array' => array(1, 2, 3, 4))
+			['array' => [1, 2, 3, 4]]
 		);
 		$this->assertTemplateResult(
 			"<tr class=\"row1\">\n<td class=\"col1\"> yo </td></tr>\n",
 			'{%tablerow item in array%} yo {%break%} {%endtablerow%}',
-			array('array' => array(1, 2, 3, 4))
+			['array' => [1, 2, 3, 4]]
 		);
 		$this->assertTemplateResult(
 			"<tr class=\"row1\">\n<td class=\"col1\">  1 </td><td class=\"col2\">  2 </td></tr>\n",
 			'{%tablerow item in array%} {%if item == 3%} {%break%} {%endif%} {{ item }} {%endtablerow%}',
-			array('array' => array(1, 2, 3, 4))
+			['array' => [1, 2, 3, 4]]
 		);
 	}
 }

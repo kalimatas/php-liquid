@@ -18,7 +18,7 @@ use Liquid\Cache;
  */
 class Local extends Cache
 {
-	private $cache = array();
+	private $cache = [];
 
 	/**
 	 * {@inheritdoc}
@@ -54,7 +54,7 @@ class Local extends Cache
 	 */
 	public function flush($expiredOnly = false)
 	{
-		$this->cache = array();
+		$this->cache = [];
 		return true;
 	}
 }

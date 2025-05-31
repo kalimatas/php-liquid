@@ -24,7 +24,7 @@ class TestCase extends \PHPUnit\Framework\TestCase
 	{
 		parent::setUp();
 
-		$defaultConfig = array(
+		$defaultConfig = [
 			'HAS_PROPERTY_METHOD' => 'field_exists',
 			'GET_PROPERTY_METHOD' => 'get',
 			'FILTER_SEPARATOR' => '\|',
@@ -38,7 +38,7 @@ class TestCase extends \PHPUnit\Framework\TestCase
 			'VARIABLE_END' => '}}',
 			'VARIABLE_NAME' => '[a-zA-Z_][a-zA-Z0-9_.-]*',
 			'EXPOSE_SERVER' => false,
-		);
+		];
 
 		foreach ($defaultConfig as $configKey => $configValue) {
 			Liquid::set($configKey, $configValue);
@@ -53,7 +53,7 @@ class TestCase extends \PHPUnit\Framework\TestCase
 	 * @param array $assigns
 	 * @param string $message
 	 */
-	public function assertTemplateResult($expected, $templateString, array $assigns = array(), $message = "%s")
+	public function assertTemplateResult($expected, $templateString, array $assigns = [], $message = "%s")
 	{
 		$template = new Template();
 		$template->parse($templateString);

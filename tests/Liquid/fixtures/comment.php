@@ -9,4 +9,4 @@
  * @package Liquid
  */
 
-return array();
+return [];
