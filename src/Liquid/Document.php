@@ -26,7 +26,7 @@ class Document extends AbstractBlock
 	 * @param array $tokens
 	 * @param FileSystem $fileSystem
 	 */
-	public function __construct(array &$tokens, FileSystem $fileSystem = null)
+	public function __construct(array &$tokens, ?FileSystem $fileSystem = null)
 	{
 		$this->fileSystem = $fileSystem;
 		$this->parse($tokens);

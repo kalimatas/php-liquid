@@ -36,7 +36,7 @@ class TagIfchanged extends AbstractBlock
 	 *
 	 * @throws \Liquid\LiquidException
 	 */
-	public function __construct($markup, array &$tokens, FileSystem $fileSystem = null)
+	public function __construct($markup, array &$tokens, ?FileSystem $fileSystem = null)
 	{
 		parent::__construct($markup, $tokens, $fileSystem);
 	}

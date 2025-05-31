@@ -51,7 +51,7 @@ abstract class AbstractTag
 	 * @param array $tokens
 	 * @param FileSystem $fileSystem
 	 */
-	public function __construct($markup, array &$tokens, FileSystem $fileSystem = null)
+	public function __construct($markup, array &$tokens, ?FileSystem $fileSystem = null)
 	{
 		$this->markup = $markup;
 		$this->fileSystem = $fileSystem;

@@ -54,7 +54,7 @@ class TagTablerow extends AbstractBlock
 	 *
 	 * @throws \Liquid\Exception\ParseException
 	 */
-	public function __construct($markup, array &$tokens, FileSystem $fileSystem = null)
+	public function __construct($markup, array &$tokens, ?FileSystem $fileSystem = null)
 	{
 		parent::__construct($markup, $tokens, $fileSystem);
 

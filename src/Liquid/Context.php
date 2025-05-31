@@ -97,7 +97,7 @@ class Context
 	 *
 	 * @param mixed $filter
 	 */
-	public function addFilters($filter, callable $callback = null)
+	public function addFilters($filter, ?callable $callback = null)
 	{
 		$this->filterbank->addFilter($filter, $callback);
 	}
