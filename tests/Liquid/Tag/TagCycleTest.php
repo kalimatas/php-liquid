@@ -36,11 +36,15 @@ class TagCycleTest extends TestCase
 	public function testMultipleCycles()
 	{
 		$this->assertTemplateResult('1 2 1 1 2 3 1', '{%cycle 1,2%} {%cycle 1,2%} {%cycle 1,2%} {%cycle 1,2,3%} {%cycle 1,2,3%} {%cycle 1,2,3%} {%cycle 1,2,3%}');
+		$this->assertTemplateResult('onetwo:,three', '{%cycle "one","two:,three"%}{%cycle "one","two:,three"%}');
 	}
 
 	public function testMultipleNamedCycles()
 	{
-		$this->assertTemplateResult('one one two two one one', '{%cycle 1: "one", "two" %} {%cycle 2: "one", "two" %} {%cycle 1: "one", "two" %} {%cycle 2: "one", "two" %} {%cycle 1: "one", "two" %} {%cycle 2: "one", "two" %}');
+		$this->assertTemplateResult('one one two two one one', '{%cycle 1: "one", "two" %} {%cycle 2: "one", "two" %} {%cycle 1 : "one", "two" %} {%cycle 2 : "one", "two" %} {%cycle 1: "one", "two" %} {%cycle 2: "one", "two" %}');
+		$this->assertTemplateResult('one one two two one one', '{%cycle "first": "one", "two" %} {%cycle "second": "one", "two" %} {%cycle "first" : "one", "two" %} {%cycle "second" : "one", "two" %} {%cycle "first": "one", "two" %} {%cycle "second": "one", "two" %}');
+		$this->assertTemplateResult('one one two two one one', '{%cycle 1: \'one\', \'two\' %} {%cycle 2: \'one\', \'two\' %} {%cycle 1 : \'one\', \'two\' %} {%cycle 2 : \'one\', \'two\' %} {%cycle 1: \'one\', \'two\' %} {%cycle 2: \'one\', \'two\' %}');
+		$this->assertTemplateResult('one one two two one one', '{%cycle \'first\': \'one\', \'two\' %} {%cycle \'second\': \'one\', \'two\' %} {%cycle \'first\' : \'one\', \'two\' %} {%cycle \'second\' : \'one\', \'two\' %} {%cycle \'first\': \'one\', \'two\' %} {%cycle \'second\': \'one\', \'two\' %}');
 	}
 
 	public function testMultipleNamedCyclesWithNamesFromContext()
