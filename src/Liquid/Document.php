@@ -24,7 +24,7 @@ class Document extends AbstractBlock
 	 * Constructor.
 	 *
 	 * @param array $tokens
-	 * @param FileSystem $fileSystem
+	 * @param FileSystem|null $fileSystem
 	 */
 	public function __construct(array &$tokens, ?FileSystem $fileSystem = null)
 	{

@@ -30,11 +30,11 @@
         "php": "^7.4 || ^8.0"
     },
     "require-dev": {
-        "ergebnis/composer-normalize": ">=2.8",
-        "friendsofphp/php-cs-fixer": "^3.22",
-        "infection/infection": ">=0.17.6",
-        "php-coveralls/php-coveralls": "^2.2",
-        "phpunit/phpunit": "^9.2.6"
+        "ergebnis/composer-normalize": "~2.47.0",
+        "friendsofphp/php-cs-fixer": "~3.75.0",
+        "infection/infection": "~0.25.6",
+        "php-coveralls/php-coveralls": "~2.8.0",
+        "phpunit/phpunit": "~9.6.23"
     },
     "config": {
         "sort-packages": true,
