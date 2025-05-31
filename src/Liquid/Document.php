@@ -28,8 +28,7 @@ class Document extends AbstractBlock
 	 */
 	public function __construct(array &$tokens, ?FileSystem $fileSystem = null)
 	{
-		$this->fileSystem = $fileSystem;
-		$this->parse($tokens);
+		parent::__construct('', $tokens, $fileSystem);
 	}
 
 	/**

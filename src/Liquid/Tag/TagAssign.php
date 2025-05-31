@@ -50,6 +50,8 @@ class TagAssign extends AbstractTag
 	 */
 	public function __construct($markup, array &$tokens, ?FileSystem $fileSystem = null)
 	{
+		parent::__construct($markup, $tokens, $fileSystem);
+
 		$syntaxRegexp = new Regexp('/(\w+)\s*=\s*(.*)\s*/');
 
 		if ($syntaxRegexp->match($markup)) {
