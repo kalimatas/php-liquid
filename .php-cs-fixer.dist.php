@@ -1,5 +1,14 @@
 <?php
 
+/*
+ * This file is part of the Liquid package.
+ *
+ * For the full copyright and license information, please view the LICENSE
+ * file that was distributed with this source code.
+ *
+ * @package Liquid
+ */
+
 $header = <<<'EOF'
 This file is part of the Liquid package.
 
@@ -11,6 +20,7 @@ EOF;
 
 $config = new PhpCsFixer\Config();
 $config
+	->setParallelConfig(PhpCsFixer\Runner\Parallel\ParallelConfigFactory::detect())
 	->setRiskyAllowed(true)
 	->setRules([
 		'@PSR2' => true,
@@ -31,15 +41,17 @@ $config
 		'php_unit_mock' => true,
 		'php_unit_namespaced' => true,
 		'php_unit_no_expectation_annotation' => true,
-				"phpdoc_order_by_value" => ['annotations' => ['covers']],
+		"phpdoc_order_by_value" => ['annotations' => ['covers']],
 		'php_unit_set_up_tear_down_visibility' => true,
 		'php_unit_test_case_static_method_calls' => ['call_type' => 'this'],
-				'no_whitespace_in_blank_line' => true,
+		'no_whitespace_in_blank_line' => true,
+		'nullable_type_declaration_for_default_null_value' => true,
 	])
 	->setIndent("\t")
 	->setFinder(
 		PhpCsFixer\Finder::create()
 		->in(__DIR__)
+		->append([__FILE__])
 	)
 ;
 

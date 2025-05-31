@@ -12,7 +12,8 @@ jobs:
 
     strategy:
       matrix:
-        php-version: ['8.2']
+        php-version:
+          - '8.3'
 
     name: PHP ${{ matrix.php-version }}
 
@@ -43,4 +44,4 @@ jobs:
       - name: Check code style
         run: |
           php vendor/bin/php-cs-fixer --using-cache=no --diff --dry-run --stop-on-violation --verbose fix
-          
+
