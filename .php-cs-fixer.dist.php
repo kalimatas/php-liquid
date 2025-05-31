@@ -46,6 +46,9 @@ $config
 		'php_unit_test_case_static_method_calls' => ['call_type' => 'this'],
 		'no_whitespace_in_blank_line' => true,
 		'nullable_type_declaration_for_default_null_value' => true,
+		'array_syntax' => ['syntax' => 'short'],
+		'trailing_comma_in_multiline' => ['elements' => ['arrays']],
+		'binary_operator_spaces' => ['default' => 'at_least_single_space'],
 	])
 	->setIndent("\t")
 	->setFinder(
