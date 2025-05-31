@@ -36,8 +36,12 @@ class TagRaw extends AbstractBlock
 
 		$this->nodelist = [];
 
-		while (count($tokens)) {
-			$token = array_shift($tokens);
+		for ($i = 0, $n = count($tokens); $i < $n; $i++) {
+			if ($tokens[$i] === null) {
+				continue;
+			}
+			$token = $tokens[$i];
+			$tokens[$i] = null;
 
 			if ($tagRegexp->match($token)) {
 				// If we found the proper block delimiter just end parsing here and let the outer block proceed

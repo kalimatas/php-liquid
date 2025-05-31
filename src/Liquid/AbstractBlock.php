@@ -33,6 +33,15 @@ class AbstractBlock extends AbstractTag
 	 */
 	protected static $trimWhitespace = false;
 
+
+	private ?string $whitespaceControl;
+
+	private ?Regexp $startRegexp;
+	private ?Regexp $tagRegexp;
+	private ?Regexp $variableStartRegexp;
+
+	private ?Regexp $variableRegexp;
+
 	/**
 	 * @return array
 	 */
@@ -51,16 +60,25 @@ class AbstractBlock extends AbstractTag
 	 */
 	public function parse(array &$tokens)
 	{
-		$startRegexp = new Regexp('/^' . Liquid::get('TAG_START') . '/');
-		$tagRegexp = new Regexp('/^' . Liquid::get('TAG_START') . Liquid::get('WHITESPACE_CONTROL') . '?\s*(\w+)\s*(.*?)' . Liquid::get('WHITESPACE_CONTROL') . '?' . Liquid::get('TAG_END') . '$/s');
-		$variableStartRegexp = new Regexp('/^' . Liquid::get('VARIABLE_START') . '/');
+		// Constructor is not reliably called by subclasses, so we need to ensure these are set
+		$this->startRegexp ??= new Regexp('/^' . Liquid::get('TAG_START') . '/');
+		$this->tagRegexp ??= new Regexp('/^' . Liquid::get('TAG_START') . Liquid::get('WHITESPACE_CONTROL') . '?\s*(\w+)\s*(.*?)' . Liquid::get('WHITESPACE_CONTROL') . '?' . Liquid::get('TAG_END') . '$/s');
+		$this->variableStartRegexp ??= new Regexp('/^' . Liquid::get('VARIABLE_START') . '/');
+
+		$startRegexp = $this->startRegexp;
+		$tagRegexp = $this->tagRegexp;
+		$variableStartRegexp = $this->variableStartRegexp;
 
 		$this->nodelist = [];
 
 		$tags = Template::getTags();
 
-		while (count($tokens)) {
-			$token = array_shift($tokens);
+		for ($i = 0, $n = count($tokens); $i < $n; $i++) {
+			if ($tokens[$i] === null) {
+				continue;
+			}
+			$token = $tokens[$i];
+			$tokens[$i] = null;
 
 			if ($startRegexp->match($token)) {
 				$this->whitespaceHandler($token);
@@ -114,11 +132,13 @@ class AbstractBlock extends AbstractTag
 	 */
 	protected function whitespaceHandler($token)
 	{
+		$this->whitespaceControl ??= Liquid::get('WHITESPACE_CONTROL');
+
 		/*
 		 * This assumes that TAG_START is always '{%', and a whitespace control indicator
 		 * is exactly one character long, on a third position.
 		 */
-		if (mb_substr($token, 2, 1) === Liquid::get('WHITESPACE_CONTROL')) {
+		if ($token[2] === $this->whitespaceControl) {
 			$previousToken = end($this->nodelist);
 			if (is_string($previousToken)) { // this can also be a tag or a variable
 				$this->nodelist[key($this->nodelist)] = rtrim($previousToken);
@@ -129,7 +149,7 @@ class AbstractBlock extends AbstractTag
 		 * This assumes that TAG_END is always '%}', and a whitespace control indicator
 		 * is exactly one character long, on a third position from the end.
 		 */
-		self::$trimWhitespace = mb_substr($token, -3, 1) === Liquid::get('WHITESPACE_CONTROL');
+		self::$trimWhitespace = $token[-3] === $this->whitespaceControl;
 	}
 
 	/**
@@ -254,9 +274,10 @@ class AbstractBlock extends AbstractTag
 	 */
 	private function createVariable($token)
 	{
-		$variableRegexp = new Regexp('/^' . Liquid::get('VARIABLE_START') . Liquid::get('WHITESPACE_CONTROL') . '?(.*?)' . Liquid::get('WHITESPACE_CONTROL') . '?' . Liquid::get('VARIABLE_END') . '$/s');
-		if ($variableRegexp->match($token)) {
-			return new Variable($variableRegexp->matches[1]);
+		$this->variableRegexp ??= new Regexp('/^' . Liquid::get('VARIABLE_START') . Liquid::get('WHITESPACE_CONTROL') . '?(.*?)' . Liquid::get('WHITESPACE_CONTROL') . '?' . Liquid::get('VARIABLE_END') . '$/s');
+
+		if ($this->variableRegexp->match($token)) {
+			return new Variable($this->variableRegexp->matches[1]);
 		}
 
 		throw new ParseException("Variable $token was not properly terminated");

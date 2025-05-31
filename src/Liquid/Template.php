@@ -83,7 +83,7 @@ class Template
 	}
 
 	/**
-	 * @param array|Cache $cache
+	 * @param array|Cache|null $cache
 	 *
 	 * @throws \Liquid\Exception\CacheException
 	 */
