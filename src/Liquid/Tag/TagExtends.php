@@ -50,11 +50,11 @@ class TagExtends extends AbstractTag
 	 *
 	 * @param string $markup
 	 * @param array $tokens
-	 * @param FileSystem $fileSystem
+	 * @param FileSystem|null $fileSystem
 	 *
 	 * @throws \Liquid\Exception\ParseException
 	 */
-	public function __construct($markup, array &$tokens, FileSystem $fileSystem = null)
+	public function __construct($markup, array &$tokens, ?FileSystem $fileSystem = null)
 	{
 		$regex = new Regexp('/("[^"]+"|\'[^\']+\')?/');
 

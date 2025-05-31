@@ -41,11 +41,11 @@ class TagIncrement extends AbstractTag
 	 *
 	 * @param string $markup
 	 * @param array $tokens
-	 * @param FileSystem $fileSystem
+	 * @param FileSystem|null $fileSystem
 	 *
 	 * @throws \Liquid\Exception\ParseException
 	 */
-	public function __construct($markup, array &$tokens, FileSystem $fileSystem = null)
+	public function __construct($markup, array &$tokens, ?FileSystem $fileSystem = null)
 	{
 		$syntax = new Regexp('/(' . Liquid::get('VARIABLE_NAME') . ')/');
 
