@@ -71,6 +71,10 @@ class StaticAnalysisTest extends TestCase
 				continue;
 			}
 
+			if ($refClass->getMethod('__construct')->getDeclaringClass()->getName() === AbstractTag::class) {
+				continue; // Skip if the constructor is not overridden
+			}
+
 			yield $class => [...$data, $refClass];
 		}
 	}
@@ -89,13 +93,15 @@ class StaticAnalysisTest extends TestCase
 
 		$code = array_slice(file($refMethod->getFileName()), $startLine - 1, $endLine - $startLine + 1);
 
-		$code = array_filter($code, function ($line) {
+		$this->assertNotEmpty($code);
+
+		$linesWithConstruct = array_filter($code, function ($line) {
 			return strpos($line, 'parent::__construct') !== false;
 		});
 
 		$this->assertNotEmpty(
-			$code,
-			"The constructor of $class should call parent::__construct()"
+			$linesWithConstruct,
+			"The constructor of {$refClass->getName()} should call parent::__construct()"
 		);
 	}
 }

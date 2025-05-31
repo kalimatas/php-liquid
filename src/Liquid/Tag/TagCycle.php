@@ -57,6 +57,8 @@ class TagCycle extends AbstractTag
 	 */
 	public function __construct($markup, array &$tokens, ?FileSystem $fileSystem = null)
 	{
+		parent::__construct($markup, $tokens, $fileSystem);
+
 		$simpleSyntax = new Regexp("/" . Liquid::get('QUOTED_FRAGMENT') . "/");
 		$namedSyntax = new Regexp("/(" . Liquid::get('QUOTED_FRAGMENT') . ")\s*\:\s*(.*)/");
 
