@@ -20,7 +20,7 @@ class TagRawTest extends TestCase
 		$this->assertTemplateResult(
 			'{{ y | plus: x }}{% if %} is equal to 11.',
 			'{% raw %}{{ y | plus: x }}{% if %}{% endraw %} is equal to 11.',
-			array('x' => 5, 'y' => 6)
+			['x' => 5, 'y' => 6]
 		);
 
 		$this->assertTemplateResult('', '{% raw %}{% endraw %}');

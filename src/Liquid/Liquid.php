@@ -22,7 +22,7 @@ class Liquid
 	 *
 	 * @var array configuration array
 	 */
-	public static $config = array(
+	public static $config = [
 		// The method is called on objects when resolving variables to see
 		// if a given property exists.
 		'HAS_PROPERTY_METHOD' => 'field_exists',
@@ -100,7 +100,7 @@ class Liquid
 			'REQUEST_URI',
 			'SERVER_NAME',
 		],
-	);
+	];
 
 	/**
 	 * Get a configuration setting.
@@ -156,7 +156,7 @@ class Liquid
 	 */
 	public static function arrayFlatten($array)
 	{
-		$return = array();
+		$return = [];
 
 		foreach ($array as $element) {
 			if (is_array($element)) {

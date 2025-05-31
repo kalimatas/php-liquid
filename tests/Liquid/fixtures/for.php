@@ -9,14 +9,14 @@
  * @package Liquid
  */
 
-return array(
+return [
 	'array' => range(1, 5),
-	'item' => array(
+	'item' => [
 		'quantity' => 5,
-	),
-	'articles' => array(
-		array('title' => 1),
-		array('title' => 2),
-		array('title' => 3),
-	),
-);
+	],
+	'articles' => [
+		['title' => 1],
+		['title' => 2],
+		['title' => 3],
+	],
+];

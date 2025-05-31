@@ -94,7 +94,7 @@ class Local implements FileSystem
 			$templateFile = Liquid::get('INCLUDE_PREFIX') . $templateFile . '.' . Liquid::get('INCLUDE_SUFFIX');
 		}
 
-		$fullPath = join(DIRECTORY_SEPARATOR, array($this->root, $templateDir, $templateFile));
+		$fullPath = join(DIRECTORY_SEPARATOR, [$this->root, $templateDir, $templateFile]);
 
 		$realFullPath = realpath($fullPath);
 		if ($realFullPath === false) {

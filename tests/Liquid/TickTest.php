@@ -20,7 +20,7 @@ class TickTest extends TestCase
 			[20, 40, '{% for i in (1..10) %}{% for ii in (1..2) %}x{% endfor %}{% endfor %}'],
 			[1, 2, '{% if true %} {% endif %}'],
 			[7, 8, '{% assign a = 0 %} {% increment a %} {% increment a %} {% increment a %}'],
-			[1, 1, ' ']
+			[1, 1, ' '],
 		];
 	}
 

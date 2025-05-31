@@ -100,7 +100,7 @@ namespace Liquid {
 		{
 			$this->expectException(\Liquid\Exception\WrongArgumentException::class);
 
-			$this->filterBank->addFilter(array());
+			$this->filterBank->addFilter([]);
 		}
 
 		/**
@@ -236,9 +236,9 @@ namespace Liquid {
 			$template->registerFilter('foo', function ($arg) {
 				return "Foo $arg";
 			});
-			$template->setCache(new File(array(
+			$template->setCache(new File([
 				'cache_dir' => __DIR__.'/cache_dir/',
-			)));
+			]));
 			$template->parse("{{'test' | foo }}");
 			$this->assertEquals('Foo test', $template->render());
 

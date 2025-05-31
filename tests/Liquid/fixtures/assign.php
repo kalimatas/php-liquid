@@ -9,8 +9,8 @@
  * @package Liquid
  */
 
-return array(
-	'product' => array(
+return [
+	'product' => [
 		'description' => 'First<!-- split -->Second',
-	),
-);
+	],
+];

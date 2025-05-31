@@ -28,7 +28,7 @@ class File extends Cache
 	 *
 	 * @throws NotFoundException if Cachedir not exists.
 	 */
-	public function __construct(array $options = array())
+	public function __construct(array $options = [])
 	{
 		parent::__construct($options);
 

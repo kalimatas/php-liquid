@@ -31,15 +31,15 @@ class EscapeByDefaultTest extends TestCase
 	const XSS = "<script>alert()</script>";
 	const XSS_FAILED = "&lt;script&gt;alert()&lt;/script&gt;";
 
-	protected $assigns = array();
+	protected $assigns = [];
 
 	protected function setUp(): void
 	{
 		parent::setUp();
 
-		$this->assigns = array(
+		$this->assigns = [
 			'xss' => self::XSS,
-		);
+		];
 	}
 
 	public function testUnescaped()
@@ -96,18 +96,18 @@ class EscapeByDefaultTest extends TestCase
 		Liquid::set('ESCAPE_BY_DEFAULT', true);
 		$text = "{{ xss | newline_to_br }}";
 		$expected = self::XSS."<br />\n".self::XSS;
-		$this->assertTemplateResult($expected, $text, array('xss' => self::XSS."\n".self::XSS));
+		$this->assertTemplateResult($expected, $text, ['xss' => self::XSS."\n".self::XSS]);
 	}
 
 	public function testToStringEscape()
 	{
-		$this->assertTemplateResult(self::XSS_FAILED, "{{ xss | escape }}", array('xss' => new ObjectWithToString(self::XSS)));
+		$this->assertTemplateResult(self::XSS_FAILED, "{{ xss | escape }}", ['xss' => new ObjectWithToString(self::XSS)]);
 	}
 
 	public function testToStringEscapeDefault()
 	{
 		Liquid::set('ESCAPE_BY_DEFAULT', true);
-		$this->assertTemplateResult(self::XSS_FAILED, "{{ xss }}", array('xss' => new ObjectWithToString(self::XSS)));
+		$this->assertTemplateResult(self::XSS_FAILED, "{{ xss }}", ['xss' => new ObjectWithToString(self::XSS)]);
 	}
 
 	/** System default value for the escape flag */

@@ -29,42 +29,42 @@ $liquid = new Template($protectedPath . 'templates' . DIRECTORY_SEPARATOR);
 
 $liquid->parse(file_get_contents($protectedPath . 'templates' . DIRECTORY_SEPARATOR . 'index.tpl'));
 
-$assigns = array(
-	'document' => array(
+$assigns = [
+	'document' => [
 		'title' => 'This is php-liquid',
 		'content' => 'Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut labore et dolore magna aliquyam erat, sed diam voluptua.',
 		'copyright' => 'Guz Alexander - All rights reserved.',
-	),
-	'blog' => array(
-		array(
+	],
+	'blog' => [
+		[
 			'title' => 'Blog Title 1',
 			'content' => 'Nunc putamus parum claram',
-			'tags' => array('claram', 'parum'),
-			'comments' => array(
-				array(
+			'tags' => ['claram', 'parum'],
+			'comments' => [
+				[
 					'title' => 'First Comment',
 					'message' => 'Lorem ipsum dolor sit amet, consetetur sadipscing elitr',
-				),
-			),
-		),
-		array(
+				],
+			],
+		],
+		[
 			'title' => 'Blog Title 2',
 			'content' => 'Nunc putamus parum claram',
-			'tags' => array('claram', 'parum', 'freestyle'),
-			'comments' => array(
-				array(
+			'tags' => ['claram', 'parum', 'freestyle'],
+			'comments' => [
+				[
 					'title' => 'First Comment',
 					'message' => 'Lorem ipsum dolor sit amet, consetetur sadipscing elitr',
-				),
-				array(
+				],
+				[
 					'title' => 'Second Comment',
 					'message' => 'Lorem ipsum dolor sit amet, consetetur sadipscing elitr',
-				),
-			),
-		),
+				],
+			],
+		],
 
-	),
-	'array' => array('one', 'two', 'three', 'four'),
-);
+	],
+	'array' => ['one', 'two', 'three', 'four'],
+];
 
 echo $liquid->render($assigns);

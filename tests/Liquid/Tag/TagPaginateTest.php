@@ -38,21 +38,21 @@ class TagPaginateTest extends TestCase
 	{
 		$text = "{% paginate products by 3 %}{% for product in products %} {{ product.id }} {% endfor %}{% endpaginate %}";
 		$expected = " 1  2  3 ";
-		$this->assertTemplateResult($expected, $text, array('products' => array(array('id' => 1), array('id' => 2), array('id' => 3), array('id' => 4), array('id' => 5))));
+		$this->assertTemplateResult($expected, $text, ['products' => [['id' => 1], ['id' => 2], ['id' => 3], ['id' => 4], ['id' => 5]]]);
 	}
 
 	public function testVariables()
 	{
 		$text = " {% paginate search.products by 3 %}{{ paginate.page_size }} {{ paginate.current_page }} {{ paginate.current_offset }} {{ paginate.pages }} {{ paginate.items }} {{ paginate.next.url }}{% endpaginate %}";
 		$expected = " 3 1 0 2 5 http://?page=2";
-		$this->assertTemplateResult($expected, $text, array('search' => array('products' => new \ArrayIterator(array(array('id' => 1), array('id' => 2), array('id' => 3), array('id' => 4), array('id' => 5))))));
+		$this->assertTemplateResult($expected, $text, ['search' => ['products' => new \ArrayIterator([['id' => 1], ['id' => 2], ['id' => 3], ['id' => 4], ['id' => 5]])]]);
 	}
 
 	public function testNextPage()
 	{
 		$text = '{% paginate products by 1 %}{% for product in products %} {{ product.id }} {% endfor %}<a href="{{ paginate.next.url }}">{{ paginate.next.title }}</a>{% endpaginate %}';
 		$expected = ' 2 <a href="https://example.com/products?page=3">Next</a>';
-		$this->assertTemplateResult($expected, $text, array('HTTP_HOST' => 'example.com', 'REQUEST_URI' => '/products', 'HTTPS' => 'on', 'page' => 2, 'products' => array(array('id' => 1), array('id' => 2), array('id' => 3), array('id' => 4), array('id' => 5))));
+		$this->assertTemplateResult($expected, $text, ['HTTP_HOST' => 'example.com', 'REQUEST_URI' => '/products', 'HTTPS' => 'on', 'page' => 2, 'products' => [['id' => 1], ['id' => 2], ['id' => 3], ['id' => 4], ['id' => 5]]]);
 	}
 
 	/**
@@ -74,12 +74,12 @@ class TagPaginateTest extends TestCase
 		$this->assertTemplateResult('', '{% paginate products by 1 %}{% for product in products %}{{ product.id }}{% endfor %}{% endpaginate %}');
 	}
 
-	const PAGINATION_ASSIGNS = array(
+	const PAGINATION_ASSIGNS = [
 		'HTTP_HOST' => 'example.com',
 		'HTTPS' => 'on',
 		'page' => 1,
-		'articles' => array(array('title' => 1), array('title' => 2), array('title' => 3)),
-	);
+		'articles' => [['title' => 1], ['title' => 2], ['title' => 3]],
+	];
 
 	public function testPaginationForRepeatedCalls()
 	{

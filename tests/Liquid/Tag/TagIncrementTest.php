@@ -34,11 +34,11 @@ class TagIncrementTest extends TestCase
 
 	public function testIncrementVariable()
 	{
-		$this->assertTemplateResult(42, '{% increment var %}{{ var }}', array('var' => 41));
+		$this->assertTemplateResult(42, '{% increment var %}{{ var }}', ['var' => 41]);
 	}
 
 	public function testIncrementNestedVariable()
 	{
-		$this->assertTemplateResult(42, '{% for var in vars %}{% increment var %}{{ var }}{% endfor %}', array('vars' => array(41)));
+		$this->assertTemplateResult(42, '{% for var in vars %}{% increment var %}{{ var }}{% endfor %}', ['vars' => [41]]);
 	}
 }

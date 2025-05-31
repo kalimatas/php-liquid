@@ -23,7 +23,7 @@ class TextDrop extends Drop
 {
 	public function get_array()
 	{
-		return array('text1', 'text2');
+		return ['text1', 'text2'];
 	}
 
 	public function text()
@@ -84,14 +84,14 @@ class DropTest extends TestCase
 
 		$template = new Template();
 		$template->parse(' {{ product.top_sales }} ');
-		$template->render(array('product' => new ProductDrop));
+		$template->render(['product' => new ProductDrop]);
 	}
 
 	public function testNoKeyDrop()
 	{
 		$template = new Template();
 		$template->parse(' {{ product.invalid.unknown }}{{ product.false }} ');
-		$output = $template->render(array('product' => new ProductDrop));
+		$output = $template->render(['product' => new ProductDrop]);
 		$this->assertEquals('  ', $output);
 	}
 
@@ -99,12 +99,12 @@ class DropTest extends TestCase
 	{
 		$template = new Template();
 		$template->parse(' {{ product.texts.text }} ');
-		$output = $template->render(array('product' => new ProductDrop()));
+		$output = $template->render(['product' => new ProductDrop()]);
 		$this->assertEquals(' text1 ', $output);
 
 		$template = new Template();
 		$template->parse(' {{ product.catchall.unknown }} ');
-		$output = $template->render(array('product' => new ProductDrop()));
+		$output = $template->render(['product' => new ProductDrop()]);
 		$this->assertEquals(' method: unknown ', $output);
 	}
 
@@ -112,7 +112,7 @@ class DropTest extends TestCase
 	{
 		$template = new Template();
 		$template->parse('{% for text in product.texts.get_array %} {{text}} {% endfor %}');
-		$output = $template->render(array('product' => new ProductDrop()));
+		$output = $template->render(['product' => new ProductDrop()]);
 
 		$this->assertEquals(' text1  text2 ', $output);
 	}
@@ -121,7 +121,7 @@ class DropTest extends TestCase
 	{
 		$template = new Template();
 		$template->parse(' {{ context.bar }} ');
-		$output = $template->render(array('context' => new ContextDrop(), 'bar' => 'carrot'));
+		$output = $template->render(['context' => new ContextDrop(), 'bar' => 'carrot']);
 		$this->assertEquals(' carrot ', $output);
 	}
 
@@ -129,7 +129,7 @@ class DropTest extends TestCase
 	{
 		$template = new Template();
 		$template->parse(' {{ product.context.foo }} ');
-		$output = $template->render(array('product' => new ProductDrop(), 'foo' => 'monkey'));
+		$output = $template->render(['product' => new ProductDrop(), 'foo' => 'monkey']);
 		$this->assertEquals(' monkey ', $output);
 	}
 

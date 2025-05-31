@@ -58,16 +58,16 @@ class TagAssignTest extends TestCase
 		$this->assertTrue($template->render() === 'Hello');
 
 		$template->parse('{% assign test = var1 | first | upcase %}{{ test }}');
-		$this->assertTrue($template->render(array('var1' => array('a', 'b', 'c'))) === 'A');
+		$this->assertTrue($template->render(['var1' => ['a', 'b', 'c']]) === 'A');
 
 		$template->parse('{% assign test = var1 | last | upcase %}{{ test }}');
-		$this->assertTrue($template->render(array('var1' => array('a', 'b', 'c'))) === 'C');
+		$this->assertTrue($template->render(['var1' => ['a', 'b', 'c']]) === 'C');
 
 		$template->parse('{% assign test = var1 | join %}{{ test }}');
-		$this->assertTrue($template->render(array('var1' => array('a', 'b', 'c'))) === 'a b c');
+		$this->assertTrue($template->render(['var1' => ['a', 'b', 'c']]) === 'a b c');
 
 		$template->parse('{% assign test = var1 | join : "." %}{{ test }}');
-		$this->assertTrue($template->render(array('var1' => array('a', 'b', 'c'))) === 'a.b.c');
+		$this->assertTrue($template->render(['var1' => ['a', 'b', 'c']]) === 'a.b.c');
 	}
 
 	/**

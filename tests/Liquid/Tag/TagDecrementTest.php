@@ -34,16 +34,16 @@ class TagDecrementTest extends TestCase
 
 	public function testDecrementVariable()
 	{
-		$this->assertTemplateResult(42, '{% decrement var %}{{ var }}', array('var' => 43));
+		$this->assertTemplateResult(42, '{% decrement var %}{{ var }}', ['var' => 43]);
 	}
 
 	public function testDecrementNestedVariable()
 	{
-		$this->assertTemplateResult(42, '{% for var in vars %}{% decrement var %}{{ var }}{% endfor %}', array('vars' => array(43)));
+		$this->assertTemplateResult(42, '{% for var in vars %}{% decrement var %}{{ var }}{% endfor %}', ['vars' => [43]]);
 	}
 
 	public function testVariableNameContainingNumber()
 	{
-		$this->assertTemplateResult(42, '{% decrement var123 %}{{ var123 }}', array('var123' => 43));
+		$this->assertTemplateResult(42, '{% decrement var123 %}{{ var123 }}', ['var123' => 43]);
 	}
 }

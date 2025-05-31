@@ -78,7 +78,7 @@ class Variable
 
 			foreach ($this->filters as $filter) {
 				// with empty filters set we would just move along
-				if (in_array($filter[0], array('escape', 'escape_once', 'raw', 'newline_to_br'))) {
+				if (in_array($filter[0], ['escape', 'escape_once', 'raw', 'newline_to_br'])) {
 					// if we have any raw-like filter, stop
 					$addEscapeFilter = false;
 					break;
@@ -86,7 +86,7 @@ class Variable
 			}
 
 			if ($addEscapeFilter) {
-				$this->filters[] = array('escape', array());
+				$this->filters[] = ['escape', []];
 			}
 		}
 	}
@@ -98,8 +98,8 @@ class Variable
 	 */
 	private static function parseFilterExpressions($filterName, array $unparsedArgs)
 	{
-		$filterArgs = array();
-		$keywordArgs = array();
+		$filterArgs = [];
+		$keywordArgs = [];
 
 		$justTagAttributes = new Regexp('/\A' . trim(Liquid::get('TAG_ATTRIBUTES'), '/') . '\z/');
 
@@ -115,7 +115,7 @@ class Variable
 			$filterArgs[] = $keywordArgs;
 		}
 
-		return array($filterName, $filterArgs);
+		return [$filterName, $filterArgs];
 	}
 
 	/**
@@ -151,8 +151,8 @@ class Variable
 		foreach ($this->filters as $filter) {
 			list($filtername, $filterArgKeys) = $filter;
 
-			$filterArgValues = array();
-			$keywordArgValues = array();
+			$filterArgValues = [];
+			$keywordArgValues = [];
 
 			foreach ($filterArgKeys as $arg_key) {
 				if (is_array($arg_key)) {

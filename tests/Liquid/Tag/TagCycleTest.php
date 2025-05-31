@@ -45,7 +45,7 @@ class TagCycleTest extends TestCase
 
 	public function testMultipleNamedCyclesWithNamesFromContext()
 	{
-		$assigns = array("var1" => 1, "var2" => 2);
+		$assigns = ["var1" => 1, "var2" => 2];
 		$this->assertTemplateResult('one one two two one one', '{%cycle var1: "one", "two" %} {%cycle var2: "one", "two" %} {%cycle var1: "one", "two" %} {%cycle var2: "one", "two" %} {%cycle var1: "one", "two" %} {%cycle var2: "one", "two" %}', $assigns);
 	}
 }

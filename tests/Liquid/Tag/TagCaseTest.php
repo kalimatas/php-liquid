@@ -33,19 +33,19 @@ class TagCaseTest extends TestCase
 {
 	public function testCase()
 	{
-		$assigns = array('condition' => 2);
+		$assigns = ['condition' => 2];
 		$this->assertTemplateResult(' its 2 ', '{% case condition %}{% when 1 %} its 1 {% when 2 %} its 2 {% endcase %}', $assigns);
 
-		$assigns = array('condition' => 1);
+		$assigns = ['condition' => 1];
 		$this->assertTemplateResult(' its 1 ', '{% case condition %}{% when 1 %} its 1 {% when 2 %} its 2 {% endcase %}', $assigns);
 
-		$assigns = array('condition' => 3);
+		$assigns = ['condition' => 3];
 		$this->assertTemplateResult('', '{% case condition %}{% when 1 %} its 1 {% when 2 %} its 2 {% endcase %}', $assigns);
 
-		$assigns = array('condition' => "string here");
+		$assigns = ['condition' => "string here"];
 		$this->assertTemplateResult(' hit ', '{% case condition %}{% when "string here" %} hit {% endcase %}', $assigns);
 
-		$assigns = array('condition' => "bad string here");
+		$assigns = ['condition' => "bad string here"];
 		$this->assertTemplateResult('', '{% case condition %}{% when "string here" %} hit {% endcase %}', $assigns);
 	}
 
@@ -71,10 +71,10 @@ class TagCaseTest extends TestCase
 
 	public function testCaseWithElse()
 	{
-		$assigns = array('condition' => 5);
+		$assigns = ['condition' => 5];
 		$this->assertTemplateResult(' hit ', '{% case condition %}{% when 5 %} hit {% else %} else {% endcase %}', $assigns);
 
-		$assigns = array('condition' => 6);
+		$assigns = ['condition' => 6];
 		$this->assertTemplateResult(' else ', '{% case condition %}{% when 5 %} hit {% else %} else {% endcase %}', $assigns);
 	}
 
@@ -111,16 +111,16 @@ class TagCaseTest extends TestCase
 	{
 		$this->expectException(\Liquid\Exception\RenderException::class);
 
-		$this->assertTemplateResult('', '{% case variable %}{% when 5 %}{% endcase %}', array('variable' => (object) array()));
+		$this->assertTemplateResult('', '{% case variable %}{% when 5 %}{% endcase %}', ['variable' => (object) []]);
 	}
 
 	public function testStringable()
 	{
-		$this->assertTemplateResult('hit', '{% case variable %}{% when 100 %}hit{% endcase %}', array('variable' => new Stringable()));
+		$this->assertTemplateResult('hit', '{% case variable %}{% when 100 %}hit{% endcase %}', ['variable' => new Stringable()]);
 	}
 
 	public function testToLiquid()
 	{
-		$this->assertTemplateResult('hit', '{% case variable %}{% when 100 %}hit{% endcase %}', array('variable' => new HasToLiquid()));
+		$this->assertTemplateResult('hit', '{% case variable %}{% when 100 %}hit{% endcase %}', ['variable' => new HasToLiquid()]);
 	}
 }

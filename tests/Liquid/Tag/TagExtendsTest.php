@@ -25,10 +25,10 @@ class TagExtendsTest extends TestCase
 
 	protected function setUp(): void
 	{
-		$this->fs = TestFileSystem::fromArray(array(
+		$this->fs = TestFileSystem::fromArray([
 			'base' => "{% block content %}{% endblock %}{% block footer %}{% endblock %}",
 			'sub-base' => "{% extends 'base' %}{% block content %}{% endblock %}{% block footer %} Boo! {% endblock %}",
-		));
+		]);
 	}
 
 	protected function tearDown(): void
@@ -42,7 +42,7 @@ class TagExtendsTest extends TestCase
 		$template = new Template();
 		$template->setFileSystem($this->fs);
 		$template->parse("{% extends 'base' %}{% block content %}{{ hello }}{% endblock %}");
-		$output = $template->render(array("hello" => "Hello!"));
+		$output = $template->render(["hello" => "Hello!"]);
 		$this->assertEquals("Hello!", $output);
 	}
 
@@ -51,7 +51,7 @@ class TagExtendsTest extends TestCase
 		$template = new Template();
 		$template->setFileSystem($this->fs);
 		$template->parse("{% block content %}{{ hello }}{% endblock %}\n{% extends 'sub-base' %}");
-		$output = $template->render(array("hello" => "Hello!"));
+		$output = $template->render(["hello" => "Hello!"]);
 		$this->assertEquals("Hello!\n Boo! ", $output);
 	}
 
@@ -61,7 +61,7 @@ class TagExtendsTest extends TestCase
 		$template->setFileSystem($this->fs);
 		$template->parse('{% extends "sub-base" %}{% block content %}{{ hello }}{% endblock %}{% block footer %} I am a footer.{% endblock %}');
 
-		$output = $template->render(array("hello" => "Hello!"));
+		$output = $template->render(["hello" => "Hello!"]);
 		$this->assertEquals("Hello! I am a footer.", $output);
 	}
 
@@ -71,9 +71,9 @@ class TagExtendsTest extends TestCase
 		$template->setFileSystem($this->fs);
 		$template->setCache(new Local());
 
-		foreach (array("Before cache", "With cache") as $type) {
+		foreach (["Before cache", "With cache"] as $type) {
 			$template->parse("{% extends 'base' %}{% block content %}{{ hello }}{% endblock %}");
-			$output = $template->render(array("hello" => "$type"));
+			$output = $template->render(["hello" => "$type"]);
 			$this->assertEquals($type, $output);
 		}
 
@@ -86,10 +86,10 @@ class TagExtendsTest extends TestCase
 	public function testExtendsReplaceContentWithCache()
 	{
 		$template = new Template();
-		$template->setFileSystem(TestFileSystem::fromArray(array(
+		$template->setFileSystem(TestFileSystem::fromArray([
 			'outer' => "{% block content %}Content for outer block{% endblock %} / {% block footer %}Footer for outer block{% endblock %}",
 			'inner' => "{% extends 'outer' %}{% block content %}Content for inner block{% endblock %}",
-		)));
+		]));
 
 		$contentsWithoutCache = $template->parseFile('inner')->render();
 
@@ -102,11 +102,11 @@ class TagExtendsTest extends TestCase
 	public function testExtendsReplaceContentWithVariables()
 	{
 		$template = new Template();
-		$template->setFileSystem(TestFileSystem::fromArray(array(
+		$template->setFileSystem(TestFileSystem::fromArray([
 			'outer' => "{% block content %}Outer{{ a }}{% endblock %}Spacer{{ a }}{% block footer %}Footer{{ a }}{% endblock %}",
 			'middle' => "{% extends 'outer' %}{% block content %}Middle{{ a }}{% endblock %}",
 			'inner' => "{% extends 'middle' %}{% block content %}Inner{{ a }}{% endblock %}",
-		)));
+		]));
 
 		$template->setCache(new Local());
 
@@ -120,10 +120,10 @@ class TagExtendsTest extends TestCase
 	public function testExtendsWithEmptyDefaultContent()
 	{
 		$template = new Template();
-		$template->setFileSystem(TestFileSystem::fromArray(array(
+		$template->setFileSystem(TestFileSystem::fromArray([
 			'base' => "<div>{% block content %}{% endblock %}</div>",
 			'extends' => "{% extends 'base' %}{% block content %}{{ test }}{% endblock %}",
-		)));
+		]));
 
 		$template->setCache(new Local());
 
@@ -140,24 +140,24 @@ class TagExtendsTest extends TestCase
 		$template->setCache(new Local());
 
 		$content = "[{{ name }}]";
-		$template->setFileSystem(TestFileSystem::fromArray(array(
+		$template->setFileSystem(TestFileSystem::fromArray([
 			'outer' => &$content,
-			'inner' => "{% extends 'outer' %}"
-		)));
+			'inner' => "{% extends 'outer' %}",
+		]));
 
 		$template->parseFile('inner');
-		$output = $template->render(array("name" => "Example"));
+		$output = $template->render(["name" => "Example"]);
 		$this->assertEquals("[Example]", $output);
 
 		// this should go from cache
 		$template->parse("{% extends 'outer' %}");
-		$output = $template->render(array("name" => "Example"));
+		$output = $template->render(["name" => "Example"]);
 		$this->assertEquals("[Example]", $output);
 
 		// content change should trigger re-render
 		$content = "<{{ name }}>";
 		$template->parseFile('inner');
-		$output = $template->render(array("name" => "Example"));
+		$output = $template->render(["name" => "Example"]);
 		$this->assertEquals("<Example>", $output);
 	}
 

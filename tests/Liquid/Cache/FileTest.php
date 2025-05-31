@@ -28,11 +28,11 @@ class FileTest extends TestCase
 		// Remove tmp cache files because they may remain after a failed test run
 		$this->removeOldCachedFiles();
 
-		$this->cache = new File(array(
+		$this->cache = new File([
 			'cache_dir' => $this->cacheDir,
 			'cache_expire' => 3600,
 			'cache_prefix' => 'liquid_',
-		));
+		]);
 	}
 
 	protected function tearDown(): void
@@ -60,7 +60,7 @@ class FileTest extends TestCase
 	{
 		$this->expectException(\Liquid\Exception\FilesystemException::class);
 
-		new File(array('cache_dir' => '/no/such/dir/liquid/cache'));
+		new File(['cache_dir' => '/no/such/dir/liquid/cache']);
 	}
 
 	public function testGetExistsNoFile()

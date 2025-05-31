@@ -40,7 +40,7 @@ class TemplateTest extends TestCase
 		$this->expectException(\Liquid\LiquidException::class);
 
 		$template = new Template();
-		$template->setCache(array());
+		$template->setCache([]);
 	}
 
 	/**
@@ -50,44 +50,44 @@ class TemplateTest extends TestCase
 		$this->expectException(\Liquid\LiquidException::class);
 
 		$template = new Template();
-		$template->setCache(array('cache' => 'no_such_class'));
+		$template->setCache(['cache' => 'no_such_class']);
 	}
 
 	public function testSetCacheThroughArray()
 	{
 		$template = new Template();
-		$template->setCache(array('cache' => 'file', 'cache_dir' => $this->cacheDir));
+		$template->setCache(['cache' => 'file', 'cache_dir' => $this->cacheDir]);
 		$this->assertInstanceOf(\Liquid\Cache\File::class, $template::getCache());
 	}
 
 	public function testSetCacheThroughCacheObject()
 	{
 		$template = new Template();
-		$cache = new Cache\File(array('cache_dir' => $this->cacheDir));
+		$cache = new Cache\File(['cache_dir' => $this->cacheDir]);
 		$template->setCache($cache);
 		$this->assertEquals($cache, $template::getCache());
 	}
 
 	public function testTokenizeStrings()
 	{
-		$this->assertEquals(array(' '), Template::tokenize(' '));
-		$this->assertEquals(array('hello world'), Template::tokenize('hello world'));
+		$this->assertEquals([' '], Template::tokenize(' '));
+		$this->assertEquals(['hello world'], Template::tokenize('hello world'));
 	}
 
 	public function testTokenizeVariables()
 	{
-		$this->assertEquals(array('{{funk}}'), Template::tokenize('{{funk}}'));
-		$this->assertEquals(array(' ', '{{funk}}', ' '), Template::tokenize(' {{funk}} '));
-		$this->assertEquals(array(' ', '{{funk}}', ' ', '{{so}}', ' ', '{{brother}}', ' '), Template::tokenize(' {{funk}} {{so}} {{brother}} '));
-		$this->assertEquals(array(' ', '{{  funk  }}', ' '), Template::tokenize(' {{  funk  }} '));
+		$this->assertEquals(['{{funk}}'], Template::tokenize('{{funk}}'));
+		$this->assertEquals([' ', '{{funk}}', ' '], Template::tokenize(' {{funk}} '));
+		$this->assertEquals([' ', '{{funk}}', ' ', '{{so}}', ' ', '{{brother}}', ' '], Template::tokenize(' {{funk}} {{so}} {{brother}} '));
+		$this->assertEquals([' ', '{{  funk  }}', ' '], Template::tokenize(' {{  funk  }} '));
 	}
 
 	public function testTokenizeBlocks()
 	{
-		$this->assertEquals(array('{%comment%}'), Template::tokenize('{%comment%}'));
-		$this->assertEquals(array(' ', '{%comment%}', ' '), Template::tokenize(' {%comment%} '));
-		$this->assertEquals(array(' ', '{%comment%}', ' ', '{%endcomment%}', ' '), Template::tokenize(' {%comment%} {%endcomment%} '));
-		$this->assertEquals(array('  ', '{% comment %}', ' ', '{% endcomment %}', ' '), Template::tokenize("  {% comment %} {% endcomment %} "));
+		$this->assertEquals(['{%comment%}'], Template::tokenize('{%comment%}'));
+		$this->assertEquals([' ', '{%comment%}', ' '], Template::tokenize(' {%comment%} '));
+		$this->assertEquals([' ', '{%comment%}', ' ', '{%endcomment%}', ' '], Template::tokenize(' {%comment%} {%endcomment%} '));
+		$this->assertEquals(['  ', '{% comment %}', ' ', '{% endcomment %}', ' '], Template::tokenize("  {% comment %} {% endcomment %} "));
 	}
 
 	public function testBlackspace()
@@ -97,7 +97,7 @@ class TemplateTest extends TestCase
 
 		$nodelist = $template->getRoot()->getNodelist();
 
-		$this->assertEquals(array('  '), $nodelist);
+		$this->assertEquals(['  '], $nodelist);
 	}
 
 	public function testVariableBeginning()

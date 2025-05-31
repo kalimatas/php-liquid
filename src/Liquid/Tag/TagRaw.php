@@ -34,7 +34,7 @@ class TagRaw extends AbstractBlock
 	{
 		$tagRegexp = new Regexp('/^' . Liquid::get('TAG_START') . '\s*(\w+)\s*(.*)?' . Liquid::get('TAG_END') . '$/');
 
-		$this->nodelist = array();
+		$this->nodelist = [];
 
 		while (count($tokens)) {
 			$token = array_shift($tokens);

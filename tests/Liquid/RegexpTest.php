@@ -25,32 +25,32 @@ class RegexpTest extends TestCase
 
 	public function testEmpty()
 	{
-		$this->assertEquals(array(), $this->regexp->scan(''));
+		$this->assertEquals([], $this->regexp->scan(''));
 	}
 
 	public function testQuote()
 	{
-		$this->assertEquals(array('"arg 1"'), $this->regexp->scan('"arg 1"'));
+		$this->assertEquals(['"arg 1"'], $this->regexp->scan('"arg 1"'));
 	}
 
 	public function testWords()
 	{
-		$this->assertEquals(array('arg1', 'arg2'), $this->regexp->scan('arg1 arg2'));
+		$this->assertEquals(['arg1', 'arg2'], $this->regexp->scan('arg1 arg2'));
 	}
 
 	public function testQuotedWords()
 	{
-		$this->assertEquals(array('arg1', 'arg2', '"arg 3"'), $this->regexp->scan('arg1 arg2 "arg 3"'));
+		$this->assertEquals(['arg1', 'arg2', '"arg 3"'], $this->regexp->scan('arg1 arg2 "arg 3"'));
 	}
 
 	public function testQuotedWords2()
 	{
-		$this->assertEquals(array('arg1', 'arg2', "'arg 3'"), $this->regexp->scan('arg1 arg2 \'arg 3\''));
+		$this->assertEquals(['arg1', 'arg2', "'arg 3'"], $this->regexp->scan('arg1 arg2 \'arg 3\''));
 	}
 
 	public function testQuotedWordsInTheMiddle()
 	{
-		$this->assertEquals(array('arg1', 'arg2', '"arg 3"', 'arg4'), $this->regexp->scan('arg1 arg2 "arg 3" arg4   '));
+		$this->assertEquals(['arg1', 'arg2', '"arg 3"', 'arg4'], $this->regexp->scan('arg1 arg2 "arg 3" arg4   '));
 	}
 
 	public function testPregQuote()
@@ -63,7 +63,7 @@ class RegexpTest extends TestCase
 	public function testNoDelimiter()
 	{
 		$regexp = new Regexp('(example)');
-		$this->assertEquals(array('(example)'), $regexp->scan('(example)'));
-		$this->assertEquals(array(), $regexp->scan('nothing'));
+		$this->assertEquals(['(example)'], $regexp->scan('(example)'));
+		$this->assertEquals([], $regexp->scan('nothing'));
 	}
 }
