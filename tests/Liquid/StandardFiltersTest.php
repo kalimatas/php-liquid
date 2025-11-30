@@ -765,6 +765,14 @@ class StandardFiltersTest extends TestCase
 				0,
 				0,
 			],
+			[
+				['attr' => 'single value'],
+				['single value'],
+			],
+			[
+				[[['attr' => 1], ['attr' => 2]], [['attr' => 3]]],
+				[1, 2, 3],
+			],
 		];
 
 		foreach ($data as $item) {
