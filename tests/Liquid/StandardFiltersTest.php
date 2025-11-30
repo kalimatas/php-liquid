@@ -1083,6 +1083,33 @@ class StandardFiltersTest extends TestCase
 		foreach ($data as $item) {
 			$this->assertEqualsWithDelta($item[2], StandardFilters::divided_by($item[0], $item[1]), 0.00001);
 		}
+
+		$data = [
+			[
+				12,
+				3,
+				4,
+			],
+			[
+				14,
+				3,
+				4,
+			],
+			[
+				15,
+				3,
+				5,
+			],
+			[
+				5,
+				3,
+				1,
+			],
+		];
+
+		foreach ($data as $item) {
+			$this->assertSame($item[2], StandardFilters::divided_by($item[0], $item[1]));
+		}
 	}
 
 	public function testModulo()
