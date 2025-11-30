@@ -129,11 +129,11 @@ class StandardFiltersTest extends TestCase
 	public function testCapitalize()
 	{
 		$data = [
-			'one Word not' => 'One Word Not',
-			'1test' => '1Test',
+			'one Word not' => 'One word not',
+			'1test' => '1test',
 			'' => '',
 			// UTF-8
-			'владимир владимирович' => 'Владимир Владимирович',
+			'владимир владимирович' => 'Владимир владимирович',
 		];
 
 		foreach ($data as $element => $expected) {
