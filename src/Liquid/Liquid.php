@@ -151,20 +151,44 @@ class Liquid
 	 * Flatten a multidimensional array into a single array. Does not maintain keys.
 	 *
 	 * @param array $array
+	 * @param bool $skipHash If true, associative arrays (hashes) are preserved without flattening.
+	 *                       This mimics Ruby's Array#flatten behavior which preserves Hash objects.
 	 *
 	 * @return array
 	 */
-	public static function arrayFlatten($array)
+	public static function arrayFlatten($array, $skipHash = false)
 	{
 		$return = [];
 
 		foreach ($array as $element) {
 			if (is_array($element)) {
-				$return = array_merge($return, self::arrayFlatten($element));
+				if ($skipHash && self::isHash($element)) {
+					$return[] = $element;
+				} else {
+					$return = array_merge($return, self::arrayFlatten($element, $skipHash));
+				}
 			} else {
 				$return[] = $element;
 			}
 		}
 		return $return;
+	}
+
+	/**
+	 * Determine if an array is a hash (associative array).
+	 * This is a polyfill for !array_is_list() (PHP 8.1+).
+	 *
+	 * @param array $array
+	 *
+	 * @return bool
+	 *
+	 * @see https://www.php.net/manual/en/function.array-is-list.php
+	 */
+	public static function isHash(array $array): bool
+	{
+		if (empty($array)) {
+			return false;
+		}
+		return array_keys($array) !== range(0, count($array) - 1);
 	}
 }

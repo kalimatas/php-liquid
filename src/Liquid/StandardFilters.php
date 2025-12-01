@@ -316,7 +316,7 @@ class StandardFilters
 	 * @param array|\Traversable $input
 	 * @param string $property
 	 *
-	 * @return string
+	 * @return mixed
 	 */
 	public static function map($input, $property)
 	{
@@ -326,6 +326,15 @@ class StandardFilters
 		if (!is_array($input)) {
 			return $input;
 		}
+
+		if (Liquid::isHash($input)) {
+			$input = [$input];
+		}
+
+		// Flatten nested arrays while preserving hashes
+		// [[['attr' => 1]]] => [['attr' => 1]]
+		$input = Liquid::arrayFlatten($input, true);
+
 		return array_map(function ($elem) use ($property) {
 			if (is_callable($elem)) {
 				return $elem();

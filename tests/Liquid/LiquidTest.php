@@ -85,4 +85,62 @@ class LiquidTest extends TestCase
 
 		$this->assertEquals($expected, Liquid::arrayFlatten($original));
 	}
+
+	public function testArrayFlattenSkipHash()
+	{
+		$original = [
+			[['attr' => 1], ['attr' => 2]],
+			[['attr' => 3]],
+		];
+
+		$expected = [
+			['attr' => 1],
+			['attr' => 2],
+			['attr' => 3],
+		];
+
+		$this->assertEquals($expected, Liquid::arrayFlatten($original, true));
+	}
+
+	public function testArrayFlattenSkipHashMixedContent()
+	{
+		$original = [
+			['name' => 'John', 'age' => 30],
+			[1, 2, 3],
+			['key' => 'value'],
+		];
+
+		$expected = [
+			['name' => 'John', 'age' => 30],
+			1,
+			2,
+			3,
+			['key' => 'value'],
+		];
+
+		$this->assertEquals($expected, Liquid::arrayFlatten($original, true));
+	}
+
+	public function testIsHashWithEmptyArray()
+	{
+		$this->assertFalse(Liquid::isHash([]));
+	}
+
+	public function testIsHashWithIndexedArray()
+	{
+		$this->assertFalse(Liquid::isHash(['a', 'b', 'c']));
+		$this->assertFalse(Liquid::isHash([0 => 'a', 1 => 'b', 2 => 'c']));
+	}
+
+	public function testIsHashWithAssociativeArray()
+	{
+		$this->assertTrue(Liquid::isHash(['name' => 'John']));
+		$this->assertTrue(Liquid::isHash(['a' => 1, 'b' => 2]));
+	}
+
+	public function testIsHashWithNonSequentialKeys()
+	{
+		$this->assertTrue(Liquid::isHash([1 => 'a', 2 => 'b']));
+		$this->assertTrue(Liquid::isHash([0 => 'a', 2 => 'b']));
+	}
 }
