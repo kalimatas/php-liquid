@@ -143,4 +143,41 @@ class LiquidTest extends TestCase
 		$this->assertTrue(Liquid::isHash([1 => 'a', 2 => 'b']));
 		$this->assertTrue(Liquid::isHash([0 => 'a', 2 => 'b']));
 	}
+
+	public function testIsIntegerWithIntType()
+	{
+		$this->assertTrue(Liquid::isInteger(20));
+		$this->assertTrue(Liquid::isInteger(0));
+		$this->assertTrue(Liquid::isInteger(-5));
+	}
+
+	public function testIsIntegerWithStringInteger()
+	{
+		$this->assertTrue(Liquid::isInteger('20'));
+		$this->assertTrue(Liquid::isInteger('0'));
+		$this->assertTrue(Liquid::isInteger('-5'));
+	}
+
+	public function testIsIntegerWithFloat()
+	{
+		$this->assertFalse(Liquid::isInteger(20.0));
+		$this->assertFalse(Liquid::isInteger(20.5));
+		$this->assertFalse(Liquid::isInteger(-5.0));
+	}
+
+	public function testIsIntegerWithStringFloat()
+	{
+		$this->assertFalse(Liquid::isInteger('20.0'));
+		$this->assertFalse(Liquid::isInteger('20.5'));
+		$this->assertFalse(Liquid::isInteger('-5.5'));
+	}
+
+	public function testIsIntegerWithInvalidValues()
+	{
+		$this->assertFalse(Liquid::isInteger(''));
+		$this->assertFalse(Liquid::isInteger('-'));
+		$this->assertFalse(Liquid::isInteger('abc'));
+		$this->assertFalse(Liquid::isInteger(null));
+		$this->assertFalse(Liquid::isInteger([]));
+	}
 }

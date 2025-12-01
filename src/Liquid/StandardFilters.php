@@ -111,16 +111,19 @@ class StandardFilters
 
 
 	/**
-	 * division
+	 * Division
 	 *
-	 * @param float $input
-	 * @param float $operand
+	 * @param int|float|string $input
+	 * @param int|float|string $operand
 	 *
-	 * @return float
+	 * @return int|float
 	 */
 	public static function divided_by($input, $operand)
 	{
-		return (float)$input / (float)$operand;
+		if (Liquid::isInteger($input) && Liquid::isInteger($operand)) {
+			return (int) floor($input / $operand);
+		}
+		return (float) $input / (float) $operand;
 	}
 
 
@@ -347,29 +350,35 @@ class StandardFilters
 
 
 	/**
-	 * subtraction
+	 * Subtraction
 	 *
-	 * @param float $input
-	 * @param float $operand
+	 * @param int|float|string $input
+	 * @param int|float|string $operand
 	 *
-	 * @return float
+	 * @return int|float
 	 */
 	public static function minus($input, $operand)
 	{
+		if (Liquid::isInteger($input) && Liquid::isInteger($operand)) {
+			return (int)$input - (int)$operand;
+		}
 		return (float)$input - (float)$operand;
 	}
 
 
 	/**
-	 * modulo
+	 * Modulo
 	 *
-	 * @param float $input
-	 * @param float $operand
+	 * @param int|float|string $input
+	 * @param int|float|string $operand
 	 *
-	 * @return float
+	 * @return int|float
 	 */
 	public static function modulo($input, $operand)
 	{
+		if (Liquid::isInteger($input) && Liquid::isInteger($operand)) {
+			return (int)$input % (int)$operand;
+		}
 		return fmod((float)$input, (float)$operand);
 	}
 
@@ -388,15 +397,18 @@ class StandardFilters
 
 
 	/**
-	 * addition
+	 * Addition
 	 *
-	 * @param float $input
-	 * @param float $operand
+	 * @param int|float|string $input
+	 * @param int|float|string $operand
 	 *
-	 * @return float
+	 * @return int|float
 	 */
 	public static function plus($input, $operand)
 	{
+		if (Liquid::isInteger($input) && Liquid::isInteger($operand)) {
+			return (int)$input + (int)$operand;
+		}
 		return (float)$input + (float)$operand;
 	}
 
@@ -682,15 +694,18 @@ class StandardFilters
 
 
 	/**
-	 * multiplication
+	 * Multiplication
 	 *
-	 * @param float $input
-	 * @param float $operand
+	 * @param int|float|string $input
+	 * @param int|float|string $operand
 	 *
-	 * @return float
+	 * @return int|float
 	 */
 	public static function times($input, $operand)
 	{
+		if (Liquid::isInteger($input) && Liquid::isInteger($operand)) {
+			return (int)$input * (int)$operand;
+		}
 		return (float)$input * (float)$operand;
 	}
 

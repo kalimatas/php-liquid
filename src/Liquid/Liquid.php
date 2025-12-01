@@ -191,4 +191,25 @@ class Liquid
 		}
 		return array_keys($array) !== range(0, count($array) - 1);
 	}
+
+	/**
+	 * Determine if a value represents an integer.
+	 * Returns true for int type or string integers (e.g., "20", "-5").
+	 * Returns false for floats (e.g., 20.0) to preserve float division behavior.
+	 *
+	 * @param mixed $value
+	 *
+	 * @return bool
+	 */
+	public static function isInteger($value): bool
+	{
+		if (is_int($value)) {
+			return true;
+		}
+		if (is_string($value)) {
+			$trimmed = ltrim($value, '-');
+			return $trimmed !== '' && ctype_digit($trimmed);
+		}
+		return false;
+	}
 }
