@@ -286,4 +286,35 @@ class TagIfTest extends TestCase
 
 		$this->assertTemplateResult('', '{% unknown-tag %}');
 	}
+
+	public function testStringLiteralWithAndIsComparedLiterally()
+	{
+		$text = "{% assign course = 'Art and Design' %}" .
+				"{% if course == 'Art and Design' %}true{% else %}false{% endif %}";
+
+		$this->assertTemplateResult('true', $text);
+	}
+
+	public function testStringLiteralWithOrIsComparedLiterally()
+	{
+		$text = "{% assign title = 'History or Politics' %}" .
+				"{% if title == 'History or Politics' %}true{% else %}false{% endif %}";
+
+		$this->assertTemplateResult('true', $text);
+	}
+
+	public function testVarAndStringLiteralWithAndAreEqual()
+	{
+		$text = "{% if var == 'Art and Design' %}true{% else %}false{% endif %}";
+
+		$this->assertTemplateResult('true', $text, ['var' => 'Art and Design']);
+	}
+
+	public function testLogicalAndStillWorksWithStringLiteralContainingAnd()
+	{
+		$text = "{% assign ok = true %}{% assign course = 'Art and Design' %}" .
+				"{% if ok and course == 'Art and Design' %}true{% else %}false{% endif %}";
+
+		$this->assertTemplateResult('true', $text);
+	}
 }
