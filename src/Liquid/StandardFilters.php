@@ -416,6 +416,9 @@ class StandardFilters
 	 */
 	public static function remove($input, $string)
 	{
+		if ($string === null) {
+			return $input;
+		}
 		return str_replace($string, '', $input);
 	}
 
@@ -449,7 +452,10 @@ class StandardFilters
 	 */
 	public static function replace($input, $string, $replacement = '')
 	{
-		return str_replace($string, $replacement, $input);
+		if ($string === null) {
+			return $input;
+		}
+		return str_replace($string, $replacement === null ? '' : $replacement, $input);
 	}
 
 
