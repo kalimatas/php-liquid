@@ -441,9 +441,9 @@ class StandardFilters
 	/**
 	 * Replace occurrences of a string with another
 	 *
-	 * @param string $input
+	 * @param string|null $input
 	 * @param string|null $string
-	 * @param string $replacement
+	 * @param string|null $replacement
 	 *
 	 * @return string
 	 */
@@ -452,7 +452,7 @@ class StandardFilters
 		if ($string === null) {
 			return $input;
 		}
-		return str_replace($string, $replacement === null ? '' : $replacement, $input);
+		return str_replace($string, (string)$replacement, (string)$input);
 	}
 
 
