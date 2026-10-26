@@ -11,7 +11,11 @@
 
 namespace Liquid;
 
+use DateTimeInterface;
 use Liquid\Exception\RenderException;
+use function is_numeric;
+use function sprintf;
+use function strval;
 
 /**
  * A selection of standard filters.
@@ -78,21 +82,27 @@ class StandardFilters
 		$timezone ??= date_default_timezone_get();
 		$dateTimeZone = new \DateTimeZone($timezone);
 
-		$dateTime = is_numeric($input)
-			? (new \DateTime('now', $dateTimeZone))->setTimestamp((int) $input)
-			: new \DateTime($input, $dateTimeZone);
-
 		$dateFormat = str_replace(
 			['at', '%a', '%A', '%d', '%e', '%u', '%w', '%W', '%b', '%h', '%B', '%m', '%y', '%Y', '%D', '%F', '%x', '%n', '%t', '%H', '%k', '%I', '%l', '%M', '%p', '%P', '%r', '%R', '%S', '%T', '%X', '%z', '%Z', '%c', '%s', '%%'],
 			['\a\t', 'D', 'l', 'd', 'j', 'N', 'w', 'W', 'M', 'M', 'F', 'm', 'y', 'Y', 'm/d/y', 'Y-m-d', 'm/d/y', "\n", "\t", 'H', 'G', 'h', 'g', 'i', 'A', 'a', 'h:i:s A', 'H:i', 's', 'H:i:s', 'H:i:s', 'O', 'T', 'D M j H:i:s Y', 'U', '%'],
 			$strftimeFormat
 		);
 
-		$formatted = $dateTime->format($dateFormat);
+		$formatted = self::dateStringToDateTime($input, $dateTimeZone)->format($dateFormat);
 
 		return $formatted;
 	}
 
+	private static function dateStringToDateTime(string $input, \DateTimeZone $dateTimeZone): DateTimeInterface
+	{
+		if (!is_numeric($input)) {
+			return new \DateTimeImmutable($input, $dateTimeZone);
+		}
+
+		$dateTime = new \DateTimeImmutable(sprintf('@%d', $input));
+
+		return $dateTime->setTimezone($dateTimeZone);
+	}
 
 	/**
 	 * Default
