@@ -131,6 +131,12 @@ namespace Liquid {
 			$this->assertEquals($value, $this->filterBank->invoke('non_existing_filter', $value));
 		}
 
+		public function testInvokePrivateStaticMethod()
+		{
+			$value = 'value';
+			$this->assertEquals($value, $this->filterBank->invoke('dateStringToDateTime', $value));
+		}
+
 		/**
 		 * Test using a simple function
 		 */
