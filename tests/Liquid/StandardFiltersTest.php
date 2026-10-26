@@ -1238,4 +1238,62 @@ class StandardFiltersTest extends TestCase
 		$this->context->set('var', 1498942800);
 		$this->assertEquals($dateVar, $var->render($this->context));
 	}
+
+	public static function dateTimezoneProvider()
+	{
+		$format = '%Y-%m-%d %H:%M:%S %z';
+
+		return [
+			'timestamp, default timezone' => [1498942800, $format, null, '2017-07-01 21:00:00 +0000'],
+			'timestamp, ahead of UTC' => [1498942800, $format, 'Asia/Tokyo', '2017-07-02 06:00:00 +0900'],
+			'timestamp, behind UTC with DST' => [1498942800, $format, 'America/New_York', '2017-07-01 17:00:00 -0400'],
+			'numeric string as timestamp' => ['1498942800', $format, 'Asia/Tokyo', '2017-07-02 06:00:00 +0900'],
+			'exponent notation as timestamp' => ['1.4989428e9', $format, 'Asia/Tokyo', '2017-07-02 06:00:00 +0900'],
+			'fractional timestamp' => [1498942800.5, $format, 'Asia/Tokyo', '2017-07-02 06:00:00 +0900'],
+			'date string, default timezone' => ['2017-07-01 21:00:00', $format, null, '2017-07-01 21:00:00 +0000'],
+			'date string is local to timezone' => ['2017-07-01 21:00:00', $format, 'Asia/Tokyo', '2017-07-01 21:00:00 +0900'],
+			'explicit offset in date string wins' => ['2017-07-01 21:00:00 +0200', $format, 'Asia/Tokyo', '2017-07-01 21:00:00 +0200'],
+			'timezone abbreviation' => [1498942800, '%H:%M %Z', 'Europe/London', '22:00 BST'],
+		];
+	}
+
+	/**
+	 * @dataProvider dateTimezoneProvider
+	 * @param mixed $input
+	 */
+	public function testDateTimezone($input, string $format, ?string $timezone, string $expected)
+	{
+		$this->assertSame($expected, StandardFilters::date($input, $format, $timezone));
+	}
+
+	public function testDateTimezoneInTemplate()
+	{
+		$var = new Variable('var | date: "%Y-%m-%d %H:%M", "Asia/Tokyo"');
+		$this->context->set('var', 1498942800);
+		$this->assertSame('2017-07-02 06:00', $var->render($this->context));
+	}
+
+	public function testDateUsesDefaultTimezone()
+	{
+		$previous = date_default_timezone_get();
+		date_default_timezone_set('Asia/Tokyo');
+
+		try {
+			$this->assertSame('2017-07-02 06:00', StandardFilters::date(1498942800, '%Y-%m-%d %H:%M'));
+		} finally {
+			date_default_timezone_set($previous);
+		}
+	}
+
+	public function testDateKeepsDefaultTimezone()
+	{
+		StandardFilters::date(1498942800, '%Y', 'Asia/Tokyo');
+		$this->assertSame('UTC', date_default_timezone_get());
+	}
+
+	public function testDateInvalidTimezone()
+	{
+		$this->expectException(\Exception::class);
+		StandardFilters::date(1498942800, '%Y', 'Mars/Olympus_Mons');
+	}
 }

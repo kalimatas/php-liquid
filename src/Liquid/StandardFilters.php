@@ -65,47 +65,22 @@ class StandardFilters
 	 *
 	 * @param mixed $input
 	 * @param string $strftimeFormat (see http://strftime.net)
-     * @param string $timezone_string (see https://www.php.net/manual/de/datetimezone.construct.php & https://www.php.net/manual/en/function.date-default-timezone-set.php >> https://www.php.net/manual/de/timezones.php)
+	 * @param string|null $timezone (see https://www.php.net/manual/en/timezones.php), defaults to the default timezone
 	 *
 	 * @return string
 	 */
-	public static function date($input, $strftimeFormat = '%A, %B %e, %Y at %l:%S %P %z',?string $timezone_string = null)
+	public static function date($input, $strftimeFormat = '%A, %B %e, %Y at %l:%S %P %z', ?string $timezone = null)
 	{
 		if (!$strftimeFormat) {
 			return $input;
 		}
 
-		if (is_numeric($input)) {
+		$timezone ??= date_default_timezone_get();
+		$dateTimeZone = new \DateTimeZone($timezone);
 
-            // date() call below relies on currently configured timezone via `date_default_timezone_set`, so update it
-            // accordingly if a timezone is provided
-            if (!is_null($timezone_string)) {
-
-                $previous_timezone = date_default_timezone_get();
-                date_default_timezone_set($timezone_string);
-
-            }
-
-			$input = date('Y-m-d H:i:s', $input);
-
-            // Reset back to initial state in case it was changed above
-            if (!is_null($timezone_string)) {
-
-                date_default_timezone_set($previous_timezone);
-
-            }
-		}
-
-		$dateTime = new \DateTime(
-            $input,
-            // DateTime constructor uses DateTimeZone, which is based on the same timezone ID strings
-            // (https://www.php.net/manual/de/timezones.php), so
-            $timezone_string ? new \DateTimeZone($timezone_string) : null
-        );
-
-		if (!$dateTime) {
-			return "";
-		}
+		$dateTime = is_numeric($input)
+			? (new \DateTime('now', $dateTimeZone))->setTimestamp((int) $input)
+			: new \DateTime($input, $dateTimeZone);
 
 		$dateFormat = str_replace(
 			['at', '%a', '%A', '%d', '%e', '%u', '%w', '%W', '%b', '%h', '%B', '%m', '%y', '%Y', '%D', '%F', '%x', '%n', '%t', '%H', '%k', '%I', '%l', '%M', '%p', '%P', '%r', '%R', '%S', '%T', '%X', '%z', '%Z', '%c', '%s', '%%'],
