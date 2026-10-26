@@ -38,7 +38,7 @@ class StandardFilters
 
 
 	/**
-	 * Capitalize words in the input sentence
+	 * Capitalize the first character and downcase the rest
 	 *
 	 * @param string $input
 	 *
@@ -46,10 +46,9 @@ class StandardFilters
 	 */
 	public static function capitalize($input)
 	{
-		return preg_replace_callback("/(^|[^\p{L}'])([\p{Ll}])/u", function ($matches) {
-			$first_char = mb_substr($matches[2], 0, 1);
-			return $matches[1] . mb_strtoupper($first_char) . mb_substr($matches[2], 1);
-		}, ucwords($input));
+		$firstChar = mb_strtoupper(mb_substr($input, 0, 1, 'UTF-8'), 'UTF-8');
+		$rest = mb_strtolower(mb_substr($input, 1, null, 'UTF-8'), 'UTF-8');
+		return $firstChar . $rest;
 	}
 
 
@@ -120,16 +119,19 @@ class StandardFilters
 
 
 	/**
-	 * division
+	 * Division
 	 *
-	 * @param float $input
-	 * @param float $operand
+	 * @param int|float|string $input
+	 * @param int|float|string $operand
 	 *
-	 * @return float
+	 * @return int|float
 	 */
 	public static function divided_by($input, $operand)
 	{
-		return (float)$input / (float)$operand;
+		if (Liquid::isInteger($input) && Liquid::isInteger($operand)) {
+			return (int) floor($input / $operand);
+		}
+		return (float) $input / (float) $operand;
 	}
 
 
@@ -325,7 +327,7 @@ class StandardFilters
 	 * @param array|\Traversable $input
 	 * @param string $property
 	 *
-	 * @return string
+	 * @return mixed
 	 */
 	public static function map($input, $property)
 	{
@@ -335,6 +337,15 @@ class StandardFilters
 		if (!is_array($input)) {
 			return $input;
 		}
+
+		if (Liquid::isHash($input)) {
+			$input = [$input];
+		}
+
+		// Flatten nested arrays while preserving hashes
+		// [[['attr' => 1]]] => [['attr' => 1]]
+		$input = Liquid::arrayFlatten($input, true);
+
 		return array_map(function ($elem) use ($property) {
 			if (is_callable($elem)) {
 				return $elem();
@@ -347,29 +358,35 @@ class StandardFilters
 
 
 	/**
-	 * subtraction
+	 * Subtraction
 	 *
-	 * @param float $input
-	 * @param float $operand
+	 * @param int|float|string $input
+	 * @param int|float|string $operand
 	 *
-	 * @return float
+	 * @return int|float
 	 */
 	public static function minus($input, $operand)
 	{
+		if (Liquid::isInteger($input) && Liquid::isInteger($operand)) {
+			return (int)$input - (int)$operand;
+		}
 		return (float)$input - (float)$operand;
 	}
 
 
 	/**
-	 * modulo
+	 * Modulo
 	 *
-	 * @param float $input
-	 * @param float $operand
+	 * @param int|float|string $input
+	 * @param int|float|string $operand
 	 *
-	 * @return float
+	 * @return int|float
 	 */
 	public static function modulo($input, $operand)
 	{
+		if (Liquid::isInteger($input) && Liquid::isInteger($operand)) {
+			return (int)$input % (int)$operand;
+		}
 		return fmod((float)$input, (float)$operand);
 	}
 
@@ -388,15 +405,18 @@ class StandardFilters
 
 
 	/**
-	 * addition
+	 * Addition
 	 *
-	 * @param float $input
-	 * @param float $operand
+	 * @param int|float|string $input
+	 * @param int|float|string $operand
 	 *
-	 * @return float
+	 * @return int|float
 	 */
 	public static function plus($input, $operand)
 	{
+		if (Liquid::isInteger($input) && Liquid::isInteger($operand)) {
+			return (int)$input + (int)$operand;
+		}
 		return (float)$input + (float)$operand;
 	}
 
@@ -685,15 +705,18 @@ class StandardFilters
 
 
 	/**
-	 * multiplication
+	 * Multiplication
 	 *
-	 * @param float $input
-	 * @param float $operand
+	 * @param int|float|string $input
+	 * @param int|float|string $operand
 	 *
-	 * @return float
+	 * @return int|float
 	 */
 	public static function times($input, $operand)
 	{
+		if (Liquid::isInteger($input) && Liquid::isInteger($operand)) {
+			return (int)$input * (int)$operand;
+		}
 		return (float)$input * (float)$operand;
 	}
 

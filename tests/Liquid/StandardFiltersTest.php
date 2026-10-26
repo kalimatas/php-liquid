@@ -129,11 +129,11 @@ class StandardFiltersTest extends TestCase
 	public function testCapitalize()
 	{
 		$data = [
-			'one Word not' => 'One Word Not',
-			'1test' => '1Test',
+			'one Word not' => 'One word not',
+			'1test' => '1test',
 			'' => '',
 			// UTF-8
-			'владимир владимирович' => 'Владимир Владимирович',
+			'владимир владимирович' => 'Владимир владимирович',
 		];
 
 		foreach ($data as $element => $expected) {
@@ -765,6 +765,14 @@ class StandardFiltersTest extends TestCase
 				0,
 				0,
 			],
+			[
+				['attr' => 'single value'],
+				['single value'],
+			],
+			[
+				[[['attr' => 1], ['attr' => 2]], [['attr' => 3]]],
+				[1, 2, 3],
+			],
 		];
 
 		foreach ($data as $item) {
@@ -974,19 +982,46 @@ class StandardFiltersTest extends TestCase
 	{
 		$data = [
 			[
-				'',
-				'',
-				0,
+				1,
+				1,
+				2,
+			],
+			[
+				'3',
+				'4',
+				7,
+			],
+			[
+				'-5',
+				'3',
+				-2,
 			],
 			[
 				10,
 				20,
 				30,
 			],
+		];
+
+		foreach ($data as $item) {
+			$this->assertSame($item[2], StandardFilters::plus($item[0], $item[1]));
+		}
+
+		$data = [
+			[
+				'1',
+				'1.0',
+				2.0,
+			],
 			[
 				1.5,
 				2.7,
 				4.2,
+			],
+			[
+				'',
+				'',
+				0.0,
 			],
 		];
 
@@ -999,14 +1034,31 @@ class StandardFiltersTest extends TestCase
 	{
 		$data = [
 			[
-				'',
-				'',
-				0,
+				5,
+				1,
+				4,
+			],
+			[
+				'10',
+				'3',
+				7,
 			],
 			[
 				10,
 				20,
 				-10,
+			],
+		];
+
+		foreach ($data as $item) {
+			$this->assertSame($item[2], StandardFilters::minus($item[0], $item[1]));
+		}
+
+		$data = [
+			[
+				'4.3',
+				'2',
+				2.3,
 			],
 			[
 				1.5,
@@ -1016,7 +1068,12 @@ class StandardFiltersTest extends TestCase
 			[
 				3.1,
 				3.1,
-				0,
+				0.0,
+			],
+			[
+				'',
+				'',
+				0.0,
 			],
 		];
 
@@ -1029,14 +1086,46 @@ class StandardFiltersTest extends TestCase
 	{
 		$data = [
 			[
-				'',
-				'',
-				0,
+				3,
+				4,
+				12,
+			],
+			[
+				'5',
+				'2',
+				10,
+			],
+			[
+				-3,
+				4,
+				-12,
 			],
 			[
 				10,
 				20,
 				200,
+			],
+		];
+
+		foreach ($data as $item) {
+			$this->assertSame($item[2], StandardFilters::times($item[0], $item[1]));
+		}
+
+		$data = [
+			[
+				0.0725,
+				100,
+				7.25,
+			],
+			[
+				'-0.0725',
+				100,
+				-7.25,
+			],
+			[
+				'-0.0725',
+				-100,
+				7.25,
 			],
 			[
 				1.5,
@@ -1044,9 +1133,14 @@ class StandardFiltersTest extends TestCase
 				4.05,
 			],
 			[
-				  7.5,
-				  0,
-				  0,
+				7.5,
+				0,
+				0.0,
+			],
+			[
+				'',
+				'',
+				0.0,
 			],
 		];
 
@@ -1064,19 +1158,56 @@ class StandardFiltersTest extends TestCase
 				2,
 			],
 			[
+				12,
+				3,
+				4,
+			],
+			[
+				14,
+				3,
+				4,
+			],
+			[
+				15,
+				3,
+				5,
+			],
+			[
+				5,
+				3,
+				1,
+			],
+		];
+
+		foreach ($data as $item) {
+			$this->assertSame($item[2], StandardFilters::divided_by($item[0], $item[1]));
+		}
+
+		$data = [
+			[
+				'20.0',
 				10,
+				2.0,
+			],
+			[
+				10.0,
 				20,
 				0.5,
 			],
 			[
+				10,
+				20.0,
+				0.5,
+			],
+			[
 				0,
-				200,
-				0,
+				200.0,
+				0.0,
 			],
 			[
 				10,
 				0.5,
-				20,
+				20.0,
 			],
 		];
 
@@ -1088,6 +1219,11 @@ class StandardFiltersTest extends TestCase
 	public function testModulo()
 	{
 		$data = [
+			[
+				'7',
+				'3',
+				1,
+			],
 			[
 				'20',
 				10,
@@ -1103,6 +1239,13 @@ class StandardFiltersTest extends TestCase
 				3,
 				2,
 			],
+		];
+
+		foreach ($data as $item) {
+			$this->assertSame($item[2], StandardFilters::modulo($item[0], $item[1]));
+		}
+
+		$data = [
 			[
 				8.9,
 				3.5,
