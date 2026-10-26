@@ -92,56 +92,50 @@ class TagIf extends Decision
 	{
 		$context->push();
 
-		$logicalRegex = new Regexp('/\s+(and|or)\s+/');
 		$conditionalRegex = new Regexp('/(' . Liquid::get('QUOTED_FRAGMENT') . ')\s*([=!<>a-z_]+)?\s*(' . Liquid::get('QUOTED_FRAGMENT') . ')?/');
 
 		$result = '';
+
 		foreach ($this->blocks as $block) {
 			if ($block[0] == 'else') {
 				$result = $this->renderAll($block[2], $context);
-
 				break;
 			}
 
 			if ($block[0] == 'if' || $block[0] == 'elsif') {
-				// Extract logical operators
-				$logicalRegex->matchAll($block[1]);
+				$markup = $block[1];
 
-				$logicalOperators = $logicalRegex->matches;
-				$logicalOperators = $logicalOperators[1];
-				// Extract individual conditions
-				$temp = $logicalRegex->split($block[1]);
+				// quote-aware condition & operator parsing
+				$parsed      = $this->parseConditionsAndOperators($markup, $conditionalRegex);
+				$conditions  = $parsed['conditions'];
+				$operators   = $parsed['operators'];
 
-				$conditions = [];
-
-				foreach ($temp as $condition) {
-					if ($conditionalRegex->match($condition)) {
-						$left = (isset($conditionalRegex->matches[1])) ? $conditionalRegex->matches[1] : null;
-						$operator = (isset($conditionalRegex->matches[2])) ? $conditionalRegex->matches[2] : null;
-						$right = (isset($conditionalRegex->matches[3])) ? $conditionalRegex->matches[3] : null;
-
-						array_push($conditions, [
-							'left' => $left,
-							'operator' => $operator,
-							'right' => $right,
-						]);
-					} else {
-						throw new ParseException("Syntax Error in tag 'if' - Valid syntax: if [condition]");
-					}
+				if (count($conditions) === 0) {
+					throw new ParseException("Syntax Error in tag 'if' - Valid syntax: if [condition]");
 				}
-				if (count($logicalOperators)) {
-					// If statement contains and/or
-					$display = $this->interpretCondition($conditions[0]['left'], $conditions[0]['right'], $conditions[0]['operator'], $context);
-					foreach ($logicalOperators as $k => $logicalOperator) {
-						if ($logicalOperator == 'and') {
-							$display = ($display && $this->interpretCondition($conditions[$k + 1]['left'], $conditions[$k + 1]['right'], $conditions[$k + 1]['operator'], $context));
-						} else {
-							$display = ($display || $this->interpretCondition($conditions[$k + 1]['left'], $conditions[$k + 1]['right'], $conditions[$k + 1]['operator'], $context));
-						}
+
+				// Evaluate first condition
+				$display = $this->interpretCondition(
+					$conditions[0]['left'],
+					$conditions[0]['right'],
+					$conditions[0]['operator'],
+					$context
+				);
+
+				// Apply subsequent conditions with logical operators
+				foreach ($operators as $index => $logicalOperator) {
+					$next = $this->interpretCondition(
+						$conditions[$index + 1]['left'],
+						$conditions[$index + 1]['right'],
+						$conditions[$index + 1]['operator'],
+						$context
+					);
+
+					if ($logicalOperator === 'and') {
+						$display = $display && $next;
+					} else {
+						$display = $display || $next;
 					}
-				} else {
-					// If statement is a single condition
-					$display = $this->interpretCondition($conditions[0]['left'], $conditions[0]['right'], $conditions[0]['operator'], $context);
 				}
 
 				// hook for unless tag
@@ -149,7 +143,6 @@ class TagIf extends Decision
 
 				if ($display) {
 					$result = $this->renderAll($block[2], $context);
-
 					break;
 				}
 			}
@@ -164,5 +157,80 @@ class TagIf extends Decision
 	{
 		// no need to negate a condition in a regular `if` tag (will do that in `unless` tag)
 		return $display;
+	}
+
+	private function parseConditionsAndOperators(string $markup, Regexp $conditionalRegex): array
+	{
+		$len       = strlen($markup);
+		$inString  = false;
+		$quote     = null;
+		$buffer    = '';
+		$fragments = [];
+		$operators = [];
+
+		for ($i = 0; $i < $len; $i++) {
+			$ch = $markup[$i];
+
+			// Track entering/leaving string literals
+			if ($ch === "'" || $ch === '"') {
+				if (!$inString) {
+					$inString = true;
+					$quote    = $ch;
+				} elseif ($quote === $ch) {
+					$inString = false;
+					$quote    = null;
+				}
+
+				$buffer .= $ch;
+				continue;
+			}
+
+			if (!$inString) {
+				// Look for logical " and " outside quotes
+				if (substr($markup, $i, 5) === ' and ') {
+					$fragments[] = trim($buffer);
+					$buffer      = '';
+					$operators[] = 'and';
+					$i          += 4; // skip " and" (loop will add 1 more)
+					continue;
+				}
+
+				// Look for logical " or " outside quotes
+				if (substr($markup, $i, 4) === ' or ') {
+					$fragments[] = trim($buffer);
+					$buffer      = '';
+					$operators[] = 'or';
+					$i          += 3; // skip " or" (loop will add 1 more)
+					continue;
+				}
+			}
+
+			// Default: just accumulate characters
+			$buffer .= $ch;
+		}
+
+		if (trim($buffer) !== '') {
+			$fragments[] = trim($buffer);
+		}
+
+		$conditions = [];
+
+		foreach ($fragments as $fragment) {
+			if ($conditionalRegex->match($fragment)) {
+				$left     = isset($conditionalRegex->matches[1]) ? $conditionalRegex->matches[1] : null;
+				$operator = isset($conditionalRegex->matches[2]) ? $conditionalRegex->matches[2] : null;
+				$right    = isset($conditionalRegex->matches[3]) ? $conditionalRegex->matches[3] : null;
+
+				$conditions[] = [
+					'left'     => $left,
+					'operator' => $operator,
+					'right'    => $right,
+				];
+			} else {
+				throw new ParseException("Syntax Error in tag 'if' - Valid syntax: if [condition]");
+			}
+		}
+
+		return ['conditions' => $conditions, 'operators' => $operators];
 	}
 }
