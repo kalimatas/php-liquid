@@ -1287,13 +1287,20 @@ class StandardFiltersTest extends TestCase
 
 	public function testDateKeepsDefaultTimezone()
 	{
-		StandardFilters::date(1498942800, '%Y', 'Asia/Tokyo');
-		$this->assertSame('UTC', date_default_timezone_get());
+		$previous = date_default_timezone_get();
+		date_default_timezone_set('America/New_York');
+
+		try {
+			$this->assertSame('2017-07-02 06:00', StandardFilters::date(1498942800, '%Y-%m-%d %H:%M', 'Asia/Tokyo'));
+			$this->assertSame('America/New_York', date_default_timezone_get());
+		} finally {
+			date_default_timezone_set($previous);
+		}
 	}
 
 	public function testDateInvalidTimezone()
 	{
 		$this->expectException(\Exception::class);
-		StandardFilters::date(1498942800, '%Y', 'Mars/Olympus_Mons');
+		StandardFilters::date(1498942800, '%Y', 'Invalid/Timezone');
 	}
 }
