@@ -776,6 +776,23 @@ class StandardFiltersTest extends TestCase
 		}
 	}
 
+	public function testMapCallsInvokableObjects()
+	{
+		$invokable = new class() {
+			public function __invoke()
+			{
+				return 'from invokable';
+			}
+		};
+
+		$this->assertSame(['from invokable'], StandardFilters::map([$invokable], 'attr'));
+	}
+
+	public function testMapCallsOnlyCallableObjects()
+	{
+		$this->assertSame([null, null], StandardFilters::map(['time', new \stdClass()], 'attr'));
+	}
+
 	public function testFirst()
 	{
 		$data = [
