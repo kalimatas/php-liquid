@@ -336,7 +336,7 @@ class StandardFilters
 			return $input;
 		}
 		return array_map(function ($elem) use ($property) {
-			if (is_callable($elem)) {
+			if (is_object($elem) && is_callable($elem)) {
 				return $elem();
 			} elseif (is_array($elem) && array_key_exists($property, $elem)) {
 				return $elem[$property];
