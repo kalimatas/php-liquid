@@ -42,6 +42,19 @@ class AbstractBlock extends AbstractTag
 
 	private ?Regexp $variableRegexp;
 
+	public function __construct($markup, array &$tokens, ?FileSystem $fileSystem = null)
+	{
+		$this->config = &Liquid::$config;
+
+		$this->startRegexp = new Regexp('/^' . $this->config['TAG_START'] . '/');
+		$this->tagRegexp = new Regexp('/^' . $this->config['TAG_START'] . $this->config['WHITESPACE_CONTROL'] . '?\s*(\w+)\s*(.*?)' . $this->config['WHITESPACE_CONTROL'] . '?' . $this->config['TAG_END'] . '$/s');
+		$this->variableStartRegexp = new Regexp('/^' . $this->config['VARIABLE_START'] . '/');
+		$this->whitespaceControl = $this->config['WHITESPACE_CONTROL'];
+		$this->variableRegexp = new Regexp('/^' . $this->config['VARIABLE_START'] . $this->config['WHITESPACE_CONTROL'] . '?(.*?)' . $this->config['WHITESPACE_CONTROL'] . '?' . $this->config['VARIABLE_END'] . '$/s');
+
+		parent::__construct($markup, $tokens, $fileSystem);
+	}
+
 	/**
 	 * @return array
 	 */
@@ -60,10 +73,6 @@ class AbstractBlock extends AbstractTag
 	 */
 	public function parse(array &$tokens)
 	{
-		// Constructor is not reliably called by subclasses, so we need to ensure these are set
-		$this->startRegexp ??= new Regexp('/^' . Liquid::get('TAG_START') . '/');
-		$this->tagRegexp ??= new Regexp('/^' . Liquid::get('TAG_START') . Liquid::get('WHITESPACE_CONTROL') . '?\s*(\w+)\s*(.*?)' . Liquid::get('WHITESPACE_CONTROL') . '?' . Liquid::get('TAG_END') . '$/s');
-		$this->variableStartRegexp ??= new Regexp('/^' . Liquid::get('VARIABLE_START') . '/');
 
 		$startRegexp = $this->startRegexp;
 		$tagRegexp = $this->tagRegexp;
@@ -132,7 +141,6 @@ class AbstractBlock extends AbstractTag
 	 */
 	protected function whitespaceHandler($token)
 	{
-		$this->whitespaceControl ??= Liquid::get('WHITESPACE_CONTROL');
 
 		/*
 		 * This assumes that TAG_START is always '{%', and a whitespace control indicator
@@ -274,7 +282,6 @@ class AbstractBlock extends AbstractTag
 	 */
 	private function createVariable($token)
 	{
-		$this->variableRegexp ??= new Regexp('/^' . Liquid::get('VARIABLE_START') . Liquid::get('WHITESPACE_CONTROL') . '?(.*?)' . Liquid::get('WHITESPACE_CONTROL') . '?' . Liquid::get('VARIABLE_END') . '$/s');
 
 		if ($this->variableRegexp->match($token)) {
 			return new Variable($this->variableRegexp->matches[1]);
