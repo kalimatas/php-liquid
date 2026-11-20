@@ -710,7 +710,7 @@ class StandardFilters
 	public static function truncate($input, $characters = 100, $ending = '...')
 	{
 		if (is_string($input) || is_numeric($input)) {
-			if (strlen($input) > $characters) {
+			if (mb_strlen((string) $input) > $characters) {
 				return mb_substr($input, 0, $characters) . $ending;
 			}
 		}
