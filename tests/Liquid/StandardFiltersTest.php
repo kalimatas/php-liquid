@@ -496,6 +496,11 @@ class StandardFiltersTest extends TestCase
 
 		// UTF-8
 		$this->assertEquals('Влад...', StandardFilters::truncate('Владимир Владимирович', 4));
+
+		// UTF-8 string that fits in the length is not truncated
+		$this->assertEquals('Привет', StandardFilters::truncate('Привет', 10));
+		$this->assertEquals('café', StandardFilters::truncate('café', 4));
+		$this->assertEquals('caf...', StandardFilters::truncate('cafés', 3));
 	}
 
 	public function testTruncateWords()
