@@ -184,7 +184,7 @@ class AbstractBlock extends AbstractTag
 			}
 
 			if (is_array($value)) {
-				$value = htmlspecialchars(implode($value));
+				$value = $this->arrayToString($value);
 			}
 
 			$result .= $value;
@@ -200,6 +200,21 @@ class AbstractBlock extends AbstractTag
 		}
 
 		return $result;
+	}
+	
+	protected function arrayToString($value)
+	{
+		$result = [];
+		
+		foreach ($value as $item) {
+			if (is_array($item)) {
+				$result[] = $this->arrayToString($item);
+			} else {
+				$result[] = htmlspecialchars($item);
+			}
+		}
+	
+		return implode(', ', $result);
 	}
 
 	/**
