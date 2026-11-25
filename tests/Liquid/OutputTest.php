@@ -238,4 +238,20 @@ class OutputTest extends TestCase
 
 		$this->assertTemplateResult(' bmw ', $text, [...$this->assigns, 'brand' => null]);
 	}
+
+	public function testVariableOnSeveralLines()
+	{
+		$text = "{{ best_cars\n  | upcase\n  | append: '!' }}";
+		$this->assertTemplateResult('BMW!', $text, $this->assigns);
+
+		$text = "{{ best_cars | replace: 'b',\n  'p' }}";
+		$this->assertTemplateResult('pmw', $text, $this->assigns);
+	}
+
+	public function testStringWithLineBreak()
+	{
+		$this->assertTemplateResult("a\nb", "{{ 'a\nb' }}");
+		$this->assertTemplateResult("a\nb", "{{ \"a\nb\" }}");
+		$this->assertTemplateResult("bmw\n!", "{{ best_cars | append: '\n!' }}", $this->assigns);
+	}
 }

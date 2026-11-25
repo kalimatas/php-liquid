@@ -95,4 +95,13 @@ class TagAssignTest extends TestCase
 		$this->assertTemplateResult('-10.0', '{% assign i = -10.0 %}{{ i }}');
 		$this->assertTemplateResult('-10.5', '{% assign i = -10.5 %}{{ i }}');
 	}
+
+	/**
+	 * Tests filters and strings that span several lines
+	 */
+	public function testMultilineAssign()
+	{
+		$this->assertTemplateResult('FOO!', "{% assign a = 'foo'\n  | upcase\n  | append: '!'\n%}{{ a }}");
+		$this->assertTemplateResult("foo\nbar", "{% assign a = 'foo\nbar' %}{{ a }}");
+	}
 }
