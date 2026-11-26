@@ -102,6 +102,11 @@ class TagAssignTest extends TestCase
 	 */
 	public function testMultilineAssign()
 	{
-		$this->assertTemplateResult('FOO!', "{% assign test = 'FOO'\n  | upcase\n  | append: '!'\n %}{{ test }}");
+		$this->assertTemplateResult('FOO!', <<<LIQUID
+		{% assign test = 'FOO'
+		  | upcase
+		  | append: '!'
+		 %}{{ test }}
+		LIQUID);
 	}
 }

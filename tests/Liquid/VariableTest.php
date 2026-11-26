@@ -68,7 +68,12 @@ class VariableTest extends TestCase
 
 	public function testFiltersOnSeveralLines()
 	{
-		$var = new Variable("hello\r\n | replace: 'a',\r\n   'b'\r\n | paragraph\r\n");
+		$var = new Variable(<<<LIQUID
+		hello
+		 | replace: 'a',
+		   'b'
+		 | paragraph
+		LIQUID);
 		$this->assertEquals('hello', $var->getName());
 		$this->assertEquals([['replace', ["'a'", "'b'"]], ['paragraph', []]], $var->getFilters());
 	}
