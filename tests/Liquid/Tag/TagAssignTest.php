@@ -11,6 +11,7 @@
 
 namespace Liquid\Tag;
 
+use Liquid\Context;
 use Liquid\TestCase;
 use Liquid\Template;
 
@@ -94,5 +95,18 @@ class TagAssignTest extends TestCase
 		$this->assertTemplateResult('-100', '{% assign i = -100 %}{{ i }}');
 		$this->assertTemplateResult('-10.0', '{% assign i = -10.0 %}{{ i }}');
 		$this->assertTemplateResult('-10.5', '{% assign i = -10.5 %}{{ i }}');
+	}
+
+	/**
+	 * Tests filters and strings that span several lines
+	 */
+	public function testMultilineAssign()
+	{
+		$this->assertTemplateResult('FOO!', <<<LIQUID
+		{% assign test = 'FOO'
+		  | upcase
+		  | append: '!'
+		 %}{{ test }}
+		LIQUID);
 	}
 }

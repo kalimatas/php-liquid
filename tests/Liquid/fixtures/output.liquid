@@ -2,3 +2,10 @@ Hello {{ name }}
 Hello {{ company }}
 Hello {{ user.name }}
 Hello {{ 'Harald' | upcase }}
+Hello {{ 'Harald'
+  | upcase
+  | append: '!' }}
+{{ 'a
+b' }}
+{{ "a
+b" }}

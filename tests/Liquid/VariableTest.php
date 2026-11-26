@@ -66,6 +66,18 @@ class VariableTest extends TestCase
 		$this->assertEquals([['img_url', ["'450x450'", ["crop" => "'center'", "scale" => "2"]]]], $var->getFilters());
 	}
 
+	public function testFiltersOnSeveralLines()
+	{
+		$var = new Variable(<<<LIQUID
+		hello
+		 | replace: 'a',
+		   'b'
+		 | paragraph
+		LIQUID);
+		$this->assertEquals('hello', $var->getName());
+		$this->assertEquals([['replace', ["'a'", "'b'"]], ['paragraph', []]], $var->getFilters());
+	}
+
 	public function testFiltersWithoutWhitespace()
 	{
 		$var = new Variable('hello | textileze | paragraph');

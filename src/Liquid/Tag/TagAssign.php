@@ -52,7 +52,7 @@ class TagAssign extends AbstractTag
 	{
 		parent::__construct($markup, $tokens, $fileSystem);
 
-		$syntaxRegexp = new Regexp('/(\w+)\s*=\s*(.*)\s*/');
+		$syntaxRegexp = new Regexp('/(\w+)\s*=\s*(.*)\s*/s');
 
 		if ($syntaxRegexp->match($markup)) {
 			$this->to = $syntaxRegexp->matches[1];

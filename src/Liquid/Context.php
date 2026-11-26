@@ -228,11 +228,11 @@ class Context
 			return false;
 		}
 
-		if (preg_match('/^\'(.*)\'$/', $key, $matches)) {
+		if (preg_match('/^\'(.*)\'$/s', $key, $matches)) {
 			return $matches[1];
 		}
 
-		if (preg_match('/^"(.*)"$/', $key, $matches)) {
+		if (preg_match('/^"(.*)"$/s', $key, $matches)) {
 			return $matches[1];
 		}
 
