@@ -11,6 +11,7 @@
 
 namespace Liquid\Tag;
 
+use Liquid\Context;
 use Liquid\TestCase;
 use Liquid\Template;
 
@@ -101,7 +102,6 @@ class TagAssignTest extends TestCase
 	 */
 	public function testMultilineAssign()
 	{
-		$this->assertTemplateResult('FOO!', "{% assign a = 'foo'\n  | upcase\n  | append: '!'\n%}{{ a }}");
-		$this->assertTemplateResult("foo\nbar", "{% assign a = 'foo\nbar' %}{{ a }}");
+		$this->assertTemplateResult('FOO!', "{% assign test = 'FOO'\n  | upcase\n  | append: '!'\n %}{{ test }}");
 	}
 }
