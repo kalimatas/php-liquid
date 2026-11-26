@@ -177,7 +177,7 @@ class ContextTest extends TestCase
 
 	public function testScoping()
 	{
-		$this->context->push();
+		$this->assertTrue($this->context->push());
 		$this->assertNull($this->context->pop());
 	}
 
@@ -217,6 +217,31 @@ class ContextTest extends TestCase
 		}
 
 		$this->assertEquals(42.00, $this->context->get(42.00));
+	}
+
+	public function testPartiallyQuotedKeysAreNotLiterals()
+	{
+		$context = new Context([
+			"a'b'" => 'single quoted suffix',
+			"'quoted'suffix" => 'single quoted prefix',
+			'a"b"' => 'double quoted suffix',
+			'"quoted"suffix' => 'double quoted prefix',
+			'12abc' => 'numeric prefix',
+		]);
+
+		$this->assertSame('single quoted suffix', $context->get("a'b'"));
+		$this->assertSame('single quoted prefix', $context->get("'quoted'suffix"));
+		$this->assertSame('double quoted suffix', $context->get('a"b"'));
+		$this->assertSame('double quoted prefix', $context->get('"quoted"suffix'));
+		$this->assertSame('numeric prefix', $context->get('12abc'));
+	}
+
+	public function testNullLiteralTakesPrecedenceOverVariable()
+	{
+		$context = new Context(['null' => 'not null at all']);
+
+		$this->assertNull($context->get('null'));
+		$this->assertFalse($context->hasKey('null'));
 	}
 
 	public function testVariablesNotExisting()
@@ -473,6 +498,19 @@ class ContextTest extends TestCase
 		$this->assertEquals('test', $context->get('test'));
 	}
 
+	public function testEnvironmentsAreAnEmptyOverrideScopeAndAServerSnapshot()
+	{
+		$_SERVER['LIQUID_FOO'] = 'foo';
+
+		Liquid::set('SERVER_SUPERGLOBAL_WHITELIST', 'LIQUID_FOO');
+
+		$context = new Context();
+
+		$this->assertCount(2, $context->environments);
+		$this->assertSame([], $context->environments[0]);
+		$this->assertSame(['LIQUID_FOO' => 'foo'], $context->environments[1]);
+	}
+
 	public function testServerOnlyExposeWhitelistByDefault()
 	{
 		$_SERVER['AWS_SECRET_ACCESS_KEY'] = 'super_secret';
@@ -494,6 +532,18 @@ class ContextTest extends TestCase
 
 		$context->set('BAR', 'bar');
 		$this->assertEquals('bar', $context->get('BAR'));
+	}
+
+	public function testServerWhitelistAcceptsASingleKey()
+	{
+		$_SERVER['LIQUID_FOO'] = 'foo';
+		$_SERVER['LIQUID_BAR'] = 'bar';
+
+		Liquid::set('SERVER_SUPERGLOBAL_WHITELIST', 'LIQUID_FOO');
+
+		$context = new Context();
+		$this->assertEquals('foo', $context->get('LIQUID_FOO'));
+		$this->assertNull($context->get('LIQUID_BAR'));
 	}
 
 	public function testServerExposedWhenRequested()

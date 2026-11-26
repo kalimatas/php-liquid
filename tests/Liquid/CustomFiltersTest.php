@@ -27,6 +27,11 @@ class CustomFiltersTest extends TestCase
 		$this->context = new Context();
 	}
 
+	public function testSortKeyIsARegisteredFilter()
+	{
+		$this->assertTemplateResult('2', '{{ items | sort_key | first }}', ['items' => ['b' => 1, 'a' => 2]]);
+	}
+
 	public function testSortKey()
 	{
 		$data = [

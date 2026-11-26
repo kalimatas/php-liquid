@@ -112,6 +112,12 @@ namespace Liquid {
 			$this->filterBank->addFilter('no_such_function_or_class');
 		}
 
+		public function testAddFilterClass()
+		{
+			$this->assertTrue($this->filterBank->addFilter(\ClassFilter::class));
+			$this->assertSame('worked', $this->filterBank->invoke('static_test', ''));
+		}
+
 		public function testTypeErrorExceptionAndCallDateFilterWithoutArguments()
 		{
 			if (\PHP_VERSION_ID < 70100) {
