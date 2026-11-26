@@ -11,7 +11,11 @@
 
 namespace Liquid;
 
+use DateTimeInterface;
 use Liquid\Exception\RenderException;
+use function is_numeric;
+use function sprintf;
+use function strval;
 
 /**
  * A selection of standard filters.
@@ -65,23 +69,18 @@ class StandardFilters
 	 *
 	 * @param mixed $input
 	 * @param string $strftimeFormat (see http://strftime.net)
+	 * @param string|null $timezone (see https://www.php.net/manual/en/timezones.php), defaults to the default timezone
 	 *
 	 * @return string
 	 */
-	public static function date($input, $strftimeFormat = '%A, %B %e, %Y at %l:%S %P %z')
+	public static function date($input, $strftimeFormat = '%A, %B %e, %Y at %l:%S %P %z', ?string $timezone = null)
 	{
 		if (!$strftimeFormat) {
 			return $input;
 		}
 
-		if (is_numeric($input)) {
-			$input = date('Y-m-d H:i:s', $input);
-		}
-
-		$dateTime = new \DateTime($input);
-		if (!$dateTime) {
-			return "";
-		}
+		$timezone ??= date_default_timezone_get();
+		$dateTimeZone = new \DateTimeZone($timezone);
 
 		$dateFormat = str_replace(
 			['at', '%a', '%A', '%d', '%e', '%u', '%w', '%W', '%b', '%h', '%B', '%m', '%y', '%Y', '%D', '%F', '%x', '%n', '%t', '%H', '%k', '%I', '%l', '%M', '%p', '%P', '%r', '%R', '%S', '%T', '%X', '%z', '%Z', '%c', '%s', '%%'],
@@ -89,11 +88,21 @@ class StandardFilters
 			$strftimeFormat
 		);
 
-		$formatted = $dateTime->format($dateFormat);
+		$formatted = self::dateStringToDateTime($input, $dateTimeZone)->format($dateFormat);
 
 		return $formatted;
 	}
 
+	private static function dateStringToDateTime(string $input, \DateTimeZone $dateTimeZone): DateTimeInterface
+	{
+		if (!is_numeric($input)) {
+			return new \DateTimeImmutable($input, $dateTimeZone);
+		}
+
+		$dateTime = new \DateTimeImmutable(sprintf('@%d', $input));
+
+		return $dateTime->setTimezone($dateTimeZone);
+	}
 
 	/**
 	 * Default
@@ -327,7 +336,7 @@ class StandardFilters
 			return $input;
 		}
 		return array_map(function ($elem) use ($property) {
-			if (is_callable($elem)) {
+			if (is_object($elem) && is_callable($elem)) {
 				return $elem();
 			} elseif (is_array($elem) && array_key_exists($property, $elem)) {
 				return $elem[$property];
@@ -410,13 +419,13 @@ class StandardFilters
 	 * Remove a substring
 	 *
 	 * @param string $input
-	 * @param string $string
+	 * @param string|null $string
 	 *
 	 * @return string
 	 */
 	public static function remove($input, $string)
 	{
-		return str_replace($string, '', $input);
+		return self::replace($input, $string);
 	}
 
 
@@ -441,15 +450,18 @@ class StandardFilters
 	/**
 	 * Replace occurrences of a string with another
 	 *
-	 * @param string $input
-	 * @param string $string
-	 * @param string $replacement
+	 * @param string|null $input
+	 * @param string|null $string
+	 * @param string|null $replacement
 	 *
 	 * @return string
 	 */
 	public static function replace($input, $string, $replacement = '')
 	{
-		return str_replace($string, $replacement, $input);
+		if ($string === null) {
+			return $input;
+		}
+		return str_replace($string, (string)$replacement, (string)$input);
 	}
 
 
@@ -698,7 +710,7 @@ class StandardFilters
 	public static function truncate($input, $characters = 100, $ending = '...')
 	{
 		if (is_string($input) || is_numeric($input)) {
-			if (strlen($input) > $characters) {
+			if (mb_strlen((string) $input) > $characters) {
 				return mb_substr($input, 0, $characters) . $ending;
 			}
 		}

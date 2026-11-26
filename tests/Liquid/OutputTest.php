@@ -224,4 +224,18 @@ class OutputTest extends TestCase
 
 		$this->assertTemplateResult($expected, $text, []);
 	}
+
+	public function testRemoveWithNull(): void
+	{
+		$text = ' {{ best_cars | remove: brand }} ';
+
+		$this->assertTemplateResult(' bmw ', $text, [...$this->assigns, 'brand' => null]);
+	}
+
+	public function testReplaceWithNull()
+	{
+		$text = ' {{ best_cars | replace: brand }} ';
+
+		$this->assertTemplateResult(' bmw ', $text, [...$this->assigns, 'brand' => null]);
+	}
 }

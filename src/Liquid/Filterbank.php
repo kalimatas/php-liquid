@@ -74,6 +74,10 @@ class Filterbank
 		if (is_string($filter) && class_exists($filter)) {
 			$reflection = new \ReflectionClass($filter);
 			foreach ($reflection->getMethods(\ReflectionMethod::IS_STATIC) as $method) {
+				if (!$method->isPublic()) {
+					continue;
+				}
+
 				$this->methodMap[$method->name] = $method->class;
 			}
 
