@@ -1,0 +1,14 @@
+{% comment %}Conditions may break lines around and/or, as filters do.{% endcomment %}
+{% if user.active and
+      user.admin %}admin{% else %}not admin{% endif %}
+{% if user.admin or
+      user.active %}allowed{% else %}denied{% endif %}
+{% if user.active
+and user.admin %}admin{% else %}not admin{% endif %}
+{% if user.active	and	user.admin %}admin{% else %}not admin{% endif %}
+{% if user.admin %}admin{% elsif user.banned or
+      user.active %}member{% else %}guest{% endif %}
+{% unless user.banned and
+          user.active %}not banned{% endunless %}
+{% if user.name == "Ann" and
+      user.admin %}Hi admin Ann{% else %}Hi Ann{% endif %}
