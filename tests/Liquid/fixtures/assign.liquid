@@ -1,3 +1,7 @@
 {% assign descriptions = product.description | split: '<!-- split -->' %}
 {{ descriptions[0] }}
 {{ descriptions[1] }}
+{% assign greeting = 'foo'
+  | upcase
+  | append: '!'
+%}{{ greeting }}
