@@ -219,6 +219,8 @@ class StandardFiltersTest extends TestCase
 
 	/**
 	 * @dataProvider whereProvider
+	 * @param mixed $input
+	 * @param mixed $expected
 	 */
 	public function testWhereReturnsAList($input, array $args, $expected)
 	{
@@ -310,6 +312,8 @@ class StandardFiltersTest extends TestCase
 
 	/**
 	 * @dataProvider replaceWithoutNeedleProvider
+	 * @param mixed $input
+	 * @param mixed $expected
 	 */
 	public function testReplaceWithoutNeedle($input, $expected)
 	{
@@ -1293,6 +1297,7 @@ class StandardFiltersTest extends TestCase
 
 	/**
 	 * @dataProvider numericCastProvider
+	 * @param mixed $expected
 	 */
 	public function testNumericFiltersCastTheirOperands(string $filter, array $args, $expected)
 	{

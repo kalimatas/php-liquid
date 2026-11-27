@@ -199,6 +199,8 @@ class TagIfTest extends TestCase
 
 	/**
 	 * @dataProvider comparisonOperatorProvider
+	 * @param mixed $one
+	 * @param mixed $two
 	 */
 	public function testComparingValues(string $operator, $one, $two, string $expected)
 	{

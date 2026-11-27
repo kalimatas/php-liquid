@@ -130,6 +130,7 @@ namespace Liquid {
 
 		/**
 		 * @dataProvider addFilterProvider
+		 * @param mixed $filter
 		 */
 		public function testAddFilterReturnsTrue($filter, ?callable $callback = null)
 		{
