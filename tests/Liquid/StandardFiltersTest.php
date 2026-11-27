@@ -1277,6 +1277,50 @@ class StandardFiltersTest extends TestCase
 		}
 	}
 
+	public static function numericCastProvider()
+	{
+		return [
+			'ceil of a word' => ['ceil', ['abc'], 0],
+			'floor of a word' => ['floor', ['abc'], 0],
+			'a word divided by a number' => ['divided_by', ['abc', 2], 0.0],
+			'a number divided by a word' => ['divided_by', [4, '2abc'], 2.0],
+			'a word modulo a number' => ['modulo', ['abc', 2], 0.0],
+			'a number modulo a word' => ['modulo', [4, '2abc'], 0.0],
+			'round of a word' => ['round', ['abc'], 0.0],
+			'round with a word for precision' => ['round', [2.675, '2abc'], 2.68],
+		];
+	}
+
+	/**
+	 * @dataProvider numericCastProvider
+	 */
+	public function testNumericFiltersCastTheirOperands(string $filter, array $args, $expected)
+	{
+		$numeric = [StandardFilters::class, $filter];
+
+		$this->assertSame($expected, $numeric(...$args));
+	}
+
+	public static function roundHalfwayProvider()
+	{
+		return [
+			'half up' => [0.5, 1.0],
+			'one and a half' => [1.5, 2.0],
+			'minus one and a half' => [-1.5, -2.0],
+		];
+	}
+
+	/**
+	 * @dataProvider roundHalfwayProvider
+	 *
+	 * @param mixed $input
+	 * @param mixed $expected
+	 */
+	public function testRoundHalfwayValues($input, $expected)
+	{
+		$this->assertSame($expected, StandardFilters::round($input));
+	}
+
 	public function testCeil()
 	{
 		$data = [
