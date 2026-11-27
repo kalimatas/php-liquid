@@ -44,7 +44,7 @@ class StaticAnalysisTest extends TestCase
 			yield $class => [str_replace(getcwd(), '.', $filename), $class];
 		}
 
-		if ($seenNonVendor === false) {
+		if ($seenNonVendor === false && getenv('CI')) {
 			throw new \RuntimeException('Please generate the classmap.');
 		}
 	}
