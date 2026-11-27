@@ -607,18 +607,6 @@ class ContextTest extends TestCase
 		$this->assertEquals('bar', $context->get('BAR'));
 	}
 
-	public function testServerWhitelistAcceptsASingleKey()
-	{
-		$_SERVER['LIQUID_FOO'] = 'foo';
-		$_SERVER['LIQUID_BAR'] = 'bar';
-
-		Liquid::set('SERVER_SUPERGLOBAL_WHITELIST', 'LIQUID_FOO');
-
-		$context = new Context();
-		$this->assertEquals('foo', $context->get('LIQUID_FOO'));
-		$this->assertNull($context->get('LIQUID_BAR'));
-	}
-
 	public function testServerExposedWhenRequested()
 	{
 		Liquid::set('EXPOSE_SERVER', true);

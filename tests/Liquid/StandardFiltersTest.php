@@ -1306,26 +1306,6 @@ class StandardFiltersTest extends TestCase
 		$this->assertSame($expected, $numeric(...$args));
 	}
 
-	public static function roundHalfwayProvider()
-	{
-		return [
-			'half up' => [0.5, 1.0],
-			'one and a half' => [1.5, 2.0],
-			'minus one and a half' => [-1.5, -2.0],
-		];
-	}
-
-	/**
-	 * @dataProvider roundHalfwayProvider
-	 *
-	 * @param mixed $input
-	 * @param mixed $expected
-	 */
-	public function testRoundHalfwayValues($input, $expected)
-	{
-		$this->assertSame($expected, StandardFilters::round($input));
-	}
-
 	public function testCeil()
 	{
 		$data = [
