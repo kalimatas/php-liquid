@@ -69,6 +69,16 @@ class TagCaseTest extends TestCase
 		$this->assertTemplateResult($expected, $test, $assigns);
 	}
 
+	public function testCaseRendersEveryMatchingWhen()
+	{
+		$this->assertTemplateResult('AB', '{% case n %}{% when 1 %}A{% when 1 %}B{% endcase %}', ['n' => 1]);
+	}
+
+	public function testCaseValueListMatchesOnce()
+	{
+		$this->assertTemplateResult('A', '{% case n %}{% when 1, 1 %}A{% endcase %}', ['n' => 1]);
+	}
+
 	public function testCaseWithElse()
 	{
 		$assigns = ['condition' => 5];

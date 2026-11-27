@@ -129,6 +129,96 @@ class TagIfTest extends TestCase
 		$this->assertTemplateResult($expected, $text, ['array' => []]);
 	}
 
+	public static function missingValueComparisonProvider()
+	{
+		$no = '';
+
+		return [
+			'nothing does not differ from nothing' => ['!=', [], $no],
+			'a value is not an empty collection' => ['==', ['one' => 'x', 'two' => []], $no],
+		];
+	}
+
+	/**
+	 * @dataProvider missingValueComparisonProvider
+	 */
+	public function testComparingMissingValues(string $operator, array $assigns, string $expected)
+	{
+		$this->assertTemplateResult($expected, "{% if one $operator two %} yes {% endif %}", $assigns);
+	}
+
+	public static function comparisonOperatorProvider()
+	{
+		$yes = ' yes ';
+		$no = '';
+
+		return [
+			'equal values are not less' => ['<', 1, 1, $no],
+			'different values differ' => ['!=', 1, 2, $yes],
+			'a smaller value is no bigger' => ['>=', 1, 2, $no],
+			'a smaller value is no smaller' => ['<=', 1, 2, $yes],
+		];
+	}
+
+	/**
+	 * @dataProvider comparisonOperatorProvider
+	 * @param mixed $one
+	 * @param mixed $two
+	 */
+	public function testComparingValues(string $operator, $one, $two, string $expected)
+	{
+		$this->assertTemplateResult($expected, "{% if one $operator two %} yes {% endif %}", ['one' => $one, 'two' => $two]);
+	}
+
+	public static function incompleteConditionProvider()
+	{
+		return [
+			'two values with no operator' => ['{% if one two %}yes{% else %}no{% endif %}', ['one' => true], 'no'],
+		];
+	}
+
+	/**
+	 * @dataProvider incompleteConditionProvider
+	 */
+	public function testIncompleteConditions(string $source, array $assigns, string $expected)
+	{
+		$this->assertTemplateResult($expected, $source, $assigns);
+	}
+
+	public static function compoundConditionProvider()
+	{
+		return [
+			'and with both halves true' => ['and', ['one' => 1, 'two' => 2], 'yes'],
+			'or with one half true' => ['or', ['one' => 0, 'two' => 2], 'yes'],
+		];
+	}
+
+	/**
+	 * @dataProvider compoundConditionProvider
+	 */
+	public function testCompoundConditionKeepsItsOperatorsApart(string $operator, array $assigns, string $expected)
+	{
+		$this->assertTemplateResult($expected, "{% if one == 1 $operator two < 3 %}yes{% else %}no{% endif %}", $assigns);
+	}
+
+	public function testOrWithTwoFalseOperands()
+	{
+		$this->assertTemplateResult('no', '{% if one or two %}yes{% else %}no{% endif %}', ['one' => false, 'two' => false]);
+	}
+
+	public function testElsifAfterElseIsNotReached()
+	{
+		$this->assertTemplateResult('B', '{% if one %}A{% else %}B{% elsif two %}C{% endif %}', ['one' => false, 'two' => true]);
+	}
+
+	public function testUnknownTagInsideIf()
+	{
+		$this->expectException(\Liquid\Exception\ParseException::class);
+		$this->expectExceptionMessage('Unknown tag foo');
+
+		$this->assertTemplateResult('', '{% if true %}{% foo %}{% endif %}');
+	}
+
 	public function testIsNotCollectionEmpty()
 	{
 		$text = " {% if array == empty %} true {% else %} false {% endif %} ";
@@ -254,6 +344,7 @@ class TagIfTest extends TestCase
 	public function testInvalidOperator()
 	{
 		$this->expectException(\Liquid\Exception\RenderException::class);
+		$this->expectExceptionMessageMatches('/^Error in tag \'[^\']+\' - Unknown operator ===$/');
 
 		$this->assertTemplateResult('', '{% if foo === y %}true{% else %}false{% endif %}', ['foo' => true, 'y' => true]);
 	}
@@ -272,7 +363,7 @@ class TagIfTest extends TestCase
 	public function testSyntaxErrorElse()
 	{
 		$this->expectException(\Liquid\Exception\ParseException::class);
-		$this->expectExceptionMessage('does not expect else tag');
+		$this->expectExceptionMessage('document does not expect else tag');
 
 		$this->assertTemplateResult('', '{% if foo == 1 %}{% endif %}{% else %}');
 	}
@@ -282,7 +373,7 @@ class TagIfTest extends TestCase
 	public function testSyntaxErrorUnknown()
 	{
 		$this->expectException(\Liquid\Exception\ParseException::class);
-		$this->expectExceptionMessage('Unknown tag');
+		$this->expectExceptionMessage('Unknown tag unknown');
 
 		$this->assertTemplateResult('', '{% unknown-tag %}');
 	}

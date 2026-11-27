@@ -42,6 +42,32 @@ class TagTablerowTest extends TestCase
 		);
 	}
 
+	public function testTablerowLoopHelpers()
+	{
+		$this->assertTemplateResult(
+			'<tr class="row1">' . "\n"
+			. '<td class="col1"> 4 1 0 4 3 1 0 </td>'
+			. '<td class="col2"> 4 2 1 3 2 0 0 </td>'
+			. '<td class="col3"> 4 3 2 2 1 0 0 </td>'
+			. '<td class="col4"> 4 4 3 1 0 0 1 </td></tr>' . "\n",
+			'{% tablerow item in array %} '
+			. '{{ tablerowloop.length }} {{ tablerowloop.index }} {{ tablerowloop.index0 }} '
+			. '{{ tablerowloop.rindex }} {{ tablerowloop.rindex0 }} '
+			. '{{ tablerowloop.first }} {{ tablerowloop.last }} '
+			. '{% endtablerow %}',
+			['array' => [1, 2, 3, 4]]
+		);
+	}
+
+	public function testTablerowDiscardsCollectionKeys()
+	{
+		$this->assertTemplateResult(
+			'<tr class="row1">' . "\n" . '<td class="col1"> 1 </td><td class="col2"> 2 </td></tr>' . "\n",
+			'{% tablerow item in array %} {{ tablerowloop.index }} {% endtablerow %}',
+			['array' => ['first' => 'a', 'second' => 'b']]
+		);
+	}
+
 	/**
 	 */
 	public function testInvalidSyntax()

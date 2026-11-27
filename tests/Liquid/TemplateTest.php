@@ -33,6 +33,26 @@ class TemplateTest extends TestCase
 		array_map('unlink', glob($this->cacheDir . DIRECTORY_SEPARATOR . '*'));
 	}
 
+	public function testHasIncludes()
+	{
+		$fs = TestFileSystem::fromArray(['base' => "{% block content %}{% endblock %}"]);
+
+		$plain = new Template();
+		$plain->parse('hello');
+		$this->assertFalse($plain->getRoot()->hasIncludes());
+
+		$withBlock = new Template();
+		$withBlock->parse('{% block content %}x{% endblock %}');
+		$this->assertTrue($withBlock->getRoot()->hasIncludes());
+
+		$child = new Template();
+		$child->setFileSystem($fs);
+		$child->parse("{% extends 'base' %}{% block content %}x{% endblock %}");
+		$this->assertTrue($child->getRoot()->hasIncludes());
+
+		unset($fs);
+	}
+
 	/**
 	 */
 	public function testSetCacheInvalidKey()

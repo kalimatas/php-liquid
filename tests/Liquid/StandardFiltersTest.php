@@ -208,6 +208,25 @@ class StandardFiltersTest extends TestCase
 		}
 	}
 
+	public static function whereProvider()
+	{
+		return [
+			'item matching a value' => [[['model' => 'audi'], ['model' => 'bmw']], ['model', 'bmw'], [['model' => 'bmw']]],
+			'item holding a value' => [[['model' => false], ['model' => 'bmw']], ['model'], [['model' => 'bmw']]],
+			'input which is not a list' => ['not an array', ['model'], 'not an array'],
+		];
+	}
+
+	/**
+	 * @dataProvider whereProvider
+	 * @param mixed $input
+	 * @param mixed $expected
+	 */
+	public function testWhereReturnsAList($input, array $args, $expected)
+	{
+		$this->assertSame($expected, StandardFilters::where($input, ...$args));
+	}
+
 	public function testWhere()
 	{
 		$data = [
@@ -281,6 +300,24 @@ class StandardFiltersTest extends TestCase
 		foreach ($data as $element => $expected) {
 			$this->assertEquals($expected, StandardFilters::newline_to_br($element));
 		}
+	}
+
+	public static function replaceWithoutNeedleProvider()
+	{
+		return [
+			'nothing to work on' => [null, null],
+			'a string without the needle' => ['a b c', 'a b c'],
+		];
+	}
+
+	/**
+	 * @dataProvider replaceWithoutNeedleProvider
+	 * @param mixed $input
+	 * @param mixed $expected
+	 */
+	public function testReplaceWithoutNeedle($input, $expected)
+	{
+		$this->assertSame($expected, StandardFilters::replace($input, null));
 	}
 
 	public function testReplace()
@@ -474,6 +511,24 @@ class StandardFiltersTest extends TestCase
 		$this->assertEquals('Владимир', StandardFilters::slice('Владимир Владимирович', 0, 8));
 	}
 
+	public static function truncateNumberProvider()
+	{
+		return [
+			'a string of digits' => ['1234567890'],
+			'an actual number' => [1234567890],
+		];
+	}
+
+	/**
+	 * @dataProvider truncateNumberProvider
+	 *
+	 * @param mixed $input
+	 */
+	public function testTruncateAcceptsNumbers($input)
+	{
+		$this->assertSame('123...', StandardFilters::truncate($input, 3));
+	}
+
 	public function testTruncate()
 	{
 		// Truncate with default ending
@@ -499,6 +554,22 @@ class StandardFiltersTest extends TestCase
 		$this->assertEquals('Привет', StandardFilters::truncate('Привет', 10));
 		$this->assertEquals('café', StandardFilters::truncate('café', 4));
 		$this->assertEquals('caf...', StandardFilters::truncate('cafés', 3));
+	}
+
+	public static function truncateWordsProvider()
+	{
+		return [
+			'nothing left to drop' => ['one two three', 3, 'one two three'],
+			'a word is dropped' => ['one two three', 2, 'one two...'],
+		];
+	}
+
+	/**
+	 * @dataProvider truncateWordsProvider
+	 */
+	public function testTruncateWordsKeepsAnExactWordCount(string $input, int $words, string $expected)
+	{
+		$this->assertSame($expected, StandardFilters::truncatewords($input, $words));
 	}
 
 	public function testTruncateWords()
@@ -572,6 +643,38 @@ class StandardFiltersTest extends TestCase
 		// Custom glue
 		$this->assertEquals('1-2-3', StandardFilters::join([1, 2, 3], '-'));
 		$this->assertEquals('1-2-3', StandardFilters::join(new \ArrayIterator([1, 2, 3]), '-'));
+	}
+
+	public static function sortByMissingPropertyProvider()
+	{
+		return [
+			'numbers either side of the gap' => [
+				[['n' => 1], ['x' => 9], ['n' => -1], ['n' => 0.5], ['n' => 0]],
+				[-1, 'missing', 0, 0.5, 1],
+			],
+			'the gap lands between two halves' => [
+				[['n' => 0.5], ['n' => -0.5], ['x' => 9]],
+				[-0.5, 'missing', 0.5],
+			],
+		];
+	}
+
+	/**
+	 * @dataProvider sortByMissingPropertyProvider
+	 */
+	public function testSortByPropertyTreatsAMissingPropertyAsZero(array $input, array $expected)
+	{
+		$sorted = array_map(
+			static fn (array $item) => $item['n'] ?? 'missing',
+			array_values(StandardFilters::sort($input, 'n'))
+		);
+
+		$this->assertSame($expected, $sorted);
+	}
+
+	public function testSortByPropertyLeavesScalarsUnsorted()
+	{
+		$this->assertSame(['b', 'a'], StandardFilters::sort(['b', 'a'], 'n'));
 	}
 
 	public function testSort()
@@ -796,6 +899,14 @@ class StandardFiltersTest extends TestCase
 		$this->assertSame([null, null], StandardFilters::map(['time', new \stdClass()], 'attr'));
 	}
 
+	public function testFirstRewindsAnIterator()
+	{
+		$iterator = new \ArrayIterator([1, 2, 3]);
+		$iterator->next();
+
+		$this->assertSame(1, StandardFilters::first($iterator));
+	}
+
 	public function testFirst()
 	{
 		$data = [
@@ -880,6 +991,11 @@ class StandardFiltersTest extends TestCase
 		foreach ($data as $item) {
 			$this->assertEquals($item[1], StandardFilters::string($item[0]));
 		}
+	}
+
+	public function testSplitEmptyPattern()
+	{
+		$this->assertSame(['ä', 'ö', 'ü'], StandardFilters::split('äöü', ''));
 	}
 
 	public function testSplit()
@@ -1163,6 +1279,31 @@ class StandardFiltersTest extends TestCase
 		foreach ($data as $item) {
 			$this->assertSame($item[2], StandardFilters::round($item[0], $item[1]));
 		}
+	}
+
+	public static function numericCastProvider()
+	{
+		return [
+			'ceil of a word' => ['ceil', ['abc'], 0],
+			'floor of a word' => ['floor', ['abc'], 0],
+			'a word divided by a number' => ['divided_by', ['abc', 2], 0.0],
+			'a number divided by a word' => ['divided_by', [4, '2abc'], 2.0],
+			'a word modulo a number' => ['modulo', ['abc', 2], 0.0],
+			'a number modulo a word' => ['modulo', [4, '2abc'], 0.0],
+			'round of a word' => ['round', ['abc'], 0.0],
+			'round with a word for precision' => ['round', [2.675, '2abc'], 2.68],
+		];
+	}
+
+	/**
+	 * @dataProvider numericCastProvider
+	 * @param mixed $expected
+	 */
+	public function testNumericFiltersCastTheirOperands(string $filter, array $args, $expected)
+	{
+		$numeric = [StandardFilters::class, $filter];
+
+		$this->assertSame($expected, $numeric(...$args));
 	}
 
 	public function testCeil()

@@ -92,6 +92,24 @@ class TagIncludeTest extends TestCase
 		$this->assertEquals("Outer-Inner: value23-OuterInner: 1loopInner: 2loopInner: 3loop", $output);
 	}
 
+	public function testIncludeWithQuotedValue()
+	{
+		$template = new Template();
+		$template->setFileSystem($this->fs);
+		$template->parse("{% include inner with 'value' %}");
+
+		$this->assertEquals('Inner: value', $template->render());
+	}
+
+	public function testIncludeLeavesNothingBehind()
+	{
+		$template = new Template();
+		$template->setFileSystem($this->fs);
+		$template->parse("{% include inner with 'value' %}[{{ inner }}]");
+
+		$this->assertEquals('Inner: value[]', $template->render());
+	}
+
 	public function testIncludeTagNoWith()
 	{
 		$template = new Template();

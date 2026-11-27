@@ -48,6 +48,17 @@ class TagPaginateTest extends TestCase
 		$this->assertTemplateResult($expected, $text, ['search' => ['products' => new \ArrayIterator([['id' => 1], ['id' => 2], ['id' => 3], ['id' => 4], ['id' => 5]])]]);
 	}
 
+	public function testPageCountAndPaginatedCollection()
+	{
+		$products = array_map(static fn (int $id) => ['id' => $id], range(1, 10));
+
+		$text = '{% paginate search.products by 3 %}'
+			. '{{ paginate.pages }}:{% for product in search.products %}{{ product.id }}{% endfor %}'
+			. '{% endpaginate %}';
+
+		$this->assertTemplateResult('4:123', $text, ['search' => ['products' => $products]]);
+	}
+
 	public function testNextPage()
 	{
 		$text = '{% paginate products by 1 %}{% for product in products %} {{ product.id }} {% endfor %}<a href="{{ paginate.next.url }}">{{ paginate.next.title }}</a>{% endpaginate %}';

@@ -68,6 +68,60 @@ HERE;
 		$this->assertTemplateResult('a=b c=d e=f ', '{%for item in array%}{{item[0]}}={{item[1]}} {%endfor%}', ['array' => ['a' => 'b', 'c' => 'd', 'e' => 'f']]);
 	}
 
+	public static function forLoopNameProvider()
+	{
+		return [
+			'a collection' => ['{% for item in array %}{{ forloop.name }}{% endfor %}', ['array' => [1]], 'item-array'],
+			'a range' => ['{% for item in (1..1) %}{{ forloop.name }}{% endfor %}', [], 'item-digit'],
+		];
+	}
+
+	/**
+	 * @dataProvider forLoopNameProvider
+	 */
+	public function testForLoopName(string $source, array $assigns, string $expected)
+	{
+		$this->assertTemplateResult($expected, $source, $assigns);
+	}
+
+	public static function forLoopRangeBoundsProvider()
+	{
+		return [
+			'both bounds named' => ['(first..last)', ['first' => 1, 'last' => 3]],
+			'a one letter name' => ['(1..z)', ['z' => 3]],
+		];
+	}
+
+	/**
+	 * @dataProvider forLoopRangeBoundsProvider
+	 */
+	public function testForLoopRangeBounds(string $range, array $assigns)
+	{
+		$this->assertTemplateResult('123', "{% for i in $range %}{{ i }}{% endfor %}", $assigns);
+	}
+
+	public function testForHelpersInADigitRange()
+	{
+		$this->assertTemplateResult(
+			'2 1 0 2 1 1 0 2 2 1 1 0 0 1 2 3 2 0 -1 0 0 ',
+			'{% for i in (1..3) %}'
+			. '{{ forloop.length }} {{ forloop.index }} {{ forloop.index0 }}'
+			. ' {{ forloop.rindex }} {{ forloop.rindex0 }}'
+			. ' {{ forloop.first }} {{ forloop.last }} '
+			. '{% endfor %}'
+		);
+	}
+
+	public function testForLoopVariableIsLocalToADigitRange()
+	{
+		$this->assertTemplateResult('[]', '[{% for i in (1..3) %}{% endfor %}{{ i }}]');
+	}
+
+	public function testForLoopOverAScalar()
+	{
+		$this->assertTemplateResult('', '{% for i in scalar %}x{% endfor %}', ['scalar' => 5]);
+	}
+
 	public function testForHelpers()
 	{
 		$assigns = ['array' => [1, 2, 3]];

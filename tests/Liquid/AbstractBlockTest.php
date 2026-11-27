@@ -22,6 +22,34 @@ class AbstractBlockTest extends TestCase
 		$this->assertTemplateResult('', '{% block }');
 	}
 
+	public static function endDelimiterProvider()
+	{
+		return [
+			'if' => ['{% if true %}{% end %}{% endif %}', "'end' is not a valid delimiter for if tags. Use endif"],
+			'for' => ['{% for i in array %}{% end %}{% endfor %}', "'end' is not a valid delimiter for for tags. Use endfor"],
+			'case' => ['{% case 1 %}{% end %}{% endcase %}', "'end' is not a valid delimiter for case tags. Use endcase"],
+		];
+	}
+
+	/**
+	 * @dataProvider endDelimiterProvider
+	 */
+	public function testEndIsNotADelimiter(string $source, string $message)
+	{
+		$this->expectException(\Liquid\Exception\ParseException::class);
+		$this->expectExceptionMessage($message);
+
+		$this->assertTemplateResult('', $source);
+	}
+
+	public function testElseNeedsAConditional()
+	{
+		$this->expectException(\Liquid\Exception\ParseException::class);
+		$this->expectExceptionMessage('for does not expect else tag');
+
+		$this->assertTemplateResult('', '{% for i in array %}{% else %}{% endfor %}');
+	}
+
 	public function testWhitespaceHandler()
 	{
 		$this->assertTemplateResult('foo', '{% if true %}foo{% endif %}');
