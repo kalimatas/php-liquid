@@ -22,6 +22,38 @@ class AbstractBlockTest extends TestCase
 		$this->assertTemplateResult('', '{% block }');
 	}
 
+	/**
+	 * Every block names the delimiter which closes it.
+	 */
+	public function testEndIsNotADelimiter()
+	{
+		$cases = [
+			'{% if true %}{% end %}{% endif %}' => "'end' is not a valid delimiter for if tags. Use endif",
+			'{% for i in array %}{% end %}{% endfor %}' => "'end' is not a valid delimiter for for tags. Use endfor",
+			'{% case 1 %}{% end %}{% endcase %}' => "'end' is not a valid delimiter for case tags. Use endcase",
+		];
+
+		foreach ($cases as $source => $message) {
+			try {
+				$this->assertTemplateResult('', $source);
+				$this->fail("expected: $message");
+			} catch (\Liquid\Exception\ParseException $e) {
+				$this->assertSame($message, $e->getMessage());
+			}
+		}
+	}
+
+	/**
+	 * A block which is not a conditional has no else branch.
+	 */
+	public function testElseNeedsAConditional()
+	{
+		$this->expectException(\Liquid\Exception\ParseException::class);
+		$this->expectExceptionMessage('for does not expect else tag');
+
+		$this->assertTemplateResult('', '{% for i in array %}{% else %}{% endfor %}');
+	}
+
 	public function testWhitespaceHandler()
 	{
 		$this->assertTemplateResult('foo', '{% if true %}foo{% endif %}');
