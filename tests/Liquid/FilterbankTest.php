@@ -118,6 +118,24 @@ namespace Liquid {
 			$this->assertSame('worked', $this->filterBank->invoke('static_test', ''));
 		}
 
+		public static function addFilterProvider()
+		{
+			return [
+				'a callback' => ['callback_filter', static fn ($value) => $value],
+				'a class name' => [\ClassFilter::class, null],
+				'a global function' => ['functionFilter', null],
+				'an object' => [new \ClassFilter(), null],
+			];
+		}
+
+		/**
+		 * @dataProvider addFilterProvider
+		 */
+		public function testAddFilterReturnsTrue($filter, ?callable $callback = null)
+		{
+			$this->assertTrue($this->filterBank->addFilter($filter, $callback));
+		}
+
 		public function testTypeErrorExceptionAndCallDateFilterWithoutArguments()
 		{
 			if (\PHP_VERSION_ID < 70100) {

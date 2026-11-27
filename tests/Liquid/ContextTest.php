@@ -35,6 +35,14 @@ class CentsDrop extends Drop
 	}
 }
 
+class NeedleDrop extends Drop
+{
+	public function needle()
+	{
+		return $this->context->get('needle');
+	}
+}
+
 class NoToLiquid
 {
 	public $answer = 42;
@@ -85,6 +93,8 @@ class NestedObject
 
 class CountableObject implements \Countable
 {
+	public $name = 'two';
+
 	public function count(): int
 	{
 		return 2;
@@ -104,6 +114,14 @@ class ToArrayObject
 			'property' => $this->property,
 			'value' => 42,
 		];
+	}
+}
+
+class CallableChainObject
+{
+	public function inner()
+	{
+		return new NoToLiquid();
 	}
 }
 
@@ -175,6 +193,22 @@ class ContextTest extends TestCase
 		$this->context = new Context();
 	}
 
+	public static function booleanLiteralProvider()
+	{
+		return [
+			'true is true' => ['true', true],
+			'false is false' => ['false', false],
+		];
+	}
+
+	/**
+	 * @dataProvider booleanLiteralProvider
+	 */
+	public function testBooleanLiterals(string $name, bool $expected)
+	{
+		$this->assertSame($expected, $this->context->get($name));
+	}
+
 	public function testScoping()
 	{
 		$this->assertTrue($this->context->push());
@@ -188,6 +222,18 @@ class ContextTest extends TestCase
 		$this->expectException(\Liquid\LiquidException::class);
 
 		$this->context->pop();
+	}
+
+	public function testFilterTypeErrorKeepsItsCause()
+	{
+		try {
+			$this->context->invoke('date', [], []);
+			$this->fail('Expected a LiquidException wrapping a TypeError');
+		} catch (\Liquid\LiquidException $e) {
+			$this->assertSame(0, $e->getCode());
+			$this->assertInstanceOf(\TypeError::class, $e->getPrevious());
+			$this->assertSame($e->getPrevious()->getMessage(), $e->getMessage());
+		}
 	}
 
 	/**
@@ -300,6 +346,13 @@ class ContextTest extends TestCase
 		$this->context->set('object', new GetSetObject());
 		$this->assertEquals(42, $this->context->get('object.answer'));
 		$this->assertNull($this->context->get('object.invalid'));
+		$this->assertNull($this->context->get('object.answer.deeper'));
+	}
+
+	public function testCallableObjectProperty()
+	{
+		$this->context->set('object', new CallableChainObject());
+		$this->assertEquals(42, $this->context->get('object.inner.answer'));
 	}
 
 	public function testGetSetMagic()
@@ -307,6 +360,7 @@ class ContextTest extends TestCase
 		$this->context->set('object', new GetSetMagic());
 		$this->assertEquals(2, $this->context->get('object.prime'));
 		$this->assertNull($this->context->get('object.invalid'));
+		$this->assertNull($this->context->get('object.prime.deeper'));
 	}
 
 	public function testFinalVariableCanBeObject()
@@ -346,6 +400,7 @@ class ContextTest extends TestCase
 	{
 		$this->context->set('countable', new CountableObject());
 		$this->assertEquals(2, $this->context->get('countable.size'));
+		$this->assertEquals('two', $this->context->get('countable.name'));
 	}
 
 	public function testOverrideSize()
@@ -456,6 +511,24 @@ class ContextTest extends TestCase
 		$this->context->merge(['test' => 'newvalue', 'foo' => 'bar']);
 		$this->assertEquals('newvalue', $this->context->get('test'));
 		$this->assertEquals('bar', $this->context->get('foo'));
+
+		$this->context->push();
+		$this->context->merge(['scoped' => 'scoped']);
+		$this->assertEquals('scoped', $this->context->get('scoped'));
+
+		$this->context->pop();
+		$this->assertNull($this->context->get('scoped'));
+	}
+
+	public function testFetchedDropGetsTheContext()
+	{
+		$this->context->set('needle', 'found');
+		$this->context->set('drop', new NeedleDrop());
+
+		$drop = $this->context->get('drop');
+
+		$this->assertInstanceOf(Drop::class, $drop);
+		$this->assertSame('found', $drop->invokeDrop('needle'));
 	}
 
 	public function testCents()

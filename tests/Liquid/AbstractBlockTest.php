@@ -22,30 +22,26 @@ class AbstractBlockTest extends TestCase
 		$this->assertTemplateResult('', '{% block }');
 	}
 
-	/**
-	 * Every block names the delimiter which closes it.
-	 */
-	public function testEndIsNotADelimiter()
+	public static function endDelimiterProvider()
 	{
-		$cases = [
-			'{% if true %}{% end %}{% endif %}' => "'end' is not a valid delimiter for if tags. Use endif",
-			'{% for i in array %}{% end %}{% endfor %}' => "'end' is not a valid delimiter for for tags. Use endfor",
-			'{% case 1 %}{% end %}{% endcase %}' => "'end' is not a valid delimiter for case tags. Use endcase",
+		return [
+			'if' => ['{% if true %}{% end %}{% endif %}', "'end' is not a valid delimiter for if tags. Use endif"],
+			'for' => ['{% for i in array %}{% end %}{% endfor %}', "'end' is not a valid delimiter for for tags. Use endfor"],
+			'case' => ['{% case 1 %}{% end %}{% endcase %}', "'end' is not a valid delimiter for case tags. Use endcase"],
 		];
-
-		foreach ($cases as $source => $message) {
-			try {
-				$this->assertTemplateResult('', $source);
-				$this->fail("expected: $message");
-			} catch (\Liquid\Exception\ParseException $e) {
-				$this->assertSame($message, $e->getMessage());
-			}
-		}
 	}
 
 	/**
-	 * A block which is not a conditional has no else branch.
+	 * @dataProvider endDelimiterProvider
 	 */
+	public function testEndIsNotADelimiter(string $source, string $message)
+	{
+		$this->expectException(\Liquid\Exception\ParseException::class);
+		$this->expectExceptionMessage($message);
+
+		$this->assertTemplateResult('', $source);
+	}
+
 	public function testElseNeedsAConditional()
 	{
 		$this->expectException(\Liquid\Exception\ParseException::class);
